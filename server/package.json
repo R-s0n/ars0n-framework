@@ -1,0 +1,18 @@
+{
+  "name": "ars0n-framework",
+  "version": "0.0.1",
+  "description": "A Modern Framework for Bug Bounty Hunting",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "rs0n",
+  "license": "GNU",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.1",
+    "nodemon": "^2.0.13"
+  }
+}
