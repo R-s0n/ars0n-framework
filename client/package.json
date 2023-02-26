@@ -12,7 +12,6 @@
     "react-hot-toast": "^2.4.0",
     "react-modal": "^3.12.1",
     "react-scripts": "5.0.1",
-    "react-toast-notifications": "^2.4.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
