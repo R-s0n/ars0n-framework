@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import axios from 'axios';
-import '../Component.css';
+import axios from 'axios';import '../Component.css';
 
 const Chaining = props => {
     const [urls, setUrls] = useState(props.thisFqdn.targetUrls)

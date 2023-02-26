@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {ToastProvider} from 'react-toast-notifications';
+
 import '../Component.css';
 import HopHeaders from './SubComponents/HopHeaders';
 import CachePoisoning from './SubComponents/CachePoisoning';
@@ -67,47 +67,47 @@ const Ops = props => {
         <div className="bg-secondary workTableStyle">
             {
                 currentStep === 0 ?
-                <ToastProvider><HopHeaders thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <HopHeaders thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 1 ?
-                <ToastProvider><CachePoisoning thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <CachePoisoning thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 2 ?
-                <ToastProvider><CacheDeception thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <CacheDeception thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 3 ?
-                <ToastProvider><HttpRequestSmuggling thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <HttpRequestSmuggling thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 4 ?
-                <ToastProvider><H2cSmuggling thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <H2cSmuggling thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 5 ?
-                <ToastProvider><H2cSmugglingTunneling thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <H2cSmugglingTunneling thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 8 ?
-                <ToastProvider><HostHeader thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <HostHeader thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 9 ?
-                <ToastProvider><CspBypass thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <CspBypass thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 10 ?
-                <ToastProvider><Cors thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Cors thisFqdn={props.thisFqdn} /> :
                 ''
             }
         </div>

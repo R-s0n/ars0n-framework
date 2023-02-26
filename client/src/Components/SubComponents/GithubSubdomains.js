@@ -1,6 +1,6 @@
-import axios from 'axios';
-import React, {useState, useEffect} from 'react';
-import {useToasts} from 'react-toast-notifications';
+import axios from 'axios';import React, {useState, useEffect} from 'react';
+
+import toast, { Toaster } from 'react-hot-toast';
 import SubDomainForm from '../HelperComponents/SubDomainForm';
 import SubDomainResults from '../HelperComponents/SubDomainResults';
 
@@ -10,7 +10,12 @@ const GithubSubdomains = props => {
     const [subdomainList, setSubdomainList] = useState([])
     const [loaded, setLoaded] = useState(false);
 
-    const {addToast} = useToasts()
+
+
+    const notify = e => {
+        navigator.clipboard.writeText(e.target.innerText)
+        toast(`Copied "${e.target.innerText}" to Clipboard`)
+    }
 
     useEffect(()=>{
         setFormCompleted(false);
@@ -27,10 +32,7 @@ const GithubSubdomains = props => {
             })
     }, [props])
     
-    const copyToClipboard = e => {
-        navigator.clipboard.writeText(e.target.innerText)
-        addToast(`Copied "${e.target.innerText}" to Clipboard`, {appearance:'info',autoDismiss:true});
-    }
+
 
     const addGithubSubdomainsData = (list) => {
         const tempFqdn = props.thisFqdn;
@@ -57,11 +59,12 @@ const GithubSubdomains = props => {
         <div className="container mt-5">
             <div className="row">
                 <div className="col-12">
+                    <Toaster />
                 <p><b>DETAILS: </b>Find additional subdomains on GitHub. Very useful during you recon phase, you will probably get some extras subdomains other tools didn’t find because not public.</p>
                     <p><b>GOAL: </b>Scape public GitHub repos for additional subdomains.</p>
-                    <p><b>DOWNLOAD: </b><span onClick={copyToClipboard}>git clone https://github.com/gwen001/github-search.git</span></p>
-                    <p><b>INSTALL: </b><span onClick={copyToClipboard}>pip3 install -r requirements2.txt</span></p>
-                    <p><b>RUN: </b><span onClick={copyToClipboard}>python3 github-subdomains.py -d {props.thisFqdn.fqdn} -t $github_apikey &et; githubsubdomains.{props.thisFqdn.fqdn}.txt; cat githubsubdomains.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
+                    <p><b>DOWNLOAD: </b><span onClick={notify}>git clone https://github.com/gwen001/github-search.git</span></p>
+                    <p><b>INSTALL: </b><span onClick={notify}>pip3 install -r requirements2.txt</span></p>
+                    <p><b>RUN: </b><span onClick={notify}>python3 github-subdomains.py -d {props.thisFqdn.fqdn} -t $github_apikey &et; githubsubdomains.{props.thisFqdn.fqdn}.txt; cat githubsubdomains.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
                 </div>
             </div>
             <div className="row">

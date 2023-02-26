@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {ToastProvider} from 'react-toast-notifications';
+
 import '../Component.css';
 import HopHeaders from './SubComponents/HopHeaders';
 import CachePoisoning from './SubComponents/CachePoisoning';
@@ -30,22 +30,22 @@ const Creative = props => {
         <div className="bg-secondary workTableStyle">
             {
                 currentStep === 0 ?
-                <ToastProvider><HopHeaders thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <HopHeaders thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 1 ?
-                <ToastProvider><CachePoisoning thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <CachePoisoning thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 8 ?
-                <ToastProvider><CspBypass thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <CspBypass thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 9 ?
-                <ToastProvider><Cors thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Cors thisFqdn={props.thisFqdn} /> :
                 ''
             }
         </div>

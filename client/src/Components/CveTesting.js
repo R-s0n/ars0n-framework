@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import {ToastProvider} from 'react-toast-notifications';
 import '../Component.css';
 import NucleiScans from './SubComponents/NucleiScans';
 
@@ -45,7 +44,7 @@ const CveTesting = props => {
         <div className="bg-secondary workTableStyle">
             {
                 currentStep === 0 ?
-                <ToastProvider><NucleiScans thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <NucleiScans thisFqdn={props.thisFqdn} /> :
                 ''
             }
         </div>

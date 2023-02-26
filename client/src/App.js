@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import axios from 'axios';
-import Modal from 'react-modal';
+import axios from 'axios';import Modal from 'react-modal';
 import AddFqdnModal from './Components/Modals/AddFqdnModal';
 import Fqdn from './Views/Fqdn';
 import './App.css'

@@ -1,8 +1,8 @@
 import React from 'react';
-import {useToasts} from 'react-toast-notifications';
+
+import toast, { Toaster } from 'react-hot-toast';
 
 const SubDomainResults = props => {
-    const {addToast} = useToasts()
 
     const deleteSubdomains = (e) => {
         props.resultsFunction();
@@ -16,13 +16,13 @@ const SubDomainResults = props => {
         padding: '10px'
     }
 
-    const copyListToClipboard = (e) => {
+    const notify = (e) => {
         let copyString = "";
         props.subdomainList.map((fqdn, i)=>{
             return (copyString += fqdn + "\n")
         })
         navigator.clipboard.writeText(copyString);
-        addToast(`Subdomain List copied to Clipboard`, {appearance:'info',autoDismiss:true});
+        toast(`Subdomain List copied to Clipboard`);
     }
 
     return (
@@ -47,7 +47,7 @@ const SubDomainResults = props => {
             </div>
             <div className="col-4 mt-2">
                 <button className="btn btn-primary" onClick={deleteSubdomains}>Delete</button>
-                <button className="btn btn-primary ml-5" onClick={copyListToClipboard}>Copy</button>
+                <button className="btn btn-primary ml-5" onClick={notify}>Copy</button>
             </div>
         </div>
     )

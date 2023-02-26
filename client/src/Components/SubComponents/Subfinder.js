@@ -1,6 +1,6 @@
-import axios from 'axios';
-import React, {useState, useEffect} from 'react';
-import {useToasts} from 'react-toast-notifications';
+import axios from 'axios';import React, {useState, useEffect} from 'react';
+
+import toast, { Toaster } from 'react-hot-toast';
 import SubDomainForm from '../HelperComponents/SubDomainForm';
 import SubDomainResults from '../HelperComponents/SubDomainResults';
 
@@ -10,7 +10,12 @@ const Subfinder = props => {
     const [subdomainList, setSubdomainList] = useState([])
     const [loaded, setLoaded] = useState(false);
 
-    const {addToast} = useToasts()
+
+
+    const notify = e => {
+        navigator.clipboard.writeText(e.target.innerText)
+        toast(`Copied "${e.target.innerText}" to Clipboard`)
+    }
 
     useEffect(()=>{
         setFormCompleted(false);
@@ -27,10 +32,7 @@ const Subfinder = props => {
             })
     }, [props])
     
-    const copyToClipboard = e => {
-        navigator.clipboard.writeText(e.target.innerText)
-        addToast(`Copied "${e.target.innerText}" to Clipboard`, {appearance:'info',autoDismiss:true});
-    }
+
 
     const addSubfinderData = (list) => {
         const tempFqdn = props.thisFqdn;
@@ -59,9 +61,9 @@ const Subfinder = props => {
                 <div className="col-12">
                     <p><b>DETAILS: </b>Subfinder is a subdomain discovery tool that discovers valid subdomains for websites by using passive online sources. It has a simple modular architecture and is optimized for speed. subfinder is built for doing one thing only - passive subdomain enumeration, and it does that very well.</p>
                     <p><b>GOAL: </b>Identify valid sub-domains of the current FQDN to help build a complete picture of the application.</p>
-                    <p><b>DOWNLOAD: </b><span onClick={copyToClipboard}>GO111MODULE=on go get -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder</span></p>
+                    <p><b>DOWNLOAD: </b><span onClick={notify}>GO111MODULE=on go get -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder</span></p>
                     <p><b>INSTALL: </b>Subfinder will work after using the installation instructions however to configure Subfinder to work with certain services, you will need to have setup API keys.  Theses values are stored in the $HOME/.config/subfinder/config.yaml file which will be created when you run the tool for the first time. The configuration file uses the YAML format. Multiple API keys can be specified for each of these services from which one of them will be used for enumeration.  For sources that require multiple keys, namely Censys, Passivetotal, they can be added by separating them via a colon (:).</p>
-                    <p><b>RUN: </b><span onClick={copyToClipboard}>./subfinder -d {props.thisFqdn.fqdn} -o subfinder.{props.thisFqdn.fqdn}.txt; cat subfinder.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
+                    <p><b>RUN: </b><span onClick={notify}>./subfinder -d {props.thisFqdn.fqdn} -o subfinder.{props.thisFqdn.fqdn}.txt; cat subfinder.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
                 </div>
             </div>
             <div className="row">

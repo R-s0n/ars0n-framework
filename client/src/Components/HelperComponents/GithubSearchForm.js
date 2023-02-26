@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import axios from 'axios';
-
 const GithubSearchForm = props => {
     const [formData, setformData] = useState([]);
 

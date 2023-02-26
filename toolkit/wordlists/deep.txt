@@ -1168,7 +1168,7 @@ CharacterTabButton_SetTab
 CharacterTabButtonTooltipText
 Chat_AddMessage
 Chat_ClearAllMsg
-Chat_CopyToClipboard
+Chat_notify
 Chat_Emotion_AddFaceCodeToMsn
 Chat_Emotion_OnEnter
 Chat_Emotion_OnLeave

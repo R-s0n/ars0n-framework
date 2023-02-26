@@ -1,6 +1,6 @@
-import axios from 'axios';
-import React, {useState, useEffect} from 'react';
-import {useToasts} from 'react-toast-notifications';
+import axios from 'axios';import React, {useState, useEffect} from 'react';
+
+import toast, { Toaster } from 'react-hot-toast';
 
 const NucleiScans = props => {
     const [formCompleted, setFormCompleted] = useState(false);
@@ -8,7 +8,12 @@ const NucleiScans = props => {
     const [loaded, setLoaded] = useState(false);
     const [currentVuln, setCurrentVuln] = useState(0);
 
-    const {addToast} = useToasts()
+
+
+    const notify = e => {
+        navigator.clipboard.writeText(e.target.innerText)
+        toast(`Copied "${e.target.innerText}" to Clipboard`)
+    }
 
     useEffect(()=>{
         setFormCompleted(false);

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {ToastProvider} from 'react-toast-notifications';
+
 import Sublist3r from './SubComponents/Sublist3r';
 import Amass from './SubComponents/Amass';
 import Assetfinder from './SubComponents/Assetfinder';
@@ -77,103 +77,103 @@ const Recon = props => {
         <div className="bg-secondary workTableStyle">
             {
                 currentStep === 0 ?
-                <ToastProvider><Sublist3r thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Sublist3r thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 1 ?
-                <ToastProvider><Amass thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Amass thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 2 ?
-                <ToastProvider><Assetfinder thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Assetfinder thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 3 ?
-                <ToastProvider><Gau thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Gau thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 4 ?
-                <ToastProvider><Ctl thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Ctl thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 5 ?
-                <ToastProvider><Shosubgo thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Shosubgo thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 6 ?
-                <ToastProvider><Subfinder thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Subfinder thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 7 ?
-                <ToastProvider><GithubSubdomains thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <GithubSubdomains thisFqdn={props.thisFqdn} /> :
                 ''
             }
 
             {
                 currentStep === 9 ?
-                <ToastProvider><GoSpider thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <GoSpider thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 10 ?
-                <ToastProvider><Hakrawler thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Hakrawler thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 11 ?
-                <ToastProvider><SubDomainizer thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <SubDomainizer thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 12 ?
-                <ToastProvider><ShuffleDnsMassive thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <ShuffleDnsMassive thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 13 ?
-                <ToastProvider><CustomWordlist thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <CustomWordlist thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 14 ?
-                <ToastProvider><ShuffleDnsCustom thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <ShuffleDnsCustom thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 15 ?
-                <ToastProvider><CloudRanges thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <CloudRanges thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 16 ?
-                <ToastProvider><Dnmasscan thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Dnmasscan thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 17 ?
-                <ToastProvider><FindWebServer thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <FindWebServer thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 18 ?
-                <ToastProvider><Consolidator thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Consolidator thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 19 ?
-                <ToastProvider><Httprobe thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <Httprobe thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
                 currentStep === 20 ?
-                <ToastProvider><EyeWitness thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <EyeWitness thisFqdn={props.thisFqdn} /> :
                 ''
             }
             {
@@ -183,7 +183,7 @@ const Recon = props => {
             }
             {
                 currentStep === 22 ?
-                <ToastProvider><GithubBruteDork thisFqdn={props.thisFqdn} /></ToastProvider> :
+                <GithubBruteDork thisFqdn={props.thisFqdn} /> :
                 ''
             }
         </div>

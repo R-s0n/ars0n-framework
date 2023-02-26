@@ -1,6 +1,6 @@
-import axios from 'axios';
-import React, {useState, useEffect} from 'react';
-import {useToasts} from 'react-toast-notifications';
+import axios from 'axios';import React, {useState, useEffect} from 'react';
+
+import toast, { Toaster } from 'react-hot-toast';
 import SubDomainForm from '../HelperComponents/SubDomainForm';
 import SubDomainResults from '../HelperComponents/SubDomainResults';
 
@@ -10,7 +10,12 @@ const ShuffleDnsCustom = props => {
     const [subdomainList, setSubdomainList] = useState([])
     const [loaded, setLoaded] = useState(false);
 
-    const {addToast} = useToasts()
+
+
+    const notify = e => {
+        navigator.clipboard.writeText(e.target.innerText)
+        toast(`Copied "${e.target.innerText}" to Clipboard`)
+    }
 
     useEffect(()=>{
         setFormCompleted(false);
@@ -27,10 +32,7 @@ const ShuffleDnsCustom = props => {
             })
     }, [props])
     
-    const copyToClipboard = e => {
-        navigator.clipboard.writeText(e.target.innerText)
-        addToast(`Copied "${e.target.innerText}" to Clipboard`, {appearance:'info',autoDismiss:true});
-    }
+
 
     const addShuffleDnsCustomData = (list) => {
         const tempFqdn = props.thisFqdn;
@@ -57,10 +59,11 @@ const ShuffleDnsCustom = props => {
         <div className="container mt-5">
             <div className="row">
                 <div className="col-12">
+                    <Toaster />
                     <p><b>DETAILS: </b>ShuffleDNS is a wrapper around massdns written in go that allows you to enumerate valid subdomains using active bruteforce as well as resolve subdomains with wildcard handling and easy input-output support.</p>
                     <p><b>GOAL: </b>Bruteforce subdomains based on given wordlist.</p>
-                    <p><b>DOWNLOAD / INSTALL: </b><span onClick={copyToClipboard}>GO111MODULE=on go get -v github.com/projectdiscovery/shuffledns/cmd/shuffledns</span></p>
-                    <p><b>Run: </b><span onClick={copyToClipboard}>~/go/bin/shuffledns -d {props.thisFqdn.fqdn} -w ~/Wordlists/custom.txt -r ~/Wordlists/resolvers.txt | xclip -i -selection clipboard</span></p>
+                    <p><b>DOWNLOAD / INSTALL: </b><span onClick={notify}>GO111MODULE=on go get -v github.com/projectdiscovery/shuffledns/cmd/shuffledns</span></p>
+                    <p><b>Run: </b><span onClick={notify}>~/go/bin/shuffledns -d {props.thisFqdn.fqdn} -w ~/Wordlists/custom.txt -r ~/Wordlists/resolvers.txt | xclip -i -selection clipboard</span></p>
                 </div>
             </div>
             <div className="row">

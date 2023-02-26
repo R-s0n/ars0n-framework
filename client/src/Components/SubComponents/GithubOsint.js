@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import axios from 'axios';
-import UrlForm from '../HelperComponents/UrlForm';
+import axios from 'axios';import UrlForm from '../HelperComponents/UrlForm';
 
 const GithubOsint = props => {
     const [urls, setUrls] = useState([]);
@@ -25,6 +24,7 @@ const GithubOsint = props => {
         <div className="container mt-5">
             <div className="row">
                 <div className="col-12">
+                    <Toaster />
                     <p>The links below can be used search for source code on GitHub.</p>
                     <div style={{padding: '10px', height: '225px', width: '1000px', overflowY: 'scroll', border: '1px solid black'}}>
                         {

@@ -1,6 +1,6 @@
-import axios from 'axios';
-import React, {useState, useEffect} from 'react';
-import {useToasts} from 'react-toast-notifications';
+import axios from 'axios';import React, {useState, useEffect} from 'react';
+
+import toast, { Toaster } from 'react-hot-toast';
 import SubDomainForm from '../HelperComponents/SubDomainForm';
 import SubDomainResults from '../HelperComponents/SubDomainResults';
 
@@ -10,7 +10,12 @@ const Shosubgo = props => {
     const [subdomainList, setSubdomainList] = useState([])
     const [loaded, setLoaded] = useState(false);
 
-    const {addToast} = useToasts()
+
+
+    const notify = e => {
+        navigator.clipboard.writeText(e.target.innerText)
+        toast(`Copied "${e.target.innerText}" to Clipboard`)
+    }
 
     useEffect(()=>{
         setFormCompleted(false);
@@ -27,10 +32,7 @@ const Shosubgo = props => {
             })
     }, [props])
     
-    const copyToClipboard = e => {
-        navigator.clipboard.writeText(e.target.innerText)
-        addToast(`Copied "${e.target.innerText}" to Clipboard`, {appearance:'info',autoDismiss:true});
-    }
+
 
     const addShosubgoData = (list) => {
         const tempFqdn = props.thisFqdn;
@@ -57,11 +59,12 @@ const Shosubgo = props => {
         <div className="container mt-5">
             <div className="row">
                 <div className="col-12">
+                    <Toaster />
                     <p><b>DETAILS: </b>Small tool to Grab subdomains using Shodan api.</p>
                     <p><b>GOAL: </b>Identify valid sub-domains of the current FQDN to help build a complete picture of the application.</p>
-                    <p><b>DOWNLOAD: </b><span onClick={copyToClipboard}>git clone https://github.com/pownx/shosubgo.git</span></p>
-                    <p><b>INSTALL: </b><span onClick={copyToClipboard}>apt-get install golang</span></p>
-                    <p><b>RUN: </b><span onClick={copyToClipboard}>go run main.go -d {props.thisFqdn.fqdn} -s $shodan_key &gt; shosubgo.{props.thisFqdn.fqdn}.txt;  cat shosubgo.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
+                    <p><b>DOWNLOAD: </b><span onClick={notify}>git clone https://github.com/pownx/shosubgo.git</span></p>
+                    <p><b>INSTALL: </b><span onClick={notify}>apt-get install golang</span></p>
+                    <p><b>RUN: </b><span onClick={notify}>go run main.go -d {props.thisFqdn.fqdn} -s $shodan_key &gt; shosubgo.{props.thisFqdn.fqdn}.txt;  cat shosubgo.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
                 </div>
             </div>
             <div className="row">

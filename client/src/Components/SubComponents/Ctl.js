@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import {useToasts} from 'react-toast-notifications';
+import toast, { Toaster } from 'react-hot-toast';
 import SubDomainResults from '../HelperComponents/SubDomainResults';
 import SubDomainForm from '../HelperComponents/SubDomainForm';
 
@@ -9,7 +9,12 @@ const Ctl = props => {
     const [subdomainList, setSubdomainList] = useState([])
     const [loaded, setLoaded] = useState(false);
 
-    const {addToast} = useToasts()
+
+
+    const notify = e => {
+        navigator.clipboard.writeText(e.target.innerText)
+        toast(`Copied "${e.target.innerText}" to Clipboard`)
+    }
 
     useEffect(()=>{
         axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
@@ -25,10 +30,7 @@ const Ctl = props => {
             })
     }, [props.thisFqdn._id])
     
-    const copyToClipboard = e => {
-        navigator.clipboard.writeText(e.target.innerText)
-        addToast(`Copied "${e.target.innerText}" to Clipboard`, {appearance:'info',autoDismiss:true});
-    }
+
 
     const addCtlData = (list) => {
         const tempFqdn = props.thisFqdn;
@@ -55,10 +57,11 @@ const Ctl = props => {
         <div className="container mt-5">
             <div className="row">
                 <div className="col-12">
+                    <Toaster />
                     <p><b>DETAILS: </b>Gets all subdomains to a domain by querying the database of the crt.sh Certificate Transparency search engine.</p>
                     <p><b>GOAL: </b>Identify valid sub-domains of the current FQDN to help build a complete picture of the application.</p>
-                    <p><b>DOWNLOAD / INSTALL: </b><span onClick={copyToClipboard}>git clone https://github.com/hannob/tlshelpers.git</span></p>
-                    <p><b>RUN: </b><span onClick={copyToClipboard}>sudo ./getsubdomain {props.thisFqdn.fqdn} | xclip -i -selection clipboard</span></p>
+                    <p><b>DOWNLOAD / INSTALL: </b><span onClick={notify}>git clone https://github.com/hannob/tlshelpers.git</span></p>
+                    <p><b>RUN: </b><span onClick={notify}>sudo ./getsubdomain {props.thisFqdn.fqdn} | xclip -i -selection clipboard</span></p>
                 </div>
             </div>
             <div className="row">

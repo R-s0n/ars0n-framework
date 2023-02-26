@@ -1,14 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {useToasts} from 'react-toast-notifications';
-import axios from 'axios';
 
+import toast, { Toaster } from 'react-hot-toast';
+import axios from 'axios';
 const Consolidator = props => {
     const [consolidatedList, setConsolidatedList] = useState([]);
     const [consolidatedNewList, setConsolidatedNewList] = useState([]);
     const [loaded, setLoaded] = useState(false);
     const [refresh, setRefresh] = useState(0);
-
-    const {addToast} = useToasts()
 
     useEffect(()=>{
         axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
@@ -61,32 +59,29 @@ const Consolidator = props => {
             .catch(err=>console.log(err));
     }
 
-    const copyListToClipboard = (e) => {
+    const notify = (e) => {
         let copyString = "";
         consolidatedList.map((fqdn, i)=>{
             return (copyString += fqdn + "\n")
         })
         navigator.clipboard.writeText(copyString);
-        addToast(`Consolidated List copied to Clipboard`, {appearance:'info',autoDismiss:true});
+        toast(`Consolidated List copied to Clipboard`);
     }
 
-    const copyToClipboard = e => {
-        navigator.clipboard.writeText(e.target.innerText)
-        addToast(`Copied "${e.target.innerText}" to Clipboard`, {appearance:'info',autoDismiss:true});
-    }
+
 
     return (
         <div className="container mt-5">
             <div className="row">
                 <div className="col-12">
                     <p>This tool will consolidate any lists of subdomains that have been uploaded through the tools above.  Click the button below and a comprehensive list of all unique subdomains will be dynamically renderred.  This can take some time depending on the size of the lists, so please be patient.</p>
-                    <p>After running the tool, paste the list in a newly created file using the following command: <span onClick={copyToClipboard}>vim consolidated.{props.thisFqdn.fqdn}.txt</span></p>
+                    <p>After running the tool, paste the list in a newly created file using the following command: <span onClick={notify}>vim consolidated.{props.thisFqdn.fqdn}.txt</span></p>
                     <button className="btn btn-primary" onClick={consolidate}>Consolidate</button>
                 </div>
             </div>
             <div className="row mt-5">
                 <div style={{width: '400px', height: '500px', overflowY: 'scroll', border: '1px solid black'}}className="col-5 ml-5">
-                    <button className="btn btn-primary mt-3 btn-sm float-right" onClick={copyListToClipboard}>Copy</button>
+                    <button className="btn btn-primary mt-3 btn-sm float-right" onClick={notify}>Copy</button>
                     <h5 className="mt-3">Consolidated List ({consolidatedList.length})</h5>
                     <hr className="mt-3 mb-1"/>
                     { loaded === true ?
@@ -97,7 +92,7 @@ const Consolidator = props => {
                     }
                 </div>
                 <div style={{width: '400px', height: '500px', overflowY: 'scroll', border: '1px solid black'}}className="col-5 ml-5">
-                    <button className="btn btn-primary mt-3 btn-sm float-right" onClick={copyListToClipboard}>Copy</button>
+                    <button className="btn btn-primary mt-3 btn-sm float-right" onClick={notify}>Copy</button>
                     <h5 className="mt-3">New Subdomains ({consolidatedNewList.length})</h5>
                     <hr className="mt-3 mb-1"/>
                     { loaded === true ?
@@ -106,6 +101,7 @@ const Consolidator = props => {
                         }) :
                         ''
                     }
+                                        <Toaster />
                 </div>
             </div>
         </div>
