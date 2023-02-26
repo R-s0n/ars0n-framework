@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/ars0n_framework_db', {
+mongoose.connect('mongodb://127.0.0.1/wapt_db', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
