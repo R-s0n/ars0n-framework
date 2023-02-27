@@ -1,6 +1,20 @@
 import subprocess, argparse
-from wildfire import Timer
 from time import sleep
+from datetime import datetime
+
+class Timer:
+    def __init__(self):
+        self.start = datetime.now()
+        self.stop = None
+    
+    def stop_timer(self):
+        self.stop = datetime.now()
+
+    def get_start(self):
+        return self.start.strftime("%H:%M:%S")
+
+    def get_stop(self):
+        return self.stop.strftime("%H:%M:%S")
 
 def tools_dir_check():
     home_dir = get_home_dir()
@@ -308,6 +322,40 @@ def install_go():
     else:
         print("[!] Something went wrong!  Go was NOT installed successfully...")
 
+def node_check():
+    node_check = subprocess.run([f"node --version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+    if node_check.returncode == 0:
+        print("[+] Node is already installed.  Checking version...")
+        node_version = node_check.stdout.split(".")[0]
+        print(f"[-] Current Node Version: {node_version}")
+        if node_version == "v18":
+            print("[+] Node 18 is already installed.")
+            return True
+    print("[!] Node 18 is NOT already installed.  Installing now...")
+    return False
+
+def install_node():
+    node_install = subprocess.run(["sudo apt-get install nodejs npm"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, shell=True)
+    if node_install.returncode == 0:
+        print("[+] Node 18 was installed successfully!")
+    else:
+        print("[!] Something went wrong!  Node 18 was NOT installed successfully...")
+
+def mongodb_check():
+    mongodb_check = subprocess.run([f"mongod --version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    if mongodb_check.returncode == 0:
+        print("[+] Mongodb is already installed.")
+        return True
+    print("[!] Mongodb is NOT already installed.  Installing now...")
+    return False
+
+def install_mongodb():
+    mongodb_install = subprocess.run(["sudo apt-get install mongodb"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, shell=True)
+    if mongodb_install.returncode == 0:
+        print("[+] MongoDB was installed successfully!")
+    else:
+        print("[!] Something went wrong!  MongoDB was NOT installed successfully...")
+
 def get_home_dir():
     get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
     return get_home_dir.stdout.replace("\n", "")
@@ -328,6 +376,19 @@ def keystore():
             shodan_key = input("[*] Please enter your Shodan API Key (ENTER to leave black and add later):\n")
             subprocess.run([f"""echo "{slack_key}" > {home_dir}/.keys/slack_web_hook && echo "github:{github_key}" > {home_dir}/.keys/.keystore && echo "shodan:{shodan_key}" >> {home_dir}/.keys/.keystore"""], shell=True)
 
+def install_server():
+    server_install = subprocess.run(["cd server; npm install"], shell=True)
+    if server_install.returncode == 0:
+        print("[+] The Ars0n Framework Server was installed successfully!")
+    else:
+        print("[!] Something went wrong!  The Ars0n Framework Server was NOT installed successfully...")
+
+def install_client():
+    client_install = subprocess.run(["cd client; npm install"], shell=True)
+    if client_install.returncode == 0:
+        print("[+] The Ars0n Framework Client was installed successfully!")
+    else:
+        print("[!] Something went wrong!  The Ars0n Framework Client was NOT installed successfully...") 
 
 def arg_parse():
     parser = argparse.ArgumentParser()
@@ -342,6 +403,10 @@ def main(args):
     keystore()
     if tools_dir_check() is False:
         create_tools_dir()
+    if node_check() is False:
+        install_node()
+    if mongodb_check() is False:
+        install_mongodb()
     if go_check() is False:
         install_go()
     if sublist3r_check() is False:
@@ -374,6 +439,8 @@ def main(args):
         install_dnmasscan()
     if nuclei_check() is False:
         install_nuclei()
+    install_server()
+    install_client()
     starter_timer.stop_timer()
     print(f"[+] Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
