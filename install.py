@@ -354,7 +354,7 @@ def install_mongodb():
     mongodb_install = subprocess.run(["sudo apt-get install mongodb -y"], shell=True)
     if mongodb_install.returncode == 0:
         print("[+] MongoDB was installed successfully!  Starting the service...")
-        start_mongodb_service = subprocess.run(["sudo service mongod start"], shell=True)
+        start_mongodb_service = subprocess.run(["sudo service mongodb start"], shell=True)
     else:
         print("[!] Something went wrong!  MongoDB was NOT installed successfully...")
 
