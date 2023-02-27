@@ -332,10 +332,11 @@ def node_check():
             print("[+] Node 18 is already installed.")
             return True
     print("[!] Node 18 is NOT already installed.  Installing now...")
+    print("[!] This can take 30+ minutes depending on your machine.")
     return False
 
 def install_node():
-    node_install = subprocess.run(["sudo apt-get install nodejs npm"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, shell=True)
+    node_install = subprocess.run(["sudo apt-get install nodejs npm -y"], shell=True)
     if node_install.returncode == 0:
         print("[+] Node 18 was installed successfully!")
     else:
@@ -350,9 +351,10 @@ def mongodb_check():
     return False
 
 def install_mongodb():
-    mongodb_install = subprocess.run(["sudo apt-get install mongodb"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, shell=True)
+    mongodb_install = subprocess.run(["sudo apt-get install mongodb -y"], shell=True)
     if mongodb_install.returncode == 0:
-        print("[+] MongoDB was installed successfully!")
+        print("[+] MongoDB was installed successfully!  Starting the service...")
+        start_mongodb_service = subprocess.run(["sudo service mongod start"], shell=True)
     else:
         print("[!] Something went wrong!  MongoDB was NOT installed successfully...")
 
@@ -375,6 +377,22 @@ def keystore():
             github_key = input("[*] Please enter your GitHub PAT (ENTER to leave black and add later):\n")
             shodan_key = input("[*] Please enter your Shodan API Key (ENTER to leave black and add later):\n")
             subprocess.run([f"""echo "{slack_key}" > {home_dir}/.keys/slack_web_hook && echo "github:{github_key}" > {home_dir}/.keys/.keystore && echo "shodan:{shodan_key}" >> {home_dir}/.keys/.keystore"""], shell=True)
+
+def server_check():
+    server_check = subprocess.run([f"ls server/node_modules"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+    if server_check.returncode == 0:
+        print("[+] The Ars0n Framework Server is already installed.")
+        return True
+    print("[!] The Ars0n Framework Server is NOT already installed.  Installing now...")
+    return False
+
+def client_check():
+    client_check = subprocess.run([f"ls client/node_modules"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+    if client_check.returncode == 0:
+        print("[+] The Ars0n Framework Client is already installed.")
+        return True
+    print("[!] The Ars0n Framework Client is NOT already installed.  Installing now...")
+    return False
 
 def install_server():
     server_install = subprocess.run(["cd server; npm install"], shell=True)
@@ -439,8 +457,10 @@ def main(args):
         install_dnmasscan()
     if nuclei_check() is False:
         install_nuclei()
-    install_server()
-    install_client()
+    if server_check() is False:
+        install_server()
+    if client_check() is False:
+        install_client()
     starter_timer.stop_timer()
     print(f"[+] Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
