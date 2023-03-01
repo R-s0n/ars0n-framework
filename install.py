@@ -406,12 +406,63 @@ def install_client():
     if client_install.returncode == 0:
         print("[+] The Ars0n Framework Client was installed successfully!")
     else:
-        print("[!] Something went wrong!  The Ars0n Framework Client was NOT installed successfully...") 
+        print("[!] Something went wrong!  The Ars0n Framework Client was NOT installed successfully...")
+
+def run_server_prompt():
+    prompt = input("[?] Would you like to run the web application now? (Y/n)")
+    if prompt == "Y":
+        subprocess.run(["chmod 777 run.sh; ./run.sh"], shell=True)
 
 def arg_parse():
     parser = argparse.ArgumentParser()
     # parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=True)
     return parser.parse_args()
+
+def validate_install():
+    print("[-] Validating installation...")
+    if tools_dir_check() is False:
+        return False
+    if node_check() is False:
+        return False
+    if mongodb_check() is False:
+        return False
+    if go_check() is False:
+        return False
+    if sublist3r_check() is False:
+        return False
+    if assetfinder_check() is False:
+        return False
+    if gau_check() is False:
+        return False
+    if crt_check() is False:
+        return False
+    if shosubgo_check() is False:
+        return False
+    if subfinder_check() is False:
+        return False
+    if github_search_check() is False:
+        return False
+    if gospider_check() is False:
+        return False
+    if subdomainizer_check() is False:
+        return False
+    if shuffledns_check() is False:
+        return False
+    if httprobe_check() is False:
+        return False
+    if tlsscan_check() is False:
+        return False
+    if jq_check() is False:
+        return False
+    if dnmasscan_check() is False:
+        return False
+    if nuclei_check() is False:
+        return False
+    if server_check() is False:
+        return False
+    if client_check() is False:
+        return False
+    return True
 
 def main(args):
     print("[+] Starting install script")
@@ -461,7 +512,11 @@ def main(args):
         install_server()
     if client_check() is False:
         install_client()
+    if validate_install() is False:
+        print("[!] Something went wrong!  Please try to run the installer again or open an issue on the repo...")
+        exit()
     starter_timer.stop_timer()
+    run_server_prompt()
     print(f"[+] Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
 if __name__ == "__main__":
