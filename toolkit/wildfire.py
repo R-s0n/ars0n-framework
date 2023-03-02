@@ -137,8 +137,8 @@ def build_blacklist(args):
 
 def arg_parse():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=True, default="localhost")
-    parser.add_argument('-P','--port', help='Port of MongoDB API', required=True, default="8000")
+    parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=False, default="localhost")
+    parser.add_argument('-P','--port', help='Port of MongoDB API', required=False, default="8000")
     parser.add_argument('-p','--proxy', help='IP Address of Burp Suite Proxy', required=False)
     parser.add_argument('-b','--blacklist', help='FQDN to Blacklist (skip) for this round of testing.  Separate multiple FQDNs w/ a comma (Ex: -b example1.com,example2.com)', required=False)
     parser.add_argument('--start', help='Run Fire-Starter Modules', required=False, action='store_true')
