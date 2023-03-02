@@ -24,8 +24,9 @@ const CveTesting = props => {
     }, [props])
 
     return (
-        <>
-        <div className="bg-secondary checklistStyle pt-4 ml-4">
+        <div className="container-fluid">
+        <div className="row">
+        <div className="bg-secondary checklistStyle pt-4 ml-4 col-3">
             <ul>
                 <li>Third-Party Scanning</li>
                 <ul>
@@ -41,14 +42,15 @@ const CveTesting = props => {
                 </ul>
             </ul>
         </div>
-        <div className="bg-secondary workTableStyle">
+        <div className="bg-secondary workTableStyle col-8">
             {
                 currentStep === 0 ?
                 <NucleiScans thisFqdn={props.thisFqdn} /> :
                 ''
             }
         </div>
-        </>
+        </div>
+        </div>
     )
 }
 

@@ -24,7 +24,7 @@ const Enumeration = props => {
     }, [activeEndpointTab]);
 
     return (
-        <>
+        <div>
         <nav style={{borderBottom: '2px groove #284B63'}} className="pl-2 pt-0 navbar navbar-expand-lg bg-primary">
             <div className="container-fluid">
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
@@ -32,7 +32,9 @@ const Enumeration = props => {
                 </div>
             </div>
         </nav>
-        <div className="bg-secondary checklistStyle ml-4">
+                <div className="container-fluid">
+                <div className="row">
+        <div className="bg-secondary checklistStyle ml-4 col-3">
             <ul style={{listStyleType: "none"}}>
             {
                 
@@ -65,9 +67,11 @@ const Enumeration = props => {
             }        
             </ul>
         </div>
-        <div className="bg-secondary workTableStyle">
+        <div className="bg-secondary workTableStyle col-8">
         </div>
-        </>
+        </div>
+        </div>
+        </div>
     )
 }
 
