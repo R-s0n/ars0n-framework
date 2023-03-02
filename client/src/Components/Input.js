@@ -12,8 +12,9 @@ const Input = props => {
     const [currentStep, setCurrentStep] = useState(0);
 
     return (
-        <>
-        <div className="bg-secondary checklistStyle pt-4 ml-4">
+        <div className="container-fluid">
+            <div className="row">
+        <div className="bg-secondary checklistStyle pt-2 ml-4 col-3">
             <ul>
                 <li>Reflected Value Testing</li>
                 <ul>
@@ -48,7 +49,7 @@ const Input = props => {
                 </ul>
             </ul>
         </div>
-        <div className="bg-secondary workTableStyle">
+        <div className="bg-secondary workTableStyle col-8">
             {
                 currentStep === 0 ?
                 <HopHeaders thisFqdn={props.thisFqdn} /> :
@@ -70,7 +71,8 @@ const Input = props => {
                 ''
             }
         </div>
-        </>
+        </div>
+        </div>
     )
 }
 
