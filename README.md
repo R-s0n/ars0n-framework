@@ -14,6 +14,6 @@ A Modern, Agile Framework for Bug Bounty Hunting on Kali Linux
 
 ### Basic Scan
 
-`python3 wildfire.py -S localhost -P 8000 --start --scan`
+`python3 wildfire.py --start --scan`
 
 Under Construction...
