@@ -335,8 +335,8 @@ def sort_fqdns(fqdns):
 
 def arg_parse():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=True)
-    parser.add_argument('-P','--port', help='Port of MongoDB API', required=True)
+    parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=False, defalut="127.0.0.1")
+    parser.add_argument('-P','--port', help='Port of MongoDB API', required=False, default="8000")
     parser.add_argument('-p','--proxy', help='IP Address of Burp Suite Proxy', required=False)
     parser.add_argument('--deep', help='Crawl all live servers for subdomains', required=False, action='store_true')
     return parser.parse_args()
