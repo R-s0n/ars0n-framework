@@ -336,11 +336,31 @@ def node_check():
     return False
 
 def install_node():
-    node_install = subprocess.run(["sudo apt-get install nodejs npm -y"], shell=True)
+    node_install = subprocess.run(["sudo apt-get install nodejs -y"], shell=True)
     if node_install.returncode == 0:
         print("[+] Node 18 was installed successfully!")
     else:
         print("[!] Something went wrong!  Node 18 was NOT installed successfully...")
+
+def npm_check():
+    npm_check = subprocess.run([f"npm --version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+    if npm_check.returncode == 0:
+        print("[+] NPM is already installed.  Checking version...")
+        npm_version = npm_check.stdout.split(".")[0]
+        print(f"[-] Current NPM Version: {npm_version}")
+        if npm_version == "9":
+            print("[+] NPM 9 is already installed.")
+            return True
+    print("[!] npm 9 is NOT already installed.  Installing now...")
+    print("[!] This can take 30+ minutes depending on your machine.")
+    return False
+
+def install_npm():
+    npm_install = subprocess.run(["sudo apt-get install npm -y"], shell=True)
+    if npm_install.returncode == 0:
+        print("[+] NPM 9 was installed successfully!")
+    else:
+        print("[!] Something went wrong!  NPM 9 was NOT installed successfully...")
 
 def mongodb_check():
     mongodb_check = subprocess.run([f"mongod --version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -428,6 +448,8 @@ def validate_install():
         return False
     if node_check() is False:
         return False
+    if npm_check is False:
+        return False
     if mongodb_check() is False:
         return False
     if go_check() is False:
@@ -478,6 +500,8 @@ def main(args):
         create_tools_dir()
     if node_check() is False:
         install_node()
+    if npm_check() is False:
+        install_npm()
     if mongodb_check() is False:
         install_mongodb()
     if go_check() is False:
