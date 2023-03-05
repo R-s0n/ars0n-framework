@@ -414,6 +414,9 @@ def run_server_prompt():
     if prompt == "Y":
         subprocess.run(["chmod 777 run.sh; ./run.sh"], shell=True)
 
+def update_apt():
+    subprocess.run(["sudo apt-get update"], shell=True)
+
 def arg_parse():
     parser = argparse.ArgumentParser()
     # parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=True)
