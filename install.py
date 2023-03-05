@@ -376,7 +376,8 @@ def keystore():
             slack_key = input("[*] Please enter your Slack Token (ENTER to leave black and add later):\n")
             github_key = input("[*] Please enter your GitHub PAT (ENTER to leave black and add later):\n")
             shodan_key = input("[*] Please enter your Shodan API Key (ENTER to leave black and add later):\n")
-            subprocess.run([f"""echo "{slack_key}" > {home_dir}/.keys/slack_web_hook && echo "github:{github_key}" > {home_dir}/.keys/.keystore && echo "shodan:{shodan_key}" >> {home_dir}/.keys/.keystore"""], shell=True)
+            hackerone_key = input("[*] Please enter your HackerOne API Key (ENTER to leave black and add later):\n")
+            subprocess.run([f"""echo "{hackerone_key}" > {home_dir}/.keys/.hackerone && echo "{slack_key}" > {home_dir}/.keys/slack_web_hook && echo "github:{github_key}" > {home_dir}/.keys/.keystore && echo "shodan:{shodan_key}" >> {home_dir}/.keys/.keystore"""], shell=True)
 
 def server_check():
     server_check = subprocess.run([f"ls server/node_modules"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
