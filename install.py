@@ -496,6 +496,7 @@ def main(args):
     sleep(2)
     starter_timer = Timer()
     keystore()
+    update_apt()
     if tools_dir_check() is False:
         create_tools_dir()
     if node_check() is False:
