@@ -87,12 +87,15 @@ def get_bc_api_key():
     return api_key
 
 def h1_api_call(url):
-    api_key = get_h1_api_key()
-    auth_str = base64_encode(f"{api_key}")
-    headers = {"Authorization":f"Basic {auth_str}","Accept":"application/json"}
-    # proxies = {"https":"https://127.0.0.1:8080"}
-    res = requests.get(url, headers=headers, verify=False)
-    return res.json()
+    try:
+        api_key = get_h1_api_key()
+        auth_str = base64_encode(f"{api_key}")
+        headers = {"Authorization":f"Basic {auth_str}","Accept":"application/json"}
+        # proxies = {"https":"https://127.0.0.1:8080"}
+        res = requests.get(url, headers=headers, verify=False)
+        return res.json()
+    except Exception as e:
+        print("[!] Unable to get program data from HackerOne.  Skipping...")
 
 def get_h1_soup(program):
     res = requests.get(f'https://hackerone.com/{program}',verify=False)
