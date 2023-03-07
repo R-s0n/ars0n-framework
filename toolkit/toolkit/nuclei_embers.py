@@ -76,7 +76,7 @@ f.close()
 
 now = datetime.now().strftime("%d-%m-%y_%I%p")
 
-subprocess.run([f"{home_dir}/go/bin/nuclei -t {template} -l /tmp/urls.txt -es info -fhr -sb --headless -o /tmp/{fqdn}-{now}.json -json"], shell=True)
+subprocess.run([f"{home_dir}/go/bin/nuclei -t {template} -l /tmp/urls.txt -fhr -sb --headless -o /tmp/{fqdn}-{now}.json -json"], shell=True)
 
 f = open(f"/tmp/{fqdn}-{now}.json")
 results = f.read().split("\n")
