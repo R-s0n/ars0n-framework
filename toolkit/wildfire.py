@@ -171,7 +171,7 @@ def main(args):
     if args.start is False and args.spread is False and args.scan is False and args.enum is False:
         print("[!] Please Choose a Module!\n[!] Options:\n\n   --start   [Run Fire-Starter Modules]\n   --spread  [Run Fire-Spreader Modules] (Expect a LONG scan time)\n   --scan    [Run Vuln Scan Modules]\n   --enum    [Run Enumeration Modules]\n")
     wildfire_timer.stop_timer()
-    print(f"[+] Done!  Start: {wildfire_timer.get_start()}  |  Stop: {wildfire_timer.get_stop()}")
+    print(f"[+] Wildfire Scan Done!  Start: {wildfire_timer.get_start()}  |  Stop: {wildfire_timer.get_stop()}")
 
 if __name__ == "__main__":
     args = arg_parse()

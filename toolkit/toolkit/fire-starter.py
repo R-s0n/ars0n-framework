@@ -495,10 +495,10 @@ def update_fqdn_obj(args, thisFqdn):
     requests.post(f'http://{args.server}:{args.port}/api/auto/update', json=thisFqdn)
 
 def cleanup():
-    subprocess.run(["rm wordlists/crawl_*"], shell=True)
-    subprocess.run(["rm wordlists/cewl_*"], shell=True)
-    subprocess.run(["rm wordlists/live_*"], shell=True)
-    subprocess.run(["rm temp/*.tmp"], shell=True)
+    subprocess.run(["rm wordlists/crawl_*"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    subprocess.run(["rm wordlists/cewl_*"],  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    subprocess.run(["rm wordlists/live_*"],  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    subprocess.run(["rm temp/*.tmp"],  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
 def get_live_server_text(args, thisFqdn, first):
     print("[!] DEBUG: get_live_server_text method reached.")
@@ -567,7 +567,6 @@ def main(args):
     starter_timer = Timer()
     cleanup()
     print("[-] Running Subdomain Scraping Modules...")
-    """
     if args.limit:
         print("[-] Unique subdomain limit detected.  Checking count...")
         check_limit(args)
@@ -579,8 +578,7 @@ def main(args):
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
-    input("[!] Debug Pause...")
-    """
+    # input("[!] Debug Pause...")
     if args.limit:
         print("[-] Unique subdomain limit detected.  Checking count...")
         check_limit(args)
@@ -589,7 +587,7 @@ def main(args):
         sublist3r(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
+    # input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -601,7 +599,7 @@ def main(args):
         assetfinder(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
+    # input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -613,7 +611,7 @@ def main(args):
         gau(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
+    # input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -625,7 +623,7 @@ def main(args):
         crt(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
+    # input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -637,7 +635,7 @@ def main(args):
         shosubgo(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
+    # input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -649,7 +647,7 @@ def main(args):
         subfinder(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
+    # input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -661,7 +659,7 @@ def main(args):
         subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
+    # input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -673,8 +671,7 @@ def main(args):
         github_subdomains(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
-    """
+    # input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -686,8 +683,7 @@ def main(args):
         shuffle_dns(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
-    """
+    # input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -701,7 +697,7 @@ def main(args):
         shuffle_dns_custom(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
+    # input("[!] Debug Pause...")
     consolidate(args)
     new_subdomain_length = get_new_subdomain_length(args)
     slack_text = f'The subdomain list for {args.fqdn} has been updated with {new_subdomain_length} new subdomains!'
@@ -711,7 +707,7 @@ def main(args):
         httprobe(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
+    # input("[!] Debug Pause...")
     # send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), True))
     build_crawl_list(get_fqdn_obj(args))
     if args.limit:
@@ -729,7 +725,7 @@ def main(args):
             gospider(args, get_home_dir(), get_fqdn_obj(args))
         except Exception as e:
             print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
+    # input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -741,7 +737,7 @@ def main(args):
         subdomainizer(get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
+    # input("[!] Debug Pause...")
     if not check_clear_sky_data():
         if not args.update:
             print("[!] Clear Sky data not found!  Skipping AWS IP range scan...")
@@ -760,12 +756,12 @@ def main(args):
         httprobe(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    input("[!] Debug Pause...")
+    # input("[!] Debug Pause...")
     # send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), False))
     # populate_burp(args, get_fqdn_obj(args))
     cleanup()
     starter_timer.stop_timer()
-    print(f"[+] Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
+    print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
 if __name__ == "__main__":
     args = arg_parse()
