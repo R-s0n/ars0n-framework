@@ -10,8 +10,8 @@
 #         print("[+] Hakrawler successfully installed!")
 #     print(f"[-] Running Hakrawler against {fqdn}...")
 #     # Add after debug: stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, 
-#     subprocess.run([f'cd {home_dir}/go/bin; cat /tmp/amass.tmp | ./hakrawler -subs -d 3 -v > /tmp/hakrawler.tmp'], shell=True)
-#     f = open(f"/tmp/hakrawler.tmp", "r")
+#     subprocess.run([f'cd {home_dir}/go/bin; cat ./temp/amass.tmp | ./hakrawler -subs -d 3 -v > ./temp/hakrawler.tmp'], shell=True)
+#     f = open(f"./temp/hakrawler.tmp", "r")
 #     hakrawler_arr = f.read().rstrip().split("\n")
 #     hakrawler_link_arr = []
 #     for line in hakrawler_arr:
@@ -22,7 +22,7 @@
 #                 if temp_arr[2] not in hakrawler_link_arr:
 #                     hakrawler_link_arr.append(temp_arr[2])
 #     f.close()
-#     subprocess.run(["rm -rf /tmp/hakrawler"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+#     subprocess.run(["rm -rf ./temp/hakrawler"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
 #     print("[+] Hakwraler completed successfully!")
 #     thisFqdn['recon']['subdomains']['hakrawler'] = hakrawler_link_arr
 # except Exception as e:
@@ -40,13 +40,13 @@
 # httprobe_string = ""
 # for subdomain in httprobe:
 #     httprobe_string += f"{subdomain}\n"
-# f = open("/tmp/httprobe_results.tmp", "w")
+# f = open("./temp/httprobe_results.tmp", "w")
 # f.write(httprobe_string)
 # f.close()
 # now = datetime.now().strftime("%d-%m-%y_%I%p")
 # print(f"[-] Running EyeWitness report against {fqdn} httprobe results...")
 # subprocess.run([f"rm -rf {home_dir}/Reports/EyeWitness_kindling_{fqdn}_*"], shell=True)
-# subprocess.run([f"cd {home_dir}/Tools/EyeWitness/Python; ./EyeWitness.py -f /tmp/httprobe_results.tmp -d {home_dir}/Reports/EyeWitness_kindling_{fqdn}_{now} --no-prompt --jitter 5 --timeout 10"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+# subprocess.run([f"cd {home_dir}/Tools/EyeWitness/Python; ./EyeWitness.py -f ./temp/httprobe_results.tmp -d {home_dir}/Reports/EyeWitness_kindling_{fqdn}_{now} --no-prompt --jitter 5 --timeout 10"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 # print(f"[+] EyeWitness report complete!")
 
 
@@ -72,15 +72,18 @@ class Timer:
 
 def sublist3r(args, home_dir, thisFqdn):
     try:
-        subprocess.run([f"python3 {home_dir}/Tools/Sublist3r/sublist3r.py -d {args.fqdn} -t 50 -o /tmp/sublist3r.tmp"], text=True, shell=True)
-        f = open("/tmp/sublist3r.tmp", "r")
+        subprocess.run([f"python3 {home_dir}/Tools/Sublist3r/sublist3r.py -d {args.fqdn} -t 50 -o ./temp/sublist3r.tmp"], text=True, shell=True)
+        f = open("./temp/sublist3r.tmp", "r")
         sublist3r_arr = f.read().rstrip().split("\n")
         f.close()
-        subprocess.run(["rm /tmp/sublist3r.tmp"], stdout=subprocess.DEVNULL, shell=True)
+        subprocess.run(["rm ./temp/sublist3r.tmp"], stdout=subprocess.DEVNULL, shell=True)
         thisFqdn['recon']['subdomains']['sublist3r'] = sublist3r_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
-        print(f"[!] Something went wrong!  Exception: {str(e)}")
+        if """[Errno 2] No such file or directory: './temp/sublist3r.tmp'""" not in str(e):
+            print(f"[!] Something went wrong!  Exception: {str(e)}")
+        else:
+            print("[-] Sublist3r did not find any results.  Continuing scan...")
 
 def remove_duplicate_ips(ip_list):
     try:
@@ -95,7 +98,7 @@ def remove_duplicate_ips(ip_list):
 
 def get_ips_from_amass(thisFqdn):
     try:
-        amass_file = open(f"/tmp/amass.tmp", 'r')
+        amass_file = open(f"./temp/amass.tmp", 'r')
         amass_file_lines = amass_file.readlines()
         amass_file.close()
         ip_list = []
@@ -125,12 +128,12 @@ def get_ips_from_amass(thisFqdn):
 def amass(args, thisFqdn):
     try:
         regex = "{1,3}"
-        subprocess.run([f"amass enum -src -ip -brute -ipv4 -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o /tmp/amass.tmp"], shell=True)
-        subprocess.run([f"cp /tmp/amass.tmp /tmp/amass.full.tmp"], stdout=subprocess.DEVNULL, shell=True)
-        subprocess.run([f"sed -i -E 's/\[(.*?)\] +//g' /tmp/amass.tmp"], stdout=subprocess.DEVNULL, shell=True)
+        subprocess.run([f"amass enum -src -ip -brute -ipv4 -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
+        subprocess.run([f"cp ./temp/amass.tmp ./temp/amass.full.tmp"], stdout=subprocess.DEVNULL, shell=True)
+        subprocess.run([f"sed -i -E 's/\[(.*?)\] +//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, shell=True)
         thisFqdn = get_ips_from_amass(thisFqdn)
-        subprocess.run([f"sed -i -E 's/ ([0-9]{regex}\.)[0-9].*//g' /tmp/amass.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-        amass_file = open(f"/tmp/amass.tmp", 'r')
+        subprocess.run([f"sed -i -E 's/ ([0-9]{regex}\.)[0-9].*//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        amass_file = open(f"./temp/amass.tmp", 'r')
         amass_file_lines = amass_file.readlines()
         amass_file.close()
         new_lines = []
@@ -140,11 +143,11 @@ def amass(args, thisFqdn):
                 new_lines.append(subdomain)
             else:
                 new_lines.append(line)
-        subprocess.run(["rm -rf /tmp/amass.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-        amass_file = open(f"/tmp/amass.tmp", 'w')
+        subprocess.run(["rm -rf ./temp/amass.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        amass_file = open(f"./temp/amass.tmp", 'w')
         amass_file.writelines(new_lines)
         amass_file.close()
-        f = open(f"/tmp/amass.tmp", "r")
+        f = open(f"./temp/amass.tmp", "r")
         amass_arr = f.read().rstrip().split("\n")
         f.close()
         thisFqdn['recon']['subdomains']['amass'] = amass_arr
@@ -154,11 +157,11 @@ def amass(args, thisFqdn):
 
 def assetfinder(args, home_dir, thisFqdn):
     try:
-        subprocess.run([f"{home_dir}/go/bin/assetfinder --subs-only {args.fqdn} > /tmp/assetfinder.tmp"], shell=True)
-        f = open(f"/tmp/assetfinder.tmp", "r")
+        subprocess.run([f"{home_dir}/go/bin/assetfinder --subs-only {args.fqdn} > ./temp/assetfinder.tmp"], shell=True)
+        f = open(f"./temp/assetfinder.tmp", "r")
         assetfinder_arr = f.read().rstrip().split("\n")
         f.close()
-        subprocess.run(["rm /tmp/assetfinder.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+        subprocess.run(["rm ./temp/assetfinder.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['assetfinder'] = assetfinder_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
@@ -166,11 +169,11 @@ def assetfinder(args, home_dir, thisFqdn):
 
 def gau(args, home_dir, thisFqdn):
     try:
-        subprocess.run([f"{home_dir}/go/bin/gau --subs {args.fqdn} | cut -d / -f 3 | sort -u > /tmp/gau.tmp"], shell=True)
-        f = open(f"/tmp/gau.tmp", "r")
+        subprocess.run([f"{home_dir}/go/bin/gau --subs {args.fqdn} | cut -d / -f 3 | sort -u > ./temp/gau.tmp"], shell=True)
+        f = open(f"./temp/gau.tmp", "r")
         gau_arr = f.read().rstrip().split("\n")
         f.close()
-        subprocess.run(["rm /tmp/gau.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+        subprocess.run(["rm ./temp/gau.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['gau'] = gau_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
@@ -178,11 +181,11 @@ def gau(args, home_dir, thisFqdn):
 
 def crt(args, home_dir, thisFqdn):
     try:
-        subprocess.run([f"cd {home_dir}/Tools/tlshelpers; ./getsubdomain {args.fqdn} > /tmp/ctl.tmp"], shell=True)
-        f = open(f"/tmp/ctl.tmp", "r")
+        subprocess.run([f"{home_dir}/Tools/tlshelpers/getsubdomain {args.fqdn} > ./temp/ctl.tmp"], shell=True)
+        f = open(f"./temp/ctl.tmp", "r")
         ctl_arr = f.read().rstrip().split("\n")
         f.close()
-        subprocess.run(["rm /tmp/ctl.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+        subprocess.run(["rm ./temp/ctl.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['ctl'] = ctl_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
@@ -205,11 +208,11 @@ def shosubgo(args, home_dir, thisFqdn):
 
 def subfinder(args, home_dir, thisFqdn):
     try:
-        subprocess.run([f'{home_dir}/go/bin/subfinder -d {args.fqdn} -o /tmp/subfinder.tmp'], shell=True)
-        f = open(f"/tmp/subfinder.tmp", "r")
+        subprocess.run([f'{home_dir}/go/bin/subfinder -d {args.fqdn} -o ./temp/subfinder.tmp'], shell=True)
+        f = open(f"./temp/subfinder.tmp", "r")
         subfinder_arr = f.read().rstrip().split("\n")
         f.close()
-        subprocess.run(["rm -rf /tmp/subfinder.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+        subprocess.run(["rm -rf ./temp/subfinder.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['subfinder'] = subfinder_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
@@ -217,11 +220,11 @@ def subfinder(args, home_dir, thisFqdn):
 
 def subfinder_recursive(args, home_dir, thisFqdn):
     try:
-        subprocess.run([f'{home_dir}/go/bin/subfinder -d {args.fqdn} -recursive -o /tmp/subfinder.tmp'], shell=True)
-        f = open(f"/tmp/subfinder.tmp", "r")
+        subprocess.run([f'{home_dir}/go/bin/subfinder -d {args.fqdn} -recursive -o ./temp/subfinder.tmp'], shell=True)
+        f = open(f"./temp/subfinder.tmp", "r")
         subfinder_arr = f.read().rstrip().split("\n")
         f.close()
-        subprocess.run(["rm -rf /tmp/subfinder.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+        subprocess.run(["rm -rf ./temp/subfinder.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['subfinder'] = subfinder_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
@@ -251,10 +254,10 @@ def github_subdomains(args, home_dir, thisFqdn):
 
 def gospider(args, home_dir, thisFqdn):
     try:
-        subprocess.run([f'cd {home_dir}/go/bin; ./gospider -s "https://{args.fqdn}" -o /tmp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
+        subprocess.run([f'{home_dir}/go/bin/gospider -s "https://{args.fqdn}" -o ./temp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
         fqdn = args.fqdn
         outputFile = fqdn.replace(".", "_")
-        f = open(f"/tmp/gospider/{outputFile}", "r")
+        f = open(f"./temp/gospider/{outputFile}", "r")
         gospider_arr = f.read().rstrip().split("\n")
         gospider_link_arr = []
         for line in gospider_arr:
@@ -265,7 +268,7 @@ def gospider(args, home_dir, thisFqdn):
                     if temp_arr[2] not in gospider_link_arr:
                         gospider_link_arr.append(temp_arr[2])
         f.close()
-        subprocess.run(["rm -rf /tmp/gospider"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+        subprocess.run(["rm -rf ./temp/gospider"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['gospider'] = gospider_link_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
@@ -276,10 +279,10 @@ def gospider_deep(home_dir, thisFqdn):
         f = open('wordlists/crawl_list.tmp', 'r')
         domain_arr = f.read().rstrip().split("\n")
         for domain in domain_arr:
-            subprocess.run([f'cd {home_dir}/go/bin; ./gospider -s "{domain}" -o /tmp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
+            subprocess.run([f'{home_dir}/go/bin/gospider -s "{domain}" -o ./temp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
             fqdn = domain.split("/")[2]
             outputFile = fqdn.replace(".", "_")
-            f = open(f"/tmp/gospider/{outputFile}", "r")
+            f = open(f"./temp/gospider/{outputFile}", "r")
             gospider_arr = f.read().rstrip().split("\n")
             gospider_link_arr = []
             for line in gospider_arr:
@@ -290,7 +293,7 @@ def gospider_deep(home_dir, thisFqdn):
                         if temp_arr[2] not in gospider_link_arr:
                             gospider_link_arr.append(temp_arr[2])
             f.close()
-        subprocess.run(["rm -rf /tmp/gospider"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+        subprocess.run(["rm -rf ./temp/gospider"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['gospider'] = gospider_link_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
@@ -298,11 +301,11 @@ def gospider_deep(home_dir, thisFqdn):
 
 def subdomainizer(home_dir, thisFqdn):
     try:
-        subprocess.run([f"python3 {home_dir}/Tools/SubDomainizer/SubDomainizer.py -l wordlists/crawl_list.tmp -o /tmp/subdomainizer.tmp -sop /tmp/secrets.tmp"], shell=True)
-        f = open("/tmp/subdomainizer.tmp", "r")
+        subprocess.run([f"python3 {home_dir}/Tools/SubDomainizer/SubDomainizer.py -l wordlists/crawl_list.tmp -o ./temp/subdomainizer.tmp -sop ./temp/secrets.tmp"], shell=True)
+        f = open("./temp/subdomainizer.tmp", "r")
         subdomainizer_arr = f.read().rstrip().split("\n")
         f.close()
-        subprocess.run(["rm /tmp/subdomainizer.tmp"], stdout=subprocess.DEVNULL, shell=True)
+        subprocess.run(["rm ./temp/subdomainizer.tmp"], stdout=subprocess.DEVNULL, shell=True)
         thisFqdn['recon']['subdomains']['subdomainizer'] = subdomainizer_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
@@ -310,15 +313,15 @@ def subdomainizer(home_dir, thisFqdn):
 
 def shuffle_dns(args, home_dir, thisFqdn):
     try:
-        subprocess.run([f'{home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/all.txt -r wordlists/resolvers.txt -o /tmp/shuffledns.tmp'], shell=True)
-        f = open(f"/tmp/shuffledns.tmp", "r")
+        subprocess.run([f'{home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp'], shell=True)
+        f = open(f"./temp/shuffledns.tmp", "r")
         shuffledns_arr = f.read().rstrip().split("\n")
         for subdomain in shuffledns_arr:
             if args.fqdn not in subdomain:
                 i = shuffledns_arr.index(subdomain)
                 del shuffledns_arr[i]
         f.close()
-        subprocess.run(["rm -rf /tmp/shuffledns.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+        subprocess.run(["rm -rf ./temp/shuffledns.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['shuffledns'] = shuffledns_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
@@ -326,11 +329,15 @@ def shuffle_dns(args, home_dir, thisFqdn):
 
 def shuffle_dns_custom(args, home_dir, thisFqdn):
     try:
-        subprocess.run([f'{home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/cewl_{args.fqdn}.txt -r wordlists/resolvers.txt -o /tmp/shuffledns_custom.tmp'], shell=True)
-        f = open(f"/tmp/shuffledns_custom.tmp", "r")
+        subprocess.run([f'{home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/cewl_{args.fqdn}.txt -r wordlists/resolvers.txt -o ./temp/shuffledns_custom.tmp'], shell=True)
+        try:
+            f = open(f"./temp/shuffledns_custom.tmp", "r")
+        except:
+            print("[!] No results found from the CeWL scan.  Skipping the 2nd round of ShuffleDNS...")
+            return False
         shuffledns_custom_arr = f.read().rstrip().split("\n")
         f.close()
-        subprocess.run(["rm -rf /tmp/shuffledns_custom.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+        subprocess.run(["rm -rf ./temp/shuffledns_custom.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['shufflednsCustom'] = shuffledns_custom_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
@@ -364,10 +371,10 @@ def httprobe(args, home_dir, thisFqdn):
     subdomainArr = thisFqdn['recon']['subdomains']['consolidated']
     for subdomain in subdomainArr:
         subdomainStr += f"{subdomain}\n"
-    f = open("/tmp/consolidated_list.tmp", "w")
+    f = open("./temp/consolidated_list.tmp", "w")
     f.write(subdomainStr)
     f.close()
-    httprobe_results = subprocess.run([f"cat /tmp/consolidated_list.tmp | {home_dir}/go/bin/httprobe -t 8000 -c 500 -p http:8080 -p http:8000 -p http:8008 -p https:8443 -p https:44300 -p https:44301"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
+    httprobe_results = subprocess.run([f"cat ./temp/consolidated_list.tmp | {home_dir}/go/bin/httprobe -t 8000 -c 500 -p http:8080 -p http:8000 -p http:8008 -p https:8443 -p https:44300 -p https:44301"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
     r = requests.post(f'http://{args.server}:{args.port}/api/auto', data={'fqdn':args.fqdn})
     thisFqdn = r.json()
     httprobe = httprobe_results.stdout.split("\n")
@@ -394,8 +401,8 @@ def build_crawl_list(thisFqdn):
     for domain in live_servers:
         f.write(f"{domain}\n")
     f.close()
-    subprocess.run([f"ffuf -u 'FUZZ' -fc 403 -w wordlists/live_servers.tmp -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36' -o /tmp/build_crawl_list.tmp"], shell=True)
-    with open('/tmp/build_crawl_list.tmp', 'r') as json_file:
+    subprocess.run([f"ffuf -u 'FUZZ' -fc 403 -w wordlists/live_servers.tmp -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36' -o ./temp/build_crawl_list.tmp"], shell=True)
+    with open('./temp/build_crawl_list.tmp', 'r') as json_file:
         data = json.load(json_file)
     f = open("wordlists/crawl_list.tmp", 'w')
     for result in data['results']:
@@ -430,9 +437,9 @@ def identify_hosts():
     return ip_count.stdout.replace("\n", "")
 
 def masscan_to_tls(home_dir):
-    subprocess.run([f"sudo masscan -p443 --rate 40000 -iL wordlists/aws_ips.txt -oL /tmp/clear_sky_masscan.tmp"], shell=True)
-    subprocess.run(["cat /tmp/clear_sky_masscan.tmp | awk {'print $4'} | awk NF | sort -u > /tmp/tls-scan-in.tmp"], shell=True)
-    subprocess.run([f"cat /tmp/tls-scan-in.tmp | {home_dir}/Tools/tls-scan/tls-scan --port=443 --concurrency=150 --cacert={home_dir}/Tools/tls-scan/ca-bundle.crt 2>/dev/null -o wordlists/tls-results.json"], shell=True)
+    subprocess.run([f"sudo masscan -p443 --rate 40000 -iL wordlists/aws_ips.txt -oL ./temp/clear_sky_masscan.tmp"], shell=True)
+    subprocess.run(["cat ./temp/clear_sky_masscan.tmp | awk {'print $4'} | awk NF | sort -u > ./temp/tls-scan-in.tmp"], shell=True)
+    subprocess.run([f"cat ./temp/tls-scan-in.tmp | {home_dir}/Tools/tls-scan/tls-scan --port=443 --concurrency=150 --cacert={home_dir}/Tools/tls-scan/ca-bundle.crt 2>/dev/null -o wordlists/tls-results.json"], shell=True)
 
 def update_aws_domains():
     try:
@@ -487,10 +494,11 @@ def get_fqdn_obj(args):
 def update_fqdn_obj(args, thisFqdn):
     requests.post(f'http://{args.server}:{args.port}/api/auto/update', json=thisFqdn)
 
-def remove_wordlists():
+def cleanup():
     subprocess.run(["rm wordlists/crawl_*"], shell=True)
     subprocess.run(["rm wordlists/cewl_*"], shell=True)
     subprocess.run(["rm wordlists/live_*"], shell=True)
+    subprocess.run(["rm temp/*.tmp"], shell=True)
 
 def get_live_server_text(args, thisFqdn, first):
     print("[!] DEBUG: get_live_server_text method reached.")
@@ -513,12 +521,12 @@ def get_live_server_text(args, thisFqdn, first):
 
 def populate_burp(args, thisFqdn):
     url_list = thisFqdn['recon']['subdomains']['httprobe']
-    f = open('/tmp/populate_burp.tmp', 'w')
+    f = open('./temp/populate_burp.tmp', 'w')
     for url in url_list:
         f.write(f'{url}\n')
     f.close()
-    subprocess.run([f"ffuf -u 'FUZZ' -w /tmp/populate_burp.tmp -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36' -replay-proxy 'http://{args.proxy}:8080'"], shell=True)
-    subprocess.run([f"rm /tmp/populate_burp.tmp"], shell=True)
+    subprocess.run([f"ffuf -u 'FUZZ' -w ./temp/populate_burp.tmp -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36' -replay-proxy 'http://{args.proxy}:8080'"], shell=True)
+    subprocess.run([f"rm ./temp/populate_burp.tmp"], shell=True)
 
 def check_limit(args):
     thisFqdn = get_fqdn_obj(args)
@@ -557,7 +565,9 @@ def arg_parse():
 
 def main(args):
     starter_timer = Timer()
+    cleanup()
     print("[-] Running Subdomain Scraping Modules...")
+    """
     if args.limit:
         print("[-] Unique subdomain limit detected.  Checking count...")
         check_limit(args)
@@ -569,6 +579,8 @@ def main(args):
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
+    input("[!] Debug Pause...")
+    """
     if args.limit:
         print("[-] Unique subdomain limit detected.  Checking count...")
         check_limit(args)
@@ -577,6 +589,7 @@ def main(args):
         sublist3r(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -588,6 +601,7 @@ def main(args):
         assetfinder(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -599,6 +613,7 @@ def main(args):
         gau(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -610,6 +625,7 @@ def main(args):
         crt(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -621,6 +637,7 @@ def main(args):
         shosubgo(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -632,6 +649,7 @@ def main(args):
         subfinder(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -643,6 +661,7 @@ def main(args):
         subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -654,6 +673,8 @@ def main(args):
         github_subdomains(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
+    """
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -665,6 +686,8 @@ def main(args):
         shuffle_dns(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
+    """
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -678,6 +701,7 @@ def main(args):
         shuffle_dns_custom(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
     consolidate(args)
     new_subdomain_length = get_new_subdomain_length(args)
     slack_text = f'The subdomain list for {args.fqdn} has been updated with {new_subdomain_length} new subdomains!'
@@ -687,6 +711,7 @@ def main(args):
         httprobe(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
     # send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), True))
     build_crawl_list(get_fqdn_obj(args))
     if args.limit:
@@ -704,6 +729,7 @@ def main(args):
             gospider(args, get_home_dir(), get_fqdn_obj(args))
         except Exception as e:
             print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
@@ -715,14 +741,16 @@ def main(args):
         subdomainizer(get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
     if not check_clear_sky_data():
         if not args.update:
             print("[!] Clear Sky data not found!  Skipping AWS IP range scan...")
             print("[!] To enable the Clear Sky module, run fire-starter.py in UPDATE MODE (--update)")
         else:
             update_aws_domains()
-    print(f"[-] Running Clear-Sky against {args.fqdn}")
-    search_data(args, get_fqdn_obj(args))
+    else:
+        print(f"[-] Running Clear-Sky against {args.fqdn}")
+        search_data(args, get_fqdn_obj(args))
     consolidate(args)
     new_subdomain_length = get_new_subdomain_length(args)
     slack_text = f'The subdomain list for {args.fqdn} has been updated with {new_subdomain_length} new subdomains!'
@@ -732,9 +760,10 @@ def main(args):
         httprobe(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
+    input("[!] Debug Pause...")
     # send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), False))
-    populate_burp(args, get_fqdn_obj(args))
-    remove_wordlists()
+    # populate_burp(args, get_fqdn_obj(args))
+    cleanup()
     starter_timer.stop_timer()
     print(f"[+] Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 

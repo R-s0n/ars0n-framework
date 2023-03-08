@@ -1,5 +1,4 @@
 server/node_modules
 client/node_modules
 toolkit/h1.json
-toolkit/temp/urls.txt
-toolkit/temp/domains.txt
+toolkit/temp/*

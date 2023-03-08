@@ -54,7 +54,7 @@ def sublist3r_check():
 
 def install_sublist3r():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir}/Tools; git clone https://github.com/aboul3la/Sublist3r.git"], shell=True)
+    subprocess.run([f"cd {home_dir}/Tools; git clone https://github.com/aboul3la/Sublist3r.git; sudo apt-get install python3-requests python3-dnspython python-argparse"], shell=True)
     install_check = subprocess.run([f"python3 {home_dir}/Tools/Sublist3r/sublist3r.py --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Sublist3r installed successfully!")
@@ -202,7 +202,7 @@ def install_subdomainizer():
     install_check = subprocess.run([f"ls {home_dir}/Tools/SubDomainizer/"], shell=True)
     if install_check.returncode == 0:
         print("[+] SubDomainizer downloaded successfully!  Installing required modules...")
-        subprocess.run([f"cd {home_dir}/Tools/SubDomainizer;pip3 install -r requirements.txt"], shell=True)
+        subprocess.run([f"cd {home_dir}/Tools/SubDomainizer;pip3 install -r requirements.txt --break-system-packages"], shell=True)
     else:
         print("[!] Something went wrong!  SubDomainizer was NOT installed successfully...")
 
