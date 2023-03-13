@@ -94,11 +94,11 @@ def scan(args):
             except Exception as e:
                     print(f"[!] Exception: {e}")
             try:
-                subprocess.run([f'python3 toolkit/proto_pollution_embers.py -d {seed} -s {args.server} -p {args.port} -T 2'], shell=True)
+                # subprocess.run([f'python3 toolkit/proto_pollution_embers.py -d {seed} -s {args.server} -p {args.port} -T 2'], shell=True)
             except Exception as e:
                     print(f"[!] Exception: {e}")
             try:
-                subprocess.run([f'python3 toolkit/cve_embers.py -D {seed} -S {args.server} -P {args.port} -j -d 1'], shell=True)
+                # subprocess.run([f'python3 toolkit/cve_embers.py -D {seed} -S {args.server} -P {args.port} -j -d 1'], shell=True)
             except Exception as e:
                     print(f"[!] Exception: {e}")
         else:
