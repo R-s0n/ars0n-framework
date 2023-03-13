@@ -438,9 +438,17 @@ def run_server_prompt():
 def update_apt():
     subprocess.run(["sudo apt-get update"], shell=True)
 
+def install_protonvpn():
+    home_dir = get_home_dir()
+    download_protonvpn = subprocess.run([f'cd {home_dir}/Downloads;wget "https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.3_all.deb";sudo apt-get install ~/Downloads/protonvpn-stable-release_1.0.3_all.deb;sudo apt-get update;sudo apt-get install protonvpn -y'], shell=True)
+    if download_protonvpn.returncode == 0:
+        print("[+] ProtonVPN was installed successfully!")
+    else:
+        print("[!] Something went wrong!  ProtonVPN was NOT installed successfully...")    
+
 def arg_parse():
     parser = argparse.ArgumentParser()
-    # parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=True)
+    parser.add_argument('-v','--vpn', help='Install ProtonVPN Debian Client - https://protonvpn.com', required=False, action='store_true')
     return parser.parse_args()
 
 def validate_install():
@@ -542,6 +550,8 @@ def main(args):
         install_server()
     if client_check() is False:
         install_client()
+    if args.vpn:
+        install_protonvpn()
     if validate_install() is False:
         print("[!] Something went wrong!  Please try to run the installer again or open an issue on the repo...")
         exit()
