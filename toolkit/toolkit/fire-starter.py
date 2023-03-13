@@ -579,15 +579,16 @@ def main(args):
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
     # input("[!] Debug Pause...")
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
-    try:
-        print(f"[-] Running Sublist3r against {args.fqdn}")
-        sublist3r(args, get_home_dir(), get_fqdn_obj(args))
-    except Exception as e:
-        print(f"[!] Exception: {e}")
+    # if args.limit:
+    #     print("[-] Unique subdomain limit detected.  Checking count...")
+    #     check_limit(args)
+    # try:
+    #     print(f"[-] Running Sublist3r against {args.fqdn}")
+    #     sublist3r(args, get_home_dir(), get_fqdn_obj(args))
+    # except Exception as e:
+    #     print(f"[!] Exception: {e}")
     # input("[!] Debug Pause...")
+    print("[!] Sublist3r is not working properly.  Skipping for now...\n[!] Issue - https://github.com/aboul3la/Sublist3r/issues/357")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
