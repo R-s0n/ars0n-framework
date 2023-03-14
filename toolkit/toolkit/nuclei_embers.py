@@ -12,15 +12,6 @@ long_options = ["domain=","server=","port=","template="]
 get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
 home_dir = get_home_dir.stdout.replace("\n", "")
 
-# blacklist = ['token-spray/','iot/',"/technologies/fingerprinthub-web-fingerprints.yaml",
-#             'misconfiguration/http-missing-security-headers.yaml',
-#             'helpers/','fuzzing/','/ssl/mismatched-ssl.yaml','vulnerabilities/generic/request-based-interaction.yaml']
-
-blacklist = []
-
-for template in blacklist:
-    subprocess.run([f"rm -rf {home_dir}/nuclei-templates/{template}"], shell=True)
-
 try:
     arguments, values = getopt.getopt(argument_list, short_options, long_options)
 except:

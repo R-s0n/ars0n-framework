@@ -128,7 +128,13 @@ def get_ips_from_amass(thisFqdn):
 def amass(args, thisFqdn):
     try:
         regex = "{1,3}"
-        subprocess.run([f"amass enum -src -ip -brute -ipv4 -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
+        config_test = subprocess.run(["ls config/amass_config.ini"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        if config_test.returncode == 0:
+            print("[+] Amass config file detected!  Scanning with custom settings...")
+            subprocess.run([f"amass enum -src -ip -brute -ipv4 -min-for-recursive 2 -timeout 60 -config config/amass_config.ini -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
+        else:
+            print("[!] Amass config file NOT detected!  Scanning with default settings...")
+            subprocess.run([f"amass enum -src -ip -brute -ipv4 -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
         subprocess.run([f"cp ./temp/amass.tmp ./temp/amass.full.tmp"], stdout=subprocess.DEVNULL, shell=True)
         subprocess.run([f"sed -i -E 's/\[(.*?)\] +//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, shell=True)
         thisFqdn = get_ips_from_amass(thisFqdn)
