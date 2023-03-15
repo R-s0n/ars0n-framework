@@ -144,7 +144,7 @@ def subfinder_check():
 
 def install_subfinder():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/projectdiscovery/subfinder/releases/download/v2.5.4/subfinder_2.5.4_linux_amd64.zip;unzip subfinder_2.5.4_linux_amd64.zip;mv subfinder {home_dir}/go/bin/subfinder;rm subfinder_2.5.4_linux_amd64.zip README.md LICENSE"], shell=True)
+    subprocess.run([f"cd {home_dir};wget https://github.com/projectdiscovery/subfinder/releases/download/v2.5.6/subfinder_2.5.6_linux_amd64.zip;unzip subfinder_2.5.6_linux_amd64.zip;mv subfinder {home_dir}/go/bin/subfinder;rm subfinder_2.5.4_linux_amd64.zip README.md LICENSE"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/subfinder --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Subfinder installed successfully!")
@@ -253,7 +253,7 @@ def tlsscan_check():
 
 def install_tlsscan():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/prbinu/tls-scan/releases/download/1.4.8/tls-scan-1.4.8-linux-amd64.tar.gz;tar xvf tls-scan-1.4.8-linux-amd64.tar.gz;mv tls-scan {home_dir}/Tools/tls-scan;rm tls-scan-1.4.8-linux-amd64.tar.gz"], shell=True)
+    subprocess.run([f"cd {home_dir};wget https://github.com/prbinu/tls-scan/releases/download/1.5.0.1/tls-scan-1.5.0-linux-amd64.tar.gz;tar xvf tls-scan-1.5.0-linux-amd64.tar.gz;mv tls-scan {home_dir}/Tools/tls-scan;rm tls-scan-1.5.0-linux-amd64.tar.gz"], shell=True)
     install_check = subprocess.run([f"ls {home_dir}/Tools/tls-scan/tls-scan"], shell=True)
     if install_check.returncode == 0:
         print("[+] TLS-Scan installed successfully!")

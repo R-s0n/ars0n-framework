@@ -4,3 +4,4 @@ toolkit/h1.json
 toolkit/temp/*
 toolkit/config/*
 toolkit/screenshots/*
+toolkit/toolkit/nuclei-stacktrace-*.dump

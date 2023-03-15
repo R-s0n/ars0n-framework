@@ -26,10 +26,22 @@ def get_fqdn_obj(args):
     r = requests.post(f'http://{args.server}:{args.port}/api/auto', data={'fqdn':args.fqdn})
     return r.json()
 
+def get_fqdn_vulns(args):
+    r = requests.post(f'http://{args.server}:{args.port}/api/auto', data={'fqdn':args.fqdn})
+    thisFqdn = r.json()
+    return thisFqdn['data']
+
+def clear_vulns(args):
+    thisFqdn = get_fqdn_obj(args)
+    thisFqdn['vulns'] = json.loads("{}")
+    update_fqdn_obj(args, thisFqdn)
+
 def update_vulns(args, thisFqdn, data):
     res = requests.post(f"http://{args.server}:{args.port}/api/auto", data={"fqdn":args.fqdn})
     thisFqdn = res.json()
-    thisFqdn['vulns'] = data
+    for vuln in data:
+        thisFqdn['vulns'].append(vuln)
+    build_slack_message(args, thisFqdn, data)
     requests.post(f'http://{args.server}:{args.port}/api/auto/update', json=thisFqdn)
 
 def update_fqdn_obj(args, thisFqdn):
@@ -54,9 +66,54 @@ def write_urls_file(url_str):
     f.write(url_str)
     f.close()
 
-def run_nuclei(args, now):
+def full_nuclei_scan(args, now):
     home_dir = get_home_dir()
-    subprocess.run([f"{home_dir}/go/bin/nuclei -t {args.template} -l /tmp/urls.txt -fhr -sb --headless -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+    subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates -l /tmp/urls.txt -stats -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+    data = process_results(args, now)
+    thisFqdn = get_fqdn_obj(args)
+    update_vulns(args, thisFqdn, data)
+
+def misconfiguration_nuclei_scan(args, now):
+    home_dir = get_home_dir()
+    subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/misconfiguration -l /tmp/urls.txt -stats -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+    data = process_results(args, now)
+    thisFqdn = get_fqdn_obj(args)
+    update_vulns(args, thisFqdn, data)
+
+def cves_nuclei_scan(args, now):
+    home_dir = get_home_dir()
+    subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/cves -l /tmp/urls.txt -stats -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+    data = process_results(args, now)
+    thisFqdn = get_fqdn_obj(args)
+    update_vulns(args, thisFqdn, data)
+
+def cnvd_nuclei_scan(args, now):
+    home_dir = get_home_dir()
+    subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/cnvd -l /tmp/urls.txt -stats -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+    data = process_results(args, now)
+    thisFqdn = get_fqdn_obj(args)
+    update_vulns(args, thisFqdn, data)
+
+def exposed_panels_nuclei_scan(args, now):
+    home_dir = get_home_dir()
+    subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/exposed-panels -l /tmp/urls.txt -stats -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+    data = process_results(args, now)
+    thisFqdn = get_fqdn_obj(args)
+    update_vulns(args, thisFqdn, data)
+
+def miscellaneous_nuclei_scan(args, now):
+    home_dir = get_home_dir()
+    subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/miscellaneous -l /tmp/urls.txt -stats -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+    data = process_results(args, now)
+    thisFqdn = get_fqdn_obj(args)
+    update_vulns(args, thisFqdn, data)
+
+def network_nuclei_scan(args, now):
+    home_dir = get_home_dir()
+    subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/network -l /tmp/urls.txt -stats -fhr -hmY -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+    data = process_results(args, now)
+    thisFqdn = get_fqdn_obj(args)
+    update_vulns(args, thisFqdn, data)
 
 def process_results(args, now):
     f = open(f"/tmp/{args.fqdn}-{now}.json")
@@ -72,7 +129,6 @@ def process_results(args, now):
                 continue
             json_result = json.loads(result)
             data.append(json_result)
-            
         except Exception as e:
             print(f"[!] Failed to load result on line {counter}!  Skipping...")
             print(f"[!] Excpetion: {e}")
@@ -99,18 +155,26 @@ def arg_parse():
     parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=True)
     parser.add_argument('-P','--port', help='Port of MongoDB API', required=True)
     parser.add_argument('-d','--fqdn', help='Name of the Root/Seed FQDN', required=True)
+    parser.add_argument('-f','--full', help='Name of the Root/Seed FQDN', required=False, action='store_true')
     return parser.parse_args()
     
 def main(args):
     starter_timer = Timer()
+    clear_vulns(args)
     update_nuclei()
     thisFqdn = get_fqdn_obj(args)
     url_str = build_url_str(thisFqdn)
     write_urls_file(url_str)
-    now = datetime.now()
-    run_nuclei(args, now)
-    data = process_results(args, now)
-    update_vulns(args, thisFqdn, data)
+    now = str(datetime.now()).split(" ")[0]
+    if args.full:
+        full_nuclei_scan(args, now)
+    else:
+        misconfiguration_nuclei_scan(args, now)
+        cves_nuclei_scan(args, now)
+        cnvd_nuclei_scan(args, now)
+        exposed_panels_nuclei_scan(args, now)
+        miscellaneous_nuclei_scan(args, now)
+        network_nuclei_scan(args, now)
     starter_timer.stop_timer()
     print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
