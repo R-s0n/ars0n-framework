@@ -122,6 +122,17 @@ def exposed_panels_nuclei_scan(args, now):
     except Exception as e:
         print("[!] Something went wrong!  Skipping the Exposed Panels Templates...")
 
+def exposures_nuclei_scan(args, now):
+    try:
+        print("[-] Running a Nuclei Scan using the Exposures Templates")
+        home_dir = get_home_dir()
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/exposures -l /tmp/urls.txt -stats -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+        data = process_results(args, now)
+        thisFqdn = get_fqdn_obj(args)
+        update_vulns(args, thisFqdn, data, "Exposures")
+    except Exception as e:
+        print("[!] Something went wrong!  Skipping the Exposures Templates...")
+
 def miscellaneous_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Miscellaneous Templates")
@@ -192,12 +203,23 @@ def custom_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Custom Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t ./custom -l /tmp/urls.txt -stats -config config/nuclei_config.yaml -vv --headless -sb -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t ./custom -l /tmp/urls.txt -stats -config config/nuclei_config.yaml -vv --headless -hbs 10 -headc 1 -sb -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Custom")
     except Exception as e:
         print("[!] Something went wrong!  Skipping the Custom Templates...")
+
+def headless_nuclei_scan(args, now):
+    try:
+        print("[-] Running a Nuclei Scan using the Headless Templates")
+        home_dir = get_home_dir()
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless -l /tmp/urls.txt -stats -config config/nuclei_config.yaml -vv --headless -hbs 10 -headc 1 -sb -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+        data = process_results(args, now)
+        thisFqdn = get_fqdn_obj(args)
+        update_vulns(args, thisFqdn, data, "Headless")
+    except Exception as e:
+        print("[!] Something went wrong!  Skipping the Headless Templates...")
 
 def ssl_nuclei_scan(args, now):
     try:
@@ -250,7 +272,8 @@ def build_slack_message(args, thisFqdn, data, template):
         token = f.read()
         f.close()
         slack_auto = requests.post(f'https://hooks.slack.com/services/{token}', json=message_json) 
-        print(f"[+] Slack Notification Sent!  {non_info_counter} Impactful Findings!")  
+        print(f"[+] Slack Notification Sent!  {non_info_counter} Impactful Findings!")
+
 
 def arg_parse():
     parser = argparse.ArgumentParser()

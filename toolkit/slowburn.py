@@ -108,7 +108,8 @@ def get_h1_domains(program):
     return program_data
 
 def write_output(data, data_type):
-    subprocess.run([f"rm temp/{data_type}.txt"],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,shell=True)
+    home_dir = get_home_dir()
+    subprocess.run([f"rm temp/{data_type}.txt"], shell=True)
     with open(f'temp/{data_type}.txt', 'w', encoding='utf-8') as f:
         for scope_item in data:
             if scope_item == "*.*":
@@ -187,8 +188,8 @@ def hackerone():
             print(f"[!] No structured scope key:\n{program_data['relationships']}")
     with open('h1.json','a') as f:
         f.write("{}]")
-    write_output(url_list, 'urls')
-    write_output(domain_list, 'domains')
+    write_output(url_list, 'slowburn_urls')
+    write_output(domain_list, 'slowburn_domains')
 
 def get_bugcrowd_scope(program_link):
     get_content = subprocess.run([f'node bbdisco.js {program_link}'], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
@@ -218,8 +219,8 @@ def get_bugcrowd_scope(program_link):
             print("URL: " + url[0])
             url_list.append(url[0])
             continue
-    append_output(url_list, 'urls')
-    append_output(domain_list, 'domains')
+    append_output(url_list, 'slowburn_urls')
+    append_output(domain_list, 'slowburn_domains')
         
 
 def bugcrowd():
@@ -250,7 +251,7 @@ def bugcrowd():
     return True
 
 def get_url_list():
-    f = open('temp/urls.txt','r')
+    f = open('temp/slowburn_urls.txt','r')
     lines = f.readlines()
     urls = []
     for line in lines:
@@ -258,7 +259,7 @@ def get_url_list():
     return urls
 
 def get_domain_list():
-    f = open('temp/domains.txt','r')
+    f = open('temp/slowburn_domains.txt','r')
     lines = f.readlines()
     domains = []
     for line in lines:
@@ -299,7 +300,6 @@ def slowburn_domains(args, domains):
             blacklist += f"{domain},"
         if random_domain not in current_domain_list:
             add_domain(random_domain, args)
-            # subprocess.run([f"python3 wildfire.py -S {args.server} -P {args.port} -b '{blacklist}' -t 360 --start --scan"], shell=True)
             firestarter(args, random_domain)
             firescan(args, random_domain)
             check_vulns(args, random_domain)
@@ -320,7 +320,7 @@ def firestarter(args, domain):
 def firescan(args, domain):
     print(f"[-] Running Drifting-Embers Modules (Vuln Scanning) against {domain}")
     try:
-        subprocess.run([f'python3 toolkit/nuclei_embers.py -d {domain} -s {args.server} -p {args.port} -t ~/nuclei-templates'], shell=True)
+        subprocess.run([f'python3 toolkit/fire-scanner.py -S {args.server} -P {args.port} -d {domain}'], shell=True)
     except Exception as e:
             print(f"[!] Exception: {e}")
     return True
@@ -341,11 +341,14 @@ def arg_parse():
     parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=False, default="127.0.0.1")
     parser.add_argument('-P','--port', help='Port of MongoDB API', required=False, default="8000")
     parser.add_argument('-p','--proxy', help='IP Address of Burp Suite Proxy', required=False)
+    parser.add_argument('-i', '--initialize', help='Initialize/Update Bug Bounty Program Domains and URLs', required=False, action='store_true')
     parser.add_argument('--deep', help='Crawl all live servers for subdomains', required=False, action='store_true')
     return parser.parse_args()
 
 def main(args):
-    initialize()
+    program_check = subprocess.run("ls temp/slowburn_domains.txt; ls temp/slowburn_urls.txt", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)    
+    if args.initialize or program_check.returncode != 0:
+        initialize()
     urls = get_url_list()
     domains = get_domain_list()
     domain_count = len(domains)

@@ -1,4 +1,5 @@
 import requests, argparse, subprocess, json
+from time import sleep
 from datetime import datetime
 
 class Timer:
@@ -58,6 +59,8 @@ def start(args):
     return True
 
 def spread(args):
+    print("[!] WARNING: The Fire-Spreader Module is still being developed.  PLEASE MAKE SURE THE SERVERs/PORTs ARE IN SCOPE FOR YOUR PROJECT BEFORE RUNNING --scan")
+    sleep(5)
     res = get_fqdns(args)
     fqdn_json = json.loads(res.text)
     sorted_fqdns = sort_fqdns(fqdn_json)
@@ -106,6 +109,8 @@ def scan(args):
     return True
 
 def enum(args):
+    print("[!] WARNING: The Enumeration Module is still VERY new and not very effective! Use at your own risk and don't expect much...")
+    sleep(5)
     res = get_fqdns(args)
     fqdn_json = json.loads(res.text)
     sorted_fqdns = sort_fqdns(fqdn_json)

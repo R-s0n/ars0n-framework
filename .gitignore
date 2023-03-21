@@ -5,3 +5,5 @@ toolkit/temp/*
 toolkit/config/amass_config.ini
 toolkit/screenshots/*
 toolkit/toolkit/nuclei-stacktrace-*.dump
+toolkit/wordlists/*.tmp
+toolkit/wordlists/cewl_*

@@ -46,7 +46,7 @@ const NucleiScans = props => {
                 <div className="col-3" style={{height:'750px', overflowY:'scroll'}}>
                     <ul>
                     {
-                        vulnList.map((vuln, i)=>{
+                        vulnList.sort((a, b) => {return a.impactful ? -1 : 1}).map((vuln, i)=>{
                             return (
                                 vuln.info.severity !== "info" ? <li key={i} style={{listStyleType:"none", color:"red"}} onClick={(e)=>setCurrentVuln(i)}>{vuln.info.name}</li> 
                                 : <li key={i} style={{listStyleType:"none"}} onClick={(e)=>setCurrentVuln(i)}>{vuln.info.name}</li>
@@ -65,8 +65,8 @@ const NucleiScans = props => {
                             <p><b>Tags:</b> {filteredVuln.info.tags?.length > 0 ? filteredVuln.info.tags.map((tag) => <>{tag}&nbsp;&nbsp;</>) : <>No Tags</>}</p>
                             <p><b>Severity:</b> {filteredVuln.info.severity}</p>
                             <p><b>Description:</b> {filteredVuln.info.description}</p>
-                            <p><b>Host:</b> <a href={filteredVuln.host}  target="_blank" rel="noreferrer">{filteredVuln.host}</a></p>
-                            <p><b>Matched:</b> <a href={filteredVuln['matched-at']}  target="_blank" rel="noreferrer">{filteredVuln['matched-at']}</a></p>
+                            <p><b>Host:</b> <a href={"http://" + filteredVuln.host} target="_blank" rel="noreferrer">{filteredVuln.host}</a></p>
+                            <p><b>Matched:</b> <a href={"http://" + filteredVuln['matched-at']} target="_blank" rel="noreferrer">{filteredVuln['matched-at']}</a></p>
                             <p><b>Match Type:</b> {filteredVuln['matcher-name']}</p>
                             <p><b>IP:</b> {filteredVuln.ip}</p>
                             <p><b>Extracted Results:</b> 
