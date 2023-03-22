@@ -541,6 +541,7 @@ def check_limit(args):
         unique_domain_count += len(thisFqdn['recon']['subdomains'][lst])
     if unique_domain_count > 999:
         print("[!] Unique subdomain limit reached!  Ending the scan for now, but you can always come back and run the scan again without the -l|--limit flat.")
+        wrap_up()
         exit()
     print(f"[+] Current unique subdomain count: {unique_domain_count}\n[+] Continuing scan...")
 
@@ -552,24 +553,46 @@ def check_timeout(args, timer):
     now = datetime.now()
     if now > timeout:
         print("[!] Current scan time has exceeded the timeout threshold!  Exiting Fire Starter Module...")
+        wrap_up(args)
         exit()
     else:
         time_left = timeout - now
         print(F"[+] Time remaining before timeout threshold: {time_left}")
 
+def wrap_up(args):
+    consolidate(args)
+    # new_subdomain_length = get_new_subdomain_length(args)
+    # slack_text = f'The subdomain list for {args.fqdn} has been updated with {new_subdomain_length} new subdomains!'
+    # send_slack_notification(get_home_dir(), slack_text)
+    try:
+        print(f"[-] Running Httprobe against {args.fqdn}")
+        httprobe(args, get_home_dir(), get_fqdn_obj(args))
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+    # input("[!] Debug Pause...")
+    # send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), False))
+    # populate_burp(args, get_fqdn_obj(args))
+    cleanup()
+
 def arg_parse():
     parser = argparse.ArgumentParser()
     parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=True)
     parser.add_argument('-P','--port', help='Port of MongoDB API', required=True)
-    parser.add_argument('-p','--proxy', help='IP Address of Burp Suite Proxy', required=False)
     parser.add_argument('-d','--fqdn', help='Name of the Root/Seed FQDN', required=True)
+    parser.add_argument('-p','--proxy', help='IP Address of Burp Suite Proxy', required=False)
     parser.add_argument('-t','--timeout', help='Adds a timeout check after each module (in minutes)', required=False)
     parser.add_argument('--deep', help='Crawl all live servers for subdomains', required=False, action='store_true')
     parser.add_argument('-u', '--update', help='Update AWS IP Certificate Data ( Can Take 48+ Hours! )', required=False, action='store_true')
     parser.add_argument('-l', '--limit', help='Stop the scan when the number of unique subdomains goes above 999', required=False, action='store_true')
+    parser.add_argument('-c', '--consolidate', help='Consolidate and Run HTTProbe Against Discovered Subdomains', required=False, action='store_true')
     return parser.parse_args()
 
 def main(args):
+    if args.consolidate:
+        print("[-] Consolidate Flag Detected!  Running Wrap-Up Function...")
+        wrap_up(args)
+        print("[+] Wrap-Up Function Completed Successfully!  Exiting...")
+        exit()
     starter_timer = Timer()
     cleanup()
     print("[-] Running Subdomain Scraping Modules...")
@@ -754,19 +777,7 @@ def main(args):
     else:
         print(f"[-] Running Clear-Sky against {args.fqdn}")
         search_data(args, get_fqdn_obj(args))
-    consolidate(args)
-    new_subdomain_length = get_new_subdomain_length(args)
-    slack_text = f'The subdomain list for {args.fqdn} has been updated with {new_subdomain_length} new subdomains!'
-    # send_slack_notification(get_home_dir(), slack_text)
-    try:
-        print(f"[-] Running Httprobe against {args.fqdn}")
-        httprobe(args, get_home_dir(), get_fqdn_obj(args))
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    # send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), False))
-    # populate_burp(args, get_fqdn_obj(args))
-    cleanup()
+    wrap_up(args)
     starter_timer.stop_timer()
     print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 

@@ -126,6 +126,398 @@ const FqdnSchema = new mongoose.Schema({
         type: {type: String},
         "curl-command":{type: String},
     }],
+    vulnsSSL: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsFile: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsDNS: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsVulns: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsTech: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsMisconfig: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsCVEs: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsCNVD: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsExposed: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsExposure: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsMisc: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsNetwork: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsRs0n: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
+    vulnsHeadless: [{
+        impactful: {type: Boolean},
+        host: {type: String},
+        "template-id": {type: String},
+        info: {
+            author: [{
+                type: String
+            }],
+            description: {type: String},
+            name: {type: String},
+            reference: [{
+                type: String
+            }],
+            severity: {type: String},
+            tags: [{
+                type: String
+            }]
+        },
+        "extracted-results": [{
+            type: String
+        }],
+        ip: {type: String},
+        "matched-at": {type: String},
+        "matcher-name": {type: String},
+        timestamp: {type: String},
+        type: {type: String},
+        "curl-command":{type: String},
+    }],
     targetUrls: [{
         type: String
     }],
