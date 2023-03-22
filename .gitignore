@@ -3,7 +3,7 @@ client/node_modules
 toolkit/h1.json
 toolkit/temp/*
 toolkit/config/amass_config.ini
-toolkit/screenshots/*
+toolkit/screenshots/http*.png
 toolkit/toolkit/nuclei-stacktrace-*.dump
 toolkit/nuclei-stacktrace-*.dump
 toolkit/wordlists/*.tmp
