@@ -9,3 +9,4 @@ toolkit/nuclei-stacktrace-*.dump
 toolkit/wordlists/*.tmp
 toolkit/wordlists/cewl_*
 toolkit/http*
+toolkit/logs/*
