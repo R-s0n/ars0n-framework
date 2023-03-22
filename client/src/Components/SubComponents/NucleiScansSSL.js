@@ -20,6 +20,7 @@ const NucleiScans = props => {
         axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
+                    console.log(res.data.vulnsSSL)
                     const tempArr = res.data.vulnsSSL;
                     if (tempArr.length > 0){
                         setVulnList(res.data.vulnsSSL)

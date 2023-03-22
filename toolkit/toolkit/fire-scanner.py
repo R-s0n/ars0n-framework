@@ -228,7 +228,7 @@ def ssl_nuclei_scan(args, now):
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/ssl -l /tmp/urls.txt -stats -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
-        update_vulns(args, thisFqdn, data, "SSL")
+        update_vulns(args, thisFqdn, data, "SSL", "vulnsSSL")
     except Exception as e:
         print("[!] Something went wrong!  Skipping the SSL Templates...")
 

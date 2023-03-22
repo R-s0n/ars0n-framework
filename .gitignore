@@ -8,3 +8,4 @@ toolkit/toolkit/nuclei-stacktrace-*.dump
 toolkit/nuclei-stacktrace-*.dump
 toolkit/wordlists/*.tmp
 toolkit/wordlists/cewl_*
+toolkit/http*
