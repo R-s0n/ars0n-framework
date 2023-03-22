@@ -278,10 +278,10 @@ def build_slack_message(args, thisFqdn, data, template):
         print(f"[+] Slack Notification Sent!  {non_info_counter} Impactful Findings!")
 
 def clean_screenshots():
-    subprocess.run("mv http*.png ./screenshots/", shell=True)
+    subprocess.run("mv -f http*.png ./screenshots/", shell=True)
 
 def clean_stacktrace_dumps():
-    subprocess.run("mv nuclei-*.dump ./logs/", shell=True)
+    subprocess.run("mv -f nuclei-*.dump ./logs/", shell=True)
 
 def arg_parse():
     parser = argparse.ArgumentParser()
