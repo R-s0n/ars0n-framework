@@ -214,7 +214,7 @@ def headless_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Headless Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless -l /tmp/urls.txt -stats -config config/nuclei_config.yaml -vv --headless -hbs 10 -headc 1 -sb -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless -l /tmp/urls.txt -stats -config config/nuclei_config.yaml -vv --headless -hbs 10 -headc 1 -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Headless", "vulnsHeadless")
@@ -277,6 +277,11 @@ def build_slack_message(args, thisFqdn, data, template):
         slack_auto = requests.post(f'https://hooks.slack.com/services/{token}', json=message_json) 
         print(f"[+] Slack Notification Sent!  {non_info_counter} Impactful Findings!")
 
+def clean_screenshots():
+    subprocess.run("mv http*.png ./screenshots/", shell=True)
+
+def clean_stacktrace_dumps():
+    subprocess.run("mv nuclei-*.dump ./logs/", shell=True)
 
 def arg_parse():
     parser = argparse.ArgumentParser()
@@ -288,6 +293,8 @@ def arg_parse():
     
 def main(args):
     starter_timer = Timer()
+    clean_screenshots()
+    clean_stacktrace_dumps()
     clear_vulns(args)
     update_nuclei()
     thisFqdn = get_fqdn_obj(args)
