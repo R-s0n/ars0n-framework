@@ -81,7 +81,7 @@ def misconfiguration_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Misconfiguration Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/misconfiguration -l /tmp/urls.txt -stats -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/misconfiguration -l /tmp/urls.txt -timeout 7 -validate -stats -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Misconfigurations", "vulnsMisc")
@@ -278,10 +278,10 @@ def build_slack_message(args, thisFqdn, data, template):
         print(f"[+] Slack Notification Sent!  {non_info_counter} Impactful Findings!")
 
 def clean_screenshots():
-    subprocess.run("mv -f http*.png ./screenshots/", shell=True)
+    subprocess.run("mv -f http*.png ./screenshots/", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
 def clean_stacktrace_dumps():
-    subprocess.run("mv -f nuclei-*.dump ./logs/", shell=True)
+    subprocess.run("mv -f nuclei-*.dump ./logs/", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
 def arg_parse():
     parser = argparse.ArgumentParser()
