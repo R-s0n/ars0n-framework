@@ -34,6 +34,20 @@ def get_fqdn_vulns(args):
 def clear_vulns(args):
     thisFqdn = get_fqdn_obj(args)
     thisFqdn['vulns'] = json.loads("{}")
+    thisFqdn['vulnsSSL'] = json.loads("{}")
+    thisFqdn['vulnsFile'] = json.loads("{}")
+    thisFqdn['vulnsDNS'] = json.loads("{}")
+    thisFqdn['vulnsVulns'] = json.loads("{}")
+    thisFqdn['vulnsTech'] = json.loads("{}")
+    thisFqdn['vulnsMisconfig'] = json.loads("{}")
+    thisFqdn['vulnsCVEs'] = json.loads("{}")
+    thisFqdn['vulnsCNVD'] = json.loads("{}")
+    thisFqdn['vulnsExposed'] = json.loads("{}")
+    thisFqdn['vulnsExposure'] = json.loads("{}")
+    thisFqdn['vulnsMisc'] = json.loads("{}")
+    thisFqdn['vulnsNetwork'] = json.loads("{}")
+    thisFqdn['vulnsRs0n'] = json.loads("{}")
+    thisFqdn['vulnsHeadless'] = json.loads("{}")
     update_fqdn_obj(args, thisFqdn)
 
 def update_vulns(args, thisFqdn, data, template, key):
