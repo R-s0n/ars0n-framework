@@ -203,7 +203,7 @@ def rs0n_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Custom Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t ./custom -l /tmp/urls.txt -stats -config config/nuclei_config.yaml -vv --headless -hbs 10 -headc 1 -sb -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t ./custom -l /tmp/urls.txt -stats -config config/nuclei_config.yaml -vv --headless -hbs 10 -headc 1 -fhr -hm -o /tmp/{args.fqdn}-{now}.json -json"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Custom", "vulnsRs0n")
