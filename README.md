@@ -1,6 +1,22 @@
-# The Ars0n Framework
+<h1 align="center">
+  The Ars0n Framework
+  <br>
+  <a href="https://www.youtube.com/@rs0n_live"><img src="static/rs0n-logo.png" width="200px" alt="Arson Logo"></a>
+</h1>
 
-A Modern, Agile Framework for Bug Bounty Hunting on Kali Linux
+<h4 align="center">A Modern, Agile Framework for Bug Bounty Hunting on Kali Linux</h4>
+      
+<p align="center">
+  <a href="#hows">About</a> •
+  <a href="#install">Install</a> •
+  <a href="#scripts">Scripts</a> •
+  <a href="#modules">Modules</a> •
+  <a href="#for-developers">For Developers</a> •
+  <a href="#faq">FAQs</a> •
+  <a href="https://www.youtube.com/@rs0n_live">YouTube</a> •
+  <a href="https://www.twitch.tv/rs0n_live">Twitch</a> •
+  <a href="#coming-soon">Discord</a>
+</p>
 
 ### Install
 
