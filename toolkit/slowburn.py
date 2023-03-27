@@ -302,7 +302,7 @@ def slowburn_domains(args, domains):
             add_domain(random_domain, args)
             firestarter(args, random_domain)
             firescan(args, random_domain)
-            check_vulns(args, random_domain)
+            # check_vulns(args, random_domain)
         domains.remove(random_domain)
 
 def initialize():
