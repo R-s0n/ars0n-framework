@@ -19,6 +19,10 @@
   <a href="#coming-soon">Discord</a>
 </p>
 
+## About
+
+
+
 ## Install
 
 `python3 install.py`
