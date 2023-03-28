@@ -8,7 +8,7 @@
 <h4 align="center">A Modern, Agile Framework for Bug Bounty Hunting on Kali Linux</h4>
       
 <p align="center">
-  <a href="#hows">About</a> •
+  <a href="#about">About</a> •
   <a href="#install">Install</a> •
   <a href="#scripts">Scripts</a> •
   <a href="#modules">Modules</a> •
