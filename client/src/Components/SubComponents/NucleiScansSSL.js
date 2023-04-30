@@ -67,7 +67,7 @@ const NucleiScans = props => {
                             <p><b>Severity:</b> {filteredVuln.info.severity}</p>
                             <p><b>Description:</b> {filteredVuln.info.description}</p>
                             <p><b>Host:</b> <a href={"http://" + filteredVuln.host} target="_blank" rel="noreferrer">{filteredVuln.host}</a></p>
-                            <p><b>Matched:</b> <a href={"http://" + filteredVuln['matched-at']} target="_blank" rel="noreferrer">{filteredVuln['matched-at']}</a></p>
+                            <p><b>Matched:</b> <a href={filteredVuln['matched-at']} target="_blank" rel="noreferrer">{filteredVuln['matched-at']}</a></p>
                             <p><b>Match Type:</b> {filteredVuln['matcher-name']}</p>
                             <p><b>IP:</b> {filteredVuln.ip}</p>
                             <p><b>Extracted Results:</b> 

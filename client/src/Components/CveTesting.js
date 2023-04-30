@@ -36,6 +36,21 @@ const CveTesting = props => {
     const [impactfulVulnCountNetwork, setImpactfulVulnCountNetwork] = useState(0)
     const [impactfulVulnCountRs0n, setImpactfulVulnCountRs0n] = useState(0)
     const [impactfulVulnCountHeadless, setImpactfulVulnCountHeadless] = useState(0)
+    const [impactfulVulnFoundCount, setImpactfulVulnFoundCount] = useState(false)
+    const [impactfulVulnFoundSSL, setImpactfulVulnFoundSSL] = useState(false)
+    const [impactfulVulnFoundFile, setImpactfulVulnFoundFile] = useState(false)
+    const [impactfulVulnFoundDNS, setImpactfulVulnFoundDNS] = useState(false)
+    const [impactfulVulnFoundVulns, setImpactfulVulnFoundVulns] = useState(false)
+    const [impactfulVulnFoundTech, setImpactfulVulnFoundTech] = useState(false)
+    const [impactfulVulnFoundMisconfig, setImpactfulVulnFoundMisconfig] = useState(false)
+    const [impactfulVulnFoundCVEs, setImpactfulVulnFoundCVEs] = useState(false)
+    const [impactfulVulnFoundCNVD, setImpactfulVulnFoundCNVD] = useState(false)
+    const [impactfulVulnFoundExposed, setImpactfulVulnFoundExposed] = useState(false)
+    const [impactfulVulnFoundExposure, setImpactfulVulnFoundExposure] = useState(false)
+    const [impactfulVulnFoundMisc, setImpactfulVulnFoundMisc] = useState(false)
+    const [impactfulVulnFoundNetwork, setImpactfulVulnFoundNetwork] = useState(false)
+    const [impactfulVulnFoundRs0n, setImpactfulVulnFoundRs0n] = useState(false)
+    const [impactfulVulnFoundHeadless, setImpactfulVulnFoundHeadless] = useState(false)
 
     useEffect(()=>{
         axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
@@ -53,8 +68,13 @@ const CveTesting = props => {
                     setImpactfulVulnCount(counter);
                     let counterSSL = 0;
                     for (let i=0; i<res.data.vulnsSSL.length; i++){
+                        // console.log(res.data.vulnsSSL[i].info.severity)
                         if (res.data.vulnsSSL[i].info.severity !== "foo"){
                             counterSSL++;
+                        }
+                        if (res.data.vulnsSSL[i].info.severity !== "foo" && res.data.vulnsSSL[i].info.severity !== "info"){
+                            console.log(res.data.vulnsSSL[i].info.severity)
+                            setImpactfulVulnFoundSSL(true);
                         }
                     }
                     setImpactfulVulnCountSSL(counterSSL);
@@ -63,12 +83,20 @@ const CveTesting = props => {
                         if (res.data.vulnsFile[i].info.severity !== "foo"){
                             counterFile++;
                         }
+                        if (res.data.vulnsFile[i].info.severity !== "foo" && res.data.vulnsFile[i].info.severity !== "info"){
+                            console.log(res.data.vulnsFile[i].info.severity)
+                            setImpactfulVulnFoundFile(true);
+                        }
                     }
                     setImpactfulVulnCountFile(counterFile);
                     let counterDNS = 0;
                     for (let i=0; i<res.data.vulnsDNS.length; i++){
                         if (res.data.vulnsDNS[i].info.severity !== "foo"){
                             counterDNS++;
+                        }
+                        if (res.data.vulnsDNS[i].info.severity !== "foo" && res.data.vulnsDNS[i].info.severity !== "info"){
+                            console.log(res.data.vulnsDNS[i].info.severity)
+                            setImpactfulVulnFoundDNS(true);
                         }
                     }
                     setImpactfulVulnCountDNS(counterDNS);
@@ -77,12 +105,20 @@ const CveTesting = props => {
                         if (res.data.vulnsVulns[i].info.severity !== "foo"){
                             counterVulns++;
                         }
+                        if (res.data.vulnsVulns[i].info.severity !== "foo" && res.data.vulnsVulns[i].info.severity !== "info"){
+                            console.log(res.data.vulnsVulns[i].info.severity)
+                            setImpactfulVulnFoundVulns(true);
+                        }
                     }
                     setImpactfulVulnCountVulns(counterVulns);
                     let counterTech = 0;
                     for (let i=0; i<res.data.vulnsTech.length; i++){
                         if (res.data.vulnsTech[i].info.severity !== "foo"){
                             counterTech++;
+                        }
+                        if (res.data.vulnsTech[i].info.severity !== "foo" && res.data.vulnsTech[i].info.severity !== "info"){
+                            console.log(res.data.vulnsTech[i].info.severity)
+                            setImpactfulVulnFoundTech(true);
                         }
                     }
                     setImpactfulVulnCountTech(counterTech);
@@ -91,12 +127,20 @@ const CveTesting = props => {
                         if (res.data.vulnsMisconfig[i].info.severity !== "foo"){
                             counterMisconfig++;
                         }
+                        if (res.data.vulnsMisconfig[i].info.severity !== "foo" && res.data.vulnsMisconfig[i].info.severity !== "info"){
+                            console.log(res.data.vulnsMisconfig[i].info.severity)
+                            setImpactfulVulnFoundMisconfig(true);
+                        }
                     }
                     setImpactfulVulnCountMisconfig(counterMisconfig);
                     let counterCVEs = 0;
                     for (let i=0; i<res.data.vulnsCVEs.length; i++){
                         if (res.data.vulnsCVEs[i].info.severity !== "foo"){
                             counterCVEs++;
+                        }
+                        if (res.data.vulnsCVEs[i].info.severity !== "foo" && res.data.vulnsCVEs[i].info.severity !== "info"){
+                            console.log(res.data.vulnsCVEs[i].info.severity)
+                            setImpactfulVulnFoundCVEs(true);
                         }
                     }
                     setImpactfulVulnCountCVEs(counterCVEs);
@@ -105,12 +149,20 @@ const CveTesting = props => {
                         if (res.data.vulnsCNVD[i].info.severity !== "foo"){
                             counterCNVD++;
                         }
+                        if (res.data.vulnsCNVD[i].info.severity !== "foo" && res.data.vulnsCNVD[i].info.severity !== "info"){
+                            console.log(res.data.vulnsCNVD[i].info.severity)
+                            setImpactfulVulnFoundCNVD(true);
+                        }
                     }
                     setImpactfulVulnCountCNVD(counterCNVD);
                     let counterExposed = 0;
                     for (let i=0; i<res.data.vulnsExposed.length; i++){
                         if (res.data.vulnsExposed[i].info.severity !== "foo"){
                             counterExposed++;
+                        }
+                        if (res.data.vulnsExposed[i].info.severity !== "foo" && res.data.vulnsExposed[i].info.severity !== "info"){
+                            console.log(res.data.vulnsExposed[i].info.severity)
+                            setImpactfulVulnFoundExposed(true);
                         }
                     }
                     setImpactfulVulnCountExposed(counterExposed);
@@ -119,12 +171,20 @@ const CveTesting = props => {
                         if (res.data.vulnsExposure[i].info.severity !== "foo"){
                             counterExposure++;
                         }
+                        if (res.data.vulnsExposure[i].info.severity !== "foo" && res.data.vulnsExposure[i].info.severity !== "info"){
+                            console.log(res.data.vulnsExposure[i].info.severity)
+                            setImpactfulVulnFoundExposure(true);
+                        }
                     }
                     setImpactfulVulnCountExposure(counterExposure);
                     let counterMisc = 0;
                     for (let i=0; i<res.data.vulnsMisc.length; i++){
                         if (res.data.vulnsMisc[i].info.severity !== "foo"){
                             counterMisc++;
+                        }
+                        if (res.data.vulnsMisc[i].info.severity !== "foo" && res.data.vulnsMisc[i].info.severity !== "info"){
+                            console.log(res.data.vulnsMisc[i].info.severity)
+                            setImpactfulVulnFoundMisc(true);
                         }
                     }
                     setImpactfulVulnCountMisc(counterMisc);
@@ -133,6 +193,10 @@ const CveTesting = props => {
                         if (res.data.vulnsNetwork[i].info.severity !== "foo"){
                             counterNetwork++;
                         }
+                        if (res.data.vulnsNetwork[i].info.severity !== "foo" && res.data.vulnsNetwork[i].info.severity !== "info"){
+                            console.log(res.data.vulnsNetwork[i].info.severity)
+                            setImpactfulVulnFoundNetwork(true);
+                        }
                     }
                     setImpactfulVulnCountNetwork(counterNetwork);
                     let counterRs0n = 0;
@@ -140,12 +204,20 @@ const CveTesting = props => {
                         if (res.data.vulnsRs0n[i].info.severity !== "foo"){
                             counterRs0n++;
                         }
+                        if (res.data.vulnsRs0n[i].info.severity !== "foo" && res.data.vulnsRs0n[i].info.severity !== "info"){
+                            console.log(res.data.vulnsRs0n[i].info.severity)
+                            setImpactfulVulnFoundRs0n(true);
+                        }
                     }
                     setImpactfulVulnCountRs0n(counterRs0n);
                     let counterHeadless = 0;
                     for (let i=0; i<res.data.vulnsHeadless.length; i++){
                         if (res.data.vulnsHeadless[i].info.severity !== "foo"){
                             counterHeadless++;
+                        }
+                        if (res.data.vulnsHeadless[i].info.severity !== "foo" && res.data.vulnsHeadless[i].info.severity !== "info"){
+                            console.log(res.data.vulnsHeadless[i].info.severity)
+                            setImpactfulVulnFoundHeadless(true);
                         }
                     }
                     setImpactfulVulnCountHeadless(counterHeadless);
@@ -161,20 +233,76 @@ const CveTesting = props => {
                 <li>Third-Party Scanning</li>
                 <ul>
                     <li onClick={(e)=>setCurrentStep(0)}>Nuclei Scan Results -- Full (Vuln Count: {impactfulVulnCount})</li>
-                    <li onClick={(e)=>setCurrentStep(1)}>Nuclei Scan Results -- SSL (Vuln Count: {impactfulVulnCountSSL})</li>
-                    <li onClick={(e)=>setCurrentStep(2)}>Nuclei Scan Results -- File (Vuln Count: {impactfulVulnCountFile})</li>
-                    <li onClick={(e)=>setCurrentStep(3)}>Nuclei Scan Results -- DNS (Vuln Count: {impactfulVulnCountDNS})</li>
-                    <li onClick={(e)=>setCurrentStep(4)}>Nuclei Scan Results -- Vulns (Vuln Count: {impactfulVulnCountVulns})</li>
-                    <li onClick={(e)=>setCurrentStep(5)}>Nuclei Scan Results -- Tech (Vuln Count: {impactfulVulnCountTech})</li>
-                    <li onClick={(e)=>setCurrentStep(6)}>Nuclei Scan Results -- Misconfigs (Vuln Count: {impactfulVulnCountMisconfig})</li>
-                    <li onClick={(e)=>setCurrentStep(7)}>Nuclei Scan Results -- CVEs (Vuln Count: {impactfulVulnCountCVEs})</li>
-                    <li onClick={(e)=>setCurrentStep(8)}>Nuclei Scan Results -- CNVD (Vuln Count: {impactfulVulnCountCNVD})</li>
-                    <li onClick={(e)=>setCurrentStep(9)}>Nuclei Scan Results -- Exposed (Vuln Count: {impactfulVulnCountExposed})</li>
-                    <li onClick={(e)=>setCurrentStep(10)}>Nuclei Scan Results -- Exposure (Vuln Count: {impactfulVulnCountExposure})</li>
-                    <li onClick={(e)=>setCurrentStep(11)}>Nuclei Scan Results -- Misc (Vuln Count: {impactfulVulnCountMisc})</li>
-                    <li onClick={(e)=>setCurrentStep(12)}>Nuclei Scan Results -- Network (Vuln Count: {impactfulVulnCountNetwork})</li>
-                    <li onClick={(e)=>setCurrentStep(13)}>Nuclei Scan Results -- Rs0n (Vuln Count: {impactfulVulnCountRs0n})</li>
-                    <li onClick={(e)=>setCurrentStep(14)}>Nuclei Scan Results -- Headless (Vuln Count: {impactfulVulnCountHeadless})</li>
+                    {
+                        impactfulVulnFoundSSL ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(1)}>Nuclei Scan Results -- SSL (Vuln Count: {impactfulVulnCountSSL})</li> :
+                        <li onClick={(e)=>setCurrentStep(1)}>Nuclei Scan Results -- SSL (Vuln Count: {impactfulVulnCountSSL})</li> 
+                    }
+                    {
+                        impactfulVulnFoundFile ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(2)}>Nuclei Scan Results -- File (Vuln Count: {impactfulVulnCountFile})</li> :
+                        <li onClick={(e)=>setCurrentStep(2)}>Nuclei Scan Results -- File (Vuln Count: {impactfulVulnCountFile})</li>
+                    }
+                    {
+                        impactfulVulnFoundDNS ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(3)}>Nuclei Scan Results -- DNS (Vuln Count: {impactfulVulnCountDNS})</li> :
+                        <li onClick={(e)=>setCurrentStep(3)}>Nuclei Scan Results -- DNS (Vuln Count: {impactfulVulnCountDNS})</li>
+                    }
+                    {
+                        impactfulVulnFoundVulns ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(4)}>Nuclei Scan Results -- Vulns (Vuln Count: {impactfulVulnCountVulns})</li> :
+                        <li onClick={(e)=>setCurrentStep(4)}>Nuclei Scan Results -- Vulns (Vuln Count: {impactfulVulnCountVulns})</li>
+                    }
+                    {
+                        impactfulVulnFoundTech ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(5)}>Nuclei Scan Results -- Tech (Vuln Count: {impactfulVulnCountTech})</li> :
+                        <li onClick={(e)=>setCurrentStep(5)}>Nuclei Scan Results -- Tech (Vuln Count: {impactfulVulnCountTech})</li>
+                    }
+                    {
+                        impactfulVulnFoundMisconfig ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(6)}>Nuclei Scan Results -- Misconfigs (Vuln Count: {impactfulVulnCountMisconfig})</li> :
+                        <li onClick={(e)=>setCurrentStep(6)}>Nuclei Scan Results -- Misconfigs (Vuln Count: {impactfulVulnCountMisconfig})</li>
+                    }
+                    {
+                        impactfulVulnFoundCVEs ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(7)}>Nuclei Scan Results -- CVEs (Vuln Count: {impactfulVulnCountCVEs})</li> :
+                        <li onClick={(e)=>setCurrentStep(7)}>Nuclei Scan Results -- CVEs (Vuln Count: {impactfulVulnCountCVEs})</li>
+                    }
+                    {
+                        impactfulVulnFoundCNVD ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(8)}>Nuclei Scan Results -- CNVD (Vuln Count: {impactfulVulnCountCNVD})</li> :
+                        <li onClick={(e)=>setCurrentStep(8)}>Nuclei Scan Results -- CNVD (Vuln Count: {impactfulVulnCountCNVD})</li>
+                    }
+                    {
+                        impactfulVulnFoundExposed ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(9)}>Nuclei Scan Results -- Exposed (Vuln Count: {impactfulVulnCountExposed})</li> :
+                        <li onClick={(e)=>setCurrentStep(9)}>Nuclei Scan Results -- Exposed (Vuln Count: {impactfulVulnCountExposed})</li>
+                    }
+                    {
+                        impactfulVulnFoundExposure ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(10)}>Nuclei Scan Results -- Exposure (Vuln Count: {impactfulVulnCountExposure})</li> :
+                        <li onClick={(e)=>setCurrentStep(10)}>Nuclei Scan Results -- Exposure (Vuln Count: {impactfulVulnCountExposure})</li>
+                    }
+                    {
+                        impactfulVulnFoundMisc ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(11)}>Nuclei Scan Results -- Misc (Vuln Count: {impactfulVulnCountMisc})</li> :
+                        <li onClick={(e)=>setCurrentStep(11)}>Nuclei Scan Results -- Misc (Vuln Count: {impactfulVulnCountMisc})</li>
+                    }
+                    {
+                        impactfulVulnFoundNetwork ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(12)}>Nuclei Scan Results -- Network (Vuln Count: {impactfulVulnCountNetwork})</li> :
+                        <li onClick={(e)=>setCurrentStep(12)}>Nuclei Scan Results -- Network (Vuln Count: {impactfulVulnCountNetwork})</li>
+                    }
+                    {
+                        impactfulVulnFoundRs0n ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(13)}>Nuclei Scan Results -- Rs0n (Vuln Count: {impactfulVulnCountRs0n})</li> :
+                        <li onClick={(e)=>setCurrentStep(13)}>Nuclei Scan Results -- Rs0n (Vuln Count: {impactfulVulnCountRs0n})</li>
+                    }
+                    {
+                        impactfulVulnFoundHeadless ?
+                        <li style={{color:"red"}} onClick={(e)=>setCurrentStep(14)}>Nuclei Scan Results -- Headless (Vuln Count: {impactfulVulnCountHeadless})</li> :
+                        <li onClick={(e)=>setCurrentStep(14)}>Nuclei Scan Results -- Headless (Vuln Count: {impactfulVulnCountHeadless})</li>
+                    }
                 </ul>
                 <li>Custom Scanning</li>
                 <ul>
