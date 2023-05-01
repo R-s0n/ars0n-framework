@@ -37,6 +37,14 @@ def start(args):
     sorted_fqdns = sort_fqdns(fqdn_json)
     for fqdn in sorted_fqdns:
         if fqdn['fqdn'] not in args.blacklist:
+            if args.targeted:
+                seed = args.targeted
+                print(f"[-] Running Fire-Starter Modules (Subdomain Recon) against a single target: {seed}")
+                try:
+                    subprocess.run([f'python3 toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} -p {args.proxy}'], shell=True)
+                except Exception as e:
+                    print(f"[!] Exception: {e}")
+                return True
             seed = fqdn['fqdn']
             print(f"[-] Running Fire-Starter Modules (Subdomain Recon) against {seed}")
             if args.deep:
@@ -66,6 +74,18 @@ def spread(args):
     sorted_fqdns = sort_fqdns(fqdn_json)
     for fqdn in sorted_fqdns:
         if fqdn['fqdn'] not in args.blacklist:
+            if args.targeted:
+                seed = args.targeted
+                print(f"[-] Running Fire-Spreader Modules (Server/Port Recon) against a single target: {seed}")
+                try:
+                    subprocess.run([f'python3 toolkit/fire-spreader.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
+                except Exception as e:
+                    print(f"[!] Exception: {e}")
+                try:
+                    subprocess.run([f'python3 toolkit/wind.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
+                except Exception as e:
+                    print(f"[!] Exception: {e}")
+                return True
             seed = fqdn['fqdn']
             print(f"[-] Running Fire-Spreader Modules (Server/Port Recon) against {seed}")
             try:
@@ -90,6 +110,14 @@ def scan(args):
     sorted_fqdns = sort_fqdns(fqdn_json)
     for fqdn in sorted_fqdns:
         if fqdn['fqdn'] not in args.blacklist:
+            if args.targeted:
+                seed = args.targeted
+                print(f"[-] Running Drifting-Embers Modules (Vuln Scanning) against a single target: {seed}")
+                try:
+                    subprocess.run([f'python3 toolkit/fire-scanner.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
+                except Exception as e:
+                    print(f"[!] Exception: {e}")
+                return True
             seed = fqdn['fqdn']
             print(f"[-] Running Drifting-Embers Modules (Vuln Scanning) against {seed}")
             try:
@@ -116,6 +144,18 @@ def enum(args):
     sorted_fqdns = sort_fqdns(fqdn_json)
     for fqdn in sorted_fqdns:
         if fqdn['fqdn'] not in args.blacklist:
+            if args.targeted:
+                seed = args.targeted
+                print(f"[-] Running Enumeration Modules against a single target: {seed}")
+                try:
+                    subprocess.run([f'python3 toolkit/ignite.py -d {seed} -s {args.server} -p {args.port} -P {args.proxy}'], shell=True)
+                except Exception as e:
+                    print(f"[!] Exception: {e}")
+                return True
+            try:
+                subprocess.run([f'python3 toolkit/engulf.py -d {seed} -s {args.server} -p {args.port}'], shell=True)
+            except Exception as e:
+                    print(f"[!] Exception: {e}")
             seed = fqdn['fqdn']
             print(f"[-] Running Enumeration Modules against {seed}")
             try:
@@ -146,6 +186,7 @@ def arg_parse():
     parser.add_argument('-P','--port', help='Port of MongoDB API', required=False, default="8000")
     parser.add_argument('-p','--proxy', help='IP Address of Burp Suite Proxy', required=False)
     parser.add_argument('-b','--blacklist', help='FQDN to Blacklist (skip) for this round of testing.  Separate multiple FQDNs w/ a comma (Ex: -b example1.com,example2.com)', required=False)
+    parser.add_argument('--targeted', help='Runs the chosen Wildfire Scripts against a single domain', required=False)
     parser.add_argument('--start', help='Run Fire-Starter Modules', required=False, action='store_true')
     parser.add_argument('--spread', help='Run Fire-Spreader Modules (Expect a LONG scan time)', required=False, action='store_true')
     parser.add_argument('--scan', help='Run Vuln Scan Modules', required=False, action='store_true')
