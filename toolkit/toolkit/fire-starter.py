@@ -541,7 +541,7 @@ def check_limit(args):
         unique_domain_count += len(thisFqdn['recon']['subdomains'][lst])
     if unique_domain_count > 999:
         print("[!] Unique subdomain limit reached!  Ending the scan for now, but you can always come back and run the scan again without the -l|--limit flat.")
-        wrap_up()
+        wrap_up(args)
         exit()
     print(f"[+] Current unique subdomain count: {unique_domain_count}\n[+] Continuing scan...")
 

@@ -42,7 +42,7 @@ const NucleiScans = props => {
 
     return (
         <div className="container mt-3 pl-0 ml-0">
-            <div className="row" style={{width:'1400px'}}>
+            <div className="row" style={{width:'1200px'}}>
                 <div className="col-3" style={{height:'750px', overflowY:'scroll'}}>
                     <ul>
                     {

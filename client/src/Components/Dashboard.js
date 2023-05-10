@@ -1,10 +1,58 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import axios from 'axios';
 import '../Component.css';
 
 const Dashboard = props => {
+    const [vulnCount, setVulnCount] = useState(0)
+    const [impactfulVulnCount, setImpactfulVulnCount] = useState(0)
+    const [impactfulVulnArray, setImpactfulVulnArray] = useState([])
     const thisFqdn = props.thisFqdn;
     const formatUpdated = thisFqdn.updatedAt.replace(/([A-Z])+/g, " ").replace(/(\.[0-9]+)/g, " GMT");
     
+    useEffect(()=>{
+        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+            .then(res=>{
+                if (res.data !== null){
+                    let tempVulns = [];
+                    if (res.data.vulns.length > 1){
+                        tempVulns = res.data.vulns;
+                    } else {
+                        let tempVulnsA = res.data.vulnsSSL;
+                        let tempVulnsB = tempVulnsA.concat(res.data.vulnsFile);
+                        let tempVulnsC = tempVulnsB.concat(res.data.vulnsDNS);
+                        let tempVulnsD = tempVulnsC.concat(res.data.vulnsVulns);
+                        let tempVulnsE = tempVulnsD.concat(res.data.vulnsTech);
+                        let tempVulnsF = tempVulnsE.concat(res.data.vulnsMisconfig);
+                        let tempVulnsG = tempVulnsF.concat(res.data.vulnsCVEs);
+                        let tempVulnsH = tempVulnsG.concat(res.data.vulnsCNVD);
+                        let tempVulnsI = tempVulnsH.concat(res.data.vulnsExposed);
+                        let tempVulnsJ = tempVulnsI.concat(res.data.vulnsExposure);
+                        let tempVulnsK = tempVulnsJ.concat(res.data.vulnsMisc);
+                        let tempVulnsL = tempVulnsK.concat(res.data.vulnsNetwork);
+                        let tempVulnsM = tempVulnsL.concat(res.data.vulnsRs0n);
+                        tempVulns = tempVulnsM.concat(res.data.vulnsHeadless);
+                    }
+                    let vulnCount = 0;
+                    let impactfulVulnCount = 0;
+                    let tempImpactfulVulnArray = []
+                    for (let i=0; i<tempVulns.length; i++){
+                        if (tempVulns[i].info.severity !== "foo"){
+                            vulnCount++;
+                        }
+                        if (tempVulns[i].info.severity !== "foo" && tempVulns[i].info.severity !== "info"){
+                            impactfulVulnCount++;
+                            tempImpactfulVulnArray.push(tempVulns[i])
+                        }
+                    }
+                    setImpactfulVulnArray(tempImpactfulVulnArray)
+                    setVulnCount(vulnCount);
+                    setImpactfulVulnCount(impactfulVulnCount);
+                }
+            })
+    }, [props])
+
+    console.log(`Impactful Vuln Count: ${impactfulVulnCount} -- Vuln Count: ${vulnCount}`);
+
     return (
         <div className="bg-secondary dashboard">
             <div className="row pl-5">
@@ -77,13 +125,15 @@ const Dashboard = props => {
             </div>
             <div className="row ml-5 pl-5">
                 <div className="col-4">
-                    <h5>Active Web Servers: {thisFqdn.recon.subdomains.masscanLive.length}</h5>
+                    <h5>Impactful Nuclei Vulns: {impactfulVulnCount}/{vulnCount}</h5>
                     <div style={{width: '300px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
-                            thisFqdn.recon.subdomains.masscanLive.sort().map((server, i) => {
+                            impactfulVulnArray.sort().map((vuln, i) => {
                                 return (
                                     <div key={i}>
-                                    <a href={server} className="m-0 mt-2" target="_blank" rel="noreferrer">{server}</a><br/>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li key={i}>{vuln.info.name} - {vuln.info.severity}</li>
+                                        </ul>
                                     </div>
                                 )
                             })

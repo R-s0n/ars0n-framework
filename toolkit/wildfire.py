@@ -36,6 +36,9 @@ def start(args):
     fqdn_json = json.loads(res.text)
     sorted_fqdns = sort_fqdns(fqdn_json)
     for fqdn in sorted_fqdns:
+        if len(fqdn['recon']['subdomains']['consolidated']) > 1 and args.bridge:
+            print(f"[!] Bridge-the-Gap Mode Detected!  Fire Starter has already been run against {fqdn['fqdn']}.  Skipping...")
+            continue
         if fqdn['fqdn'] not in args.blacklist:
             if args.targeted:
                 seed = args.targeted
@@ -192,6 +195,7 @@ def arg_parse():
     parser.add_argument('--scan', help='Run Vuln Scan Modules', required=False, action='store_true')
     parser.add_argument('--enum', help='Run Enumeration Modules', required=False, action='store_true')
     parser.add_argument('--deep', help='Crawl all live servers for subdomains', required=False, action='store_true')
+    parser.add_argument('--bridge', help='Bridge-the-Gap Mode -- Only performs the Firestarter Module on a target FQDN if that module has not yet been run against that target', required=False, action='store_true')
     parser.add_argument('-t','--timeout', help='Adds a timeout check after each module (in minutes)', required=False)
     return parser.parse_args()
 
