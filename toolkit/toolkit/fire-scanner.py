@@ -95,10 +95,10 @@ def misconfiguration_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Misconfiguration Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/misconfiguration -l /tmp/urls.txt -timeout 7 -validate -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/misconfiguration -l /tmp/urls.txt -timeout 7 -vv -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
-        update_vulns(args, thisFqdn, data, "Misconfigurations", "vulnsMisc")
+        update_vulns(args, thisFqdn, data, "Misconfigurations", "vulnsMisconfig")
     except Exception as e:
         print("[!] Something went wrong!  Skipping the Misconfiguration Templates...")
 
@@ -107,7 +107,7 @@ def cves_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the CVEs Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/cves -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/cves -l /tmp/urls.txt -stats -system-resolvers -timeout 7 -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "CVES", "vulnsCVEs")
@@ -118,7 +118,7 @@ def cnvd_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the CNVD Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/cnvd -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/cnvd -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "CNVD", "vulnsCNVD")
@@ -129,7 +129,7 @@ def exposed_panels_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Exposed Panels Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/exposed-panels -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/exposed-panels -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Exposed Panels", "vulnsExposed")
@@ -140,7 +140,7 @@ def exposures_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Exposures Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/exposures -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/exposures -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Exposures", "vulnsExposure")
@@ -151,7 +151,7 @@ def miscellaneous_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Miscellaneous Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/miscellaneous -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/miscellaneous -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Miscellaneous", "vulnsMisc")
@@ -160,9 +160,9 @@ def miscellaneous_nuclei_scan(args, now):
 
 def network_nuclei_scan(args, now):
     try:
-        print("[-] Running a Nuclei Scan using the Network Templates")
+        print("[-] Running a Nuclei Scan using the OSINT Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/network -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/osint -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Network", "vulnsNetwork")
@@ -173,7 +173,7 @@ def file_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the File Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/file -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/default-logins -l /tmp/urls.txt -vv -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "File", "vulnsFile")
@@ -195,7 +195,7 @@ def vulnerabilities_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Vulnerabilities Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/vulnerabilities -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/vulnerabilities -l /tmp/urls.txt -stats -system-resolvers -timeout 7 -config config/nuclei_config.yaml -vv -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Vulnerabilities", "vulnsVulns")
@@ -217,7 +217,7 @@ def rs0n_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Custom Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t ./custom -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -hbs 10 -headc 1 -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t ./custom -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -sb -hbs 10 -headc 1 -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Custom", "vulnsRs0n")
@@ -228,7 +228,7 @@ def headless_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Headless Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -hbs 10 -headc 1 -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -sb -hbs 10 -headc 1 -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Headless", "vulnsHeadless")
@@ -318,20 +318,22 @@ def main(args):
     if args.full:
         full_nuclei_scan(args, now)
     else:
+        ## Safe Templates
+        technologies_nuclei_scan(args, now)
+        exposed_panels_nuclei_scan(args, now)
+        misconfiguration_nuclei_scan(args, now)
+        exposures_nuclei_scan(args, now)
         rs0n_nuclei_scan(args, now)
         headless_nuclei_scan(args, now)
-        ssl_nuclei_scan(args, now)
-        file_nuclei_scan(args, now)
         dns_nuclei_scan(args, now)
+        ssl_nuclei_scan(args, now)
         vulnerabilities_nuclei_scan(args, now)
-        technologies_nuclei_scan(args, now)
-        misconfiguration_nuclei_scan(args, now)
         cves_nuclei_scan(args, now)
-        cnvd_nuclei_scan(args, now)
-        exposed_panels_nuclei_scan(args, now)
-        exposures_nuclei_scan(args, now)
-        miscellaneous_nuclei_scan(args, now)
+        ## Unsafe Templates
+        # file_nuclei_scan(args, now)
         # network_nuclei_scan(args, now)
+        # cnvd_nuclei_scan(args, now)
+        # miscellaneous_nuclei_scan(args, now)
     starter_timer.stop_timer()
     print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 

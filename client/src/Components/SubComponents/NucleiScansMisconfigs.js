@@ -20,9 +20,9 @@ const NucleiScans = props => {
         axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
-                    const tempArr = res.data.vulnsMisconfigs;
+                    const tempArr = res.data.vulnsMisconfig;
                     if (tempArr.length > 0){
-                        setVulnList(res.data.vulnsMisconfigs)
+                        setVulnList(res.data.vulnsMisconfig)
                         setFormCompleted(true);
                     }
                 }

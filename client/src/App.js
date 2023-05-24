@@ -65,7 +65,9 @@ function App() {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             {
-            fqdns.map((fqdn, i) => {return (
+            fqdns.sort(function(a,b){
+              return new Date(b.updatedAt) - new Date(a.updatedAt)
+            }).map((fqdn, i) => {return (
               <li className="mr-3 nav-item" key={i}>
                 { i === activeTab ?
                 <button className="border border-info nav-link btn btn-primary text-secondary active" aria-current="page" href="#">{fqdn.fqdn}</button> :
