@@ -36,7 +36,7 @@ def start(args):
     fqdn_json = json.loads(res.text)
     sorted_fqdns = sort_fqdns(fqdn_json)
     for fqdn in sorted_fqdns:
-        if len(fqdn['recon']['subdomains']['consolidated']) > 1 and args.bridge:
+        if len(fqdn['recon']['subdomains']['httprobe']) > 1 and args.bridge:
             print(f"[!] Bridge-the-Gap Mode Detected!  Fire Starter has already been run against {fqdn['fqdn']}.  Skipping...")
             continue
         if fqdn['fqdn'] not in args.blacklist:

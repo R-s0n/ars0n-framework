@@ -55,6 +55,7 @@ import subprocess
 import argparse
 import json
 from datetime import datetime, timedelta
+from time import sleep
 
 class Timer:
     def __init__(self):
@@ -275,6 +276,9 @@ def gospider(args, home_dir, thisFqdn):
                         gospider_link_arr.append(temp_arr[2])
         f.close()
         subprocess.run(["rm -rf ./temp/gospider"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+        for item in gospider_link_arr:
+            if args.fqdn not in item:
+                gospider_link_arr.remove(item)
         thisFqdn['recon']['subdomains']['gospider'] = gospider_link_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
@@ -351,13 +355,20 @@ def shuffle_dns_custom(args, home_dir, thisFqdn):
 
 def consolidate(args):
     thisFqdn = get_fqdn_obj(args)
-    consolidated = thisFqdn['recon']['subdomains']['consolidated']
+    consolidated = []
     consolidatedNew = []
     for key in thisFqdn['recon']['subdomains']:
         for subdomain in thisFqdn['recon']['subdomains'][key]:
-            if subdomain not in consolidated and args.fqdn in subdomain and "?" not in subdomain:
-                consolidated.append(subdomain)
+            if subdomain in thisFqdn['recon']['subdomains']['httprobe']:
+                continue
+            if subdomain in thisFqdn['recon']['subdomains']['httprobeAdded']:
+                continue
+            if subdomain in thisFqdn['recon']['subdomains']['httprobeRemoved']:
+                continue
+            if subdomain not in thisFqdn['recon']['subdomains']['consolidated'] and args.fqdn in subdomain and "?" not in subdomain and "http" not in subdomain:
                 consolidatedNew.append(subdomain)
+            if args.fqdn in subdomain and "?" not in subdomain and "http" not in subdomain:
+                consolidated.append(subdomain)
     thisFqdn['recon']['subdomains']['consolidated'] = consolidated
     thisFqdn['recon']['subdomains']['consolidatedNew'] = consolidatedNew
     temp = []
@@ -380,10 +391,12 @@ def httprobe(args, home_dir, thisFqdn):
     f = open("./temp/consolidated_list.tmp", "w")
     f.write(subdomainStr)
     f.close()
-    httprobe_results = subprocess.run([f"cat ./temp/consolidated_list.tmp | {home_dir}/go/bin/httprobe -t 8000 -c 500 -p http:8080 -p http:8000 -p http:8008 -p https:8443 -p https:44300 -p https:44301"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
+    httprobe_results = subprocess.run([f"cat ./temp/consolidated_list.tmp | {home_dir}/go/bin/httprobe -t 8000 -c 500 -p http:8080 -p http:8000 -p http:8008 -p https:8443 -p https:44300 -p https:44301"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
     r = requests.post(f'http://{args.server}:{args.port}/api/auto', data={'fqdn':args.fqdn})
     thisFqdn = r.json()
-    httprobe = httprobe_results.stdout.split("\n")
+    httprobe_stdout = httprobe_results.stdout
+    httprobe_stderr = httprobe_results.stderr
+    httprobe = httprobe_stdout.split("\n")
     for item in httprobe:
         if len(item) < 2:
             httprobe.remove(item)
@@ -396,10 +409,14 @@ def httprobe(args, home_dir, thisFqdn):
     for subdomain in previous_httprobe:
         if subdomain not in httprobe:
             httprobeRemoved.append(subdomain)
-    thisFqdn['recon']['subdomains']['httprobe'] = httprobe
-    thisFqdn['recon']['subdomains']['httprobeAdded'] = httprobeAdded
-    thisFqdn['recon']['subdomains']['httprobeRemoved'] = httprobeRemoved
+    thisFqdn['recon']['subdomains']['httprobe'] = remove_duplicates(httprobe)
+    thisFqdn['recon']['subdomains']['httprobeAdded'] = remove_duplicates(httprobeAdded)
+    thisFqdn['recon']['subdomains']['httprobeRemoved'] = remove_duplicates(httprobeRemoved)
+    # sleep(60)
     update_fqdn_obj(args, thisFqdn)
+
+def remove_duplicates(string_list):
+    return list(set(string_list))
 
 def build_crawl_list(thisFqdn):
     live_servers = thisFqdn['recon']['subdomains']['httprobe']
@@ -507,7 +524,6 @@ def cleanup():
     subprocess.run(["rm temp/*.tmp"],  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
 def get_live_server_text(args, thisFqdn, first):
-    print("[!] DEBUG: get_live_server_text method reached.")
     if first is True:
         context_str = "Starting second round of recon..."
     else:
@@ -559,6 +575,19 @@ def check_timeout(args, timer):
         time_left = timeout - now
         print(F"[+] Time remaining before timeout threshold: {time_left}")
 
+def validate_httprobe(args, thisFqdn):
+    if len(thisFqdn['recon']['subdomains']['httprobe']) < 1:
+        domain = thisFqdn['fqdn']
+        slack_text = f'Something may have gone wrong with Httprobe!  Domain: {domain}'
+        send_slack_notification(get_home_dir(), slack_text)
+    for i in range(50):
+        if len(thisFqdn['recon']['subdomains']['httprobe']) < 1:
+            print(f"[!] Something may have gone wrong with Httprobe.\n[!] Sleeping for 2 minutes, then trying again...")
+            sleep(120)
+            httprobe(args, get_home_dir(), get_fqdn_obj(args))
+        else:
+            break
+
 def wrap_up(args):
     consolidate(args)
     # new_subdomain_length = get_new_subdomain_length(args)
@@ -567,10 +596,11 @@ def wrap_up(args):
     try:
         print(f"[-] Running Httprobe against {args.fqdn}")
         httprobe(args, get_home_dir(), get_fqdn_obj(args))
+        validate_httprobe(args, get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
     # input("[!] Debug Pause...")
-    # send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), False))
+    send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), False))
     # populate_burp(args, get_fqdn_obj(args))
     cleanup()
 
@@ -587,12 +617,13 @@ def arg_parse():
     parser.add_argument('-c', '--consolidate', help='Consolidate and Run HTTProbe Against Discovered Subdomains', required=False, action='store_true')
     return parser.parse_args()
 
+def consolidate_flag(args):
+    print("[-] Consolidate Flag Detected!  Running Wrap-Up Function...")
+    wrap_up(args)
+    print("[+] Wrap-Up Function Completed Successfully!  Exiting...")
+    exit()
+
 def main(args):
-    if args.consolidate:
-        print("[-] Consolidate Flag Detected!  Running Wrap-Up Function...")
-        wrap_up(args)
-        print("[+] Wrap-Up Function Completed Successfully!  Exiting...")
-        exit()
     starter_timer = Timer()
     cleanup()
     print("[-] Running Subdomain Scraping Modules...")
@@ -727,18 +758,7 @@ def main(args):
         shuffle_dns_custom(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    consolidate(args)
-    new_subdomain_length = get_new_subdomain_length(args)
-    slack_text = f'The subdomain list for {args.fqdn} has been updated with {new_subdomain_length} new subdomains!'
-    # send_slack_notification(get_home_dir(), slack_text)
-    try:
-        print(f"[-] Running Httprobe against {args.fqdn}")
-        httprobe(args, get_home_dir(), get_fqdn_obj(args))
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    # send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), True))
+    wrap_up(args)
     build_crawl_list(get_fqdn_obj(args))
     if args.limit:
         print("[-] Unique subdomain limit detected.  Checking count...")
@@ -783,4 +803,6 @@ def main(args):
 
 if __name__ == "__main__":
     args = arg_parse()
+    if args.consolidate:
+       consolidate_flag(args)
     main(args)
