@@ -371,7 +371,7 @@ def mongodb_check():
     return False
 
 def install_mongodb():
-    mongodb_install = subprocess.run(["sudo apt-get install mongodb -y"], shell=True)
+    mongodb_install = subprocess.run(["""sudo sh -c 'wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -; echo "deb [arch=amd64] https://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" >> /etc/apt/sources.list.d/mongodb-org-4.4.list'; sudo apt-get update ; wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb; sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb; rm libssl1.1_1.1.1f-1ubuntu2_amd64.deb; sudo apt-get remove mongodb-server-core ; sudo apt-get install -y mongodb-org ; sudo systemctl start mongod ; sudo systemctl enable mongod"""], shell=True)
     if mongodb_install.returncode == 0:
         print("[+] MongoDB was installed successfully!  Starting the service...")
         start_mongodb_service = subprocess.run(["sudo service mongodb start"], shell=True)
