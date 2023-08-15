@@ -2,6 +2,23 @@ const mongoose = require('mongoose');
 
 const FqdnSchema = new mongoose.Schema({
     fqdn: {type:String},
+    dns: {
+        arecord: [{
+            type: String
+        }],
+        aaaarecord: [{
+            type: String
+        }],
+        cnamerecord: [{
+            type: String
+        }],
+        mxrecord: [{
+            type: String
+        }],
+        txtrecord: [{
+            type: String
+        }]
+    },
     recon: {
         subdomains: {
             gospider: [{
