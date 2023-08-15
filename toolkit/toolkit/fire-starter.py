@@ -219,6 +219,7 @@ def amass_get_dns(args, thisFqdn):
             dns['txtrecord'].append(line.split("\n")[0])
     pretty_dns = json.dumps(dns, indent=4)
     print(pretty_dns)
+    return dns
 
 def amass(args, thisFqdn):
     try:
@@ -232,9 +233,9 @@ def amass(args, thisFqdn):
             subprocess.run([f"amass enum -brute -nocolor -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
         subprocess.run([f"cp ./temp/amass.tmp ./temp/amass.full.tmp"], stdout=subprocess.DEVNULL, shell=True)
         subprocess.run([f"sed -i -E 's/\[(.*?)\] +//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, shell=True)
-        thisFqdn = get_ips_from_amass(thisFqdn)
+        # thisFqdn = get_ips_from_amass(thisFqdn)
         subprocess.run([f"sed -i -E 's/ ([0-9]{regex}\.)[0-9].*//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-        amass_get_dns(args, thisFqdn)
+        thisFqdn['dns'] = amass_get_dns(args, thisFqdn)
         amass_file = open(f"./temp/amass.tmp", 'r')
         amass_file_lines = amass_file.readlines()
         amass_file.close()
@@ -599,8 +600,9 @@ def get_new_subdomain_length(args):
 def send_slack_notification(home_dir, text):
     message_json = {'text':text,'username':'Recon Box','icon_emoji':':eyes:'}
     f = open(f'{home_dir}/.keys/slack_web_hook')
-    print(token)
-    requests.post(f'https://hooks.slack.com/services/{token}', json=message_json)
+    token = f.read()
+    clean_token = token.replace(u"\u000a","")
+    requests.post(f'https://hooks.slack.com/services/{clean_token}', json=message_json)
 
 def build_cewl_wordlist(args):
     subprocess.run([f'ls; cewl -d 2 -m 5 -o -a -v -w wordlists/cewl_{args.fqdn}.txt https://{args.fqdn}'], shell=True)
@@ -722,35 +724,37 @@ def consolidate_flag(args):
     print("[+] Wrap-Up Function Completed Successfully!  Exiting...")
     exit()
 
+def run_checks(args):
+    if args.limit:
+        print("[-] Unique subdomain limit detected.  Checking count...")
+        check_limit(args)
+    if args.timeout:
+        print("[-] Timeout threshold detected.  Checking timer...")
+        check_timeout(args, starter_timer)
+    # input("[!] Debug Pause...")
+
 def main(args):
     starter_timer = Timer()
     network_validator = NetworkValidator()
     cleanup()
     print("[-] Running Subdomain Scraping Modules...")
 
+    try:
+        print(f"[-] Running Amass against {args.fqdn}")
+        amass(args, get_fqdn_obj(args))
+        run_checks(args)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
     if args.limit:
         print("[-] Unique subdomain limit detected.  Checking count...")
         check_limit(args)
     try:
-        print(f"[-] Running Amass against {args.fqdn}")
-        amass(args, get_fqdn_obj(args))
+        print(f"[-] Running Sublist3r against {args.fqdn}")
+        sublist3r(args, get_home_dir(), get_fqdn_obj(args))
     except Exception as e:
         print(f"[!] Exception: {e}")
-    if args.timeout:
-        print("[-] Timeout threshold detected.  Checking timer...")
-        check_timeout(args, starter_timer)
     # input("[!] Debug Pause...")
-    
-    # if args.limit:
-    #     print("[-] Unique subdomain limit detected.  Checking count...")
-    #     check_limit(args)
-    # try:
-    #     print(f"[-] Running Sublist3r against {args.fqdn}")
-    #     sublist3r(args, get_home_dir(), get_fqdn_obj(args))
-    # except Exception as e:
-    #     print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    print("[!] Sublist3r is not working properly.  Skipping for now...\n[!] Issue - https://github.com/aboul3la/Sublist3r/issues/357")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
