@@ -126,20 +126,47 @@ def get_ips_from_amass(thisFqdn):
     except Exception as e:
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
+def amass_get_dns(args, thisFqdn):
+    amass_file = open(f"./temp/amass.full.tmp", 'r')
+    amass_file_lines = amass_file.readlines()
+    amass_file.close()
+    dns = {
+        "arecord": [],
+        "aaaarecord": [],
+        "cnamerecord": [],
+        "mxrecord": [],
+        "txtrecord": []
+    }
+    json_object = json.dumps(dns)
+    for line in amass_file_lines:
+        if "a_record" in line and "aaaa_record" not in line:
+            dns['arecord'].append(line.split("\n")[0])
+        if "aaaa_record" in line:
+            dns['aaaarecord'].append(line.split("\n")[0])
+        if "cname_record" in line:
+            dns['cnamerecord'].append(line.split("\n")[0])
+        if "mx_record" in line:
+            dns['mxrecord'].append(line.split("\n")[0])
+        if "txt_record" in line:
+            dns['txtrecord'].append(line.split("\n")[0])
+    pretty_dns = json.dumps(dns, indent=4)
+    print(pretty_dns)
+
 def amass(args, thisFqdn):
     try:
         regex = "{1,3}"
         config_test = subprocess.run(["ls config/amass_config.ini"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         if config_test.returncode == 0:
             print("[+] Amass config file detected!  Scanning with custom settings...")
-            subprocess.run([f"amass enum -src -ip -brute -ipv4 -min-for-recursive 2 -timeout 60 -config config/amass_config.ini -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
+            subprocess.run([f"amass enum -brute -nocolor -min-for-recursive 2 -timeout 60 -config config/amass_config.ini -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
         else:
             print("[!] Amass config file NOT detected!  Scanning with default settings...")
-            subprocess.run([f"amass enum -src -ip -brute -ipv4 -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
+            subprocess.run([f"amass enum -brute -nocolor -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
         subprocess.run([f"cp ./temp/amass.tmp ./temp/amass.full.tmp"], stdout=subprocess.DEVNULL, shell=True)
         subprocess.run([f"sed -i -E 's/\[(.*?)\] +//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, shell=True)
         thisFqdn = get_ips_from_amass(thisFqdn)
         subprocess.run([f"sed -i -E 's/ ([0-9]{regex}\.)[0-9].*//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        amass_get_dns(args, thisFqdn)
         amass_file = open(f"./temp/amass.tmp", 'r')
         amass_file_lines = amass_file.readlines()
         amass_file.close()
@@ -157,7 +184,11 @@ def amass(args, thisFqdn):
         f = open(f"./temp/amass.tmp", "r")
         amass_arr = f.read().rstrip().split("\n")
         f.close()
-        thisFqdn['recon']['subdomains']['amass'] = amass_arr
+        final_amass_arr = []
+        for amass_finding in amass_arr:
+            if thisFqdn['fqdn'] in amass_finding and amass_finding not in final_amass_arr:
+                final_amass_arr.append(amass_finding)
+        thisFqdn['recon']['subdomains']['amass'] = final_amass_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
         print(f"[!] Something went wrong!  Exception: {str(e)}")
@@ -501,6 +532,7 @@ def send_slack_notification(home_dir, text):
     message_json = {'text':text,'username':'Recon Box','icon_emoji':':eyes:'}
     f = open(f'{home_dir}/.keys/slack_web_hook')
     token = f.read()
+    print(token)
     requests.post(f'https://hooks.slack.com/services/{token}', json=message_json)
 
 def build_cewl_wordlist(args):
