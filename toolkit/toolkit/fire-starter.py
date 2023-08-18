@@ -238,10 +238,10 @@ def amass(args, initFqdn):
         config_test = subprocess.run(["ls config/amass_config.yaml"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         if config_test.returncode == 0:
             print("[+] Amass config file detected!  Scanning with custom settings...")
-            # subprocess.run([f"amass enum -active -alts -brute -nocolor -min-for-recursive 2 -timeout 60 -config config/amass_config.yaml -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
+            subprocess.run([f"amass enum -active -alts -brute -nocolor -min-for-recursive 2 -timeout 60 -config config/amass_config.yaml -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
         else:
             print("[!] Amass config file NOT detected!  Scanning with default settings...")
-            # subprocess.run([f"amass enum -active -alts -brute -nocolor -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
+            subprocess.run([f"amass enum -active -alts -brute -nocolor -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
         amass_arr = []
         with open('./temp/amass.tmp', 'r') as file:
             for line in file:
@@ -620,7 +620,6 @@ def get_fqdn_obj(args):
 
 def update_fqdn_obj(args, thisFqdn):
     res = requests.post(f'http://{args.server}:{args.port}/api/auto/update', json=thisFqdn, proxies={"http":"http://127.0.0.1:8080","https":"http://127.0.0.1:8080"})
-    print(res.text)
 
 def cleanup():
     subprocess.run(["rm wordlists/crawl_*"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
@@ -762,8 +761,6 @@ def main(args):
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
-
-    exit()
 
     try:
         print(f"[-] Running Sublist3r against {args.fqdn}")
