@@ -54,6 +54,7 @@ import requests
 import subprocess
 import argparse
 import json
+import re
 from datetime import datetime, timedelta
 from time import sleep
 
@@ -70,6 +71,73 @@ class Timer:
 
     def get_stop(self):
         return self.stop.strftime("%H:%M:%S")
+
+class NetworkValidator:
+    def __init__(self):
+        self.process_id = None
+        self.interface_data = None
+        self.tunnel_ip = None
+        self.gateway_ip = None
+        self.vpn_on = self.check_vpn()
+        self.resolver_string = self.get_resolver_string()
+        self.vpn_connected = self.check_vpn_connection()
+
+    def __repr__(self):
+        return f"\n** Network Validator **\n\nProtonVPN Running: {self.vpn_on}\nProtonVPN Process ID: {self.process_id}\nProtonVPN Tunnel IP: {self.tunnel_ip}\nProtonVPN Gateway IP: {self.gateway_ip}\nInterface Data:\n{self.interface_data}\nResolvers File:\n{self.resolver_string}\n"
+    
+    def check_vpn(self):
+        print("[-] Checking for ProtonVPN Process ID...")
+        vpn_check = subprocess.run(["pgrep protonvpn"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
+        if vpn_check.returncode == 0:
+            final_process_id = vpn_check.stdout.replace("\n", "")
+            print(f"[+] ProtonVPN found on Process ID {final_process_id}")
+            self.process_id = final_process_id
+            return True
+        else:
+            print("[-] ProtonVPN Process ID not found.  If you are running ProtonVPN, something has gone wrong.  Otherwise, ignore this message :)")
+            return False
+
+    def get_resolver_string(self):
+        print("[-] Storing contents of the /etc/resolv.con file...")
+        resolver_string = subprocess.run(["cat /etc/resolv.conf"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+        if resolver_string.returncode == 0:
+            final_string = resolver_string.stdout
+            print("[+] Contents of /etc/resolv.conf stored successfully!")
+            return final_string
+        else:
+            print("[!] Unable to store contents of /etc/resolv.conf file!  If anything breaks, you're on your own...")
+            return ""
+
+    def check_vpn_connection(self):
+        print("[-] Checking VPN Connection...")
+        validation_count = 0
+        interface_check = subprocess.run(["ifconfig | grep -A 1 proton"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+        if interface_check.returncode == 0:
+            validation_count += 1
+            print("[+] ProtonVPN Connection Found!  Storing relavent data...")
+            interface_check_stdout = interface_check.stdout
+            self.interface_data = interface_check_stdout
+            pattern = r'inet\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+            match = re.search(pattern, interface_check_stdout)
+            if match:
+                validation_count += 1
+                inet_ip = match.group(1)
+                print(f"[+] ProtonVPN Tunnel IP: {inet_ip}")
+                self.tunnel_ip = inet_ip
+            pattern = r'destination\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+            match = re.search(pattern, interface_check_stdout)
+            if match:
+                validation_count += 1
+                found_gateway_ip = match.group(1)
+                print(f"[+] ProtonVPN Gateway IP: {found_gateway_ip}")
+                self.gateway_ip = found_gateway_ip
+        if validation_count == 3:
+            print("[+] ProtonVPN Connection Confirmed!")
+            self.vpn_connected = True
+        else:
+            print("[+] ProtonVPN connection not found.  Continuing without VPN...")
+            self.vpn_connected = False
+
 
 def sublist3r(args, home_dir, thisFqdn):
     try:
@@ -126,20 +194,48 @@ def get_ips_from_amass(thisFqdn):
     except Exception as e:
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
+def amass_get_dns(args, thisFqdn):
+    amass_file = open(f"./temp/amass.full.tmp", 'r')
+    amass_file_lines = amass_file.readlines()
+    amass_file.close()
+    dns = {
+        "arecord": [],
+        "aaaarecord": [],
+        "cnamerecord": [],
+        "mxrecord": [],
+        "txtrecord": []
+    }
+    json_object = json.dumps(dns)
+    for line in amass_file_lines:
+        if "a_record" in line and "aaaa_record" not in line:
+            dns['arecord'].append(line.split("\n")[0])
+        if "aaaa_record" in line:
+            dns['aaaarecord'].append(line.split("\n")[0])
+        if "cname_record" in line:
+            dns['cnamerecord'].append(line.split("\n")[0])
+        if "mx_record" in line:
+            dns['mxrecord'].append(line.split("\n")[0])
+        if "txt_record" in line:
+            dns['txtrecord'].append(line.split("\n")[0])
+    pretty_dns = json.dumps(dns, indent=4)
+    print(pretty_dns)
+    return dns
+
 def amass(args, thisFqdn):
     try:
         regex = "{1,3}"
         config_test = subprocess.run(["ls config/amass_config.ini"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         if config_test.returncode == 0:
             print("[+] Amass config file detected!  Scanning with custom settings...")
-            subprocess.run([f"amass enum -src -ip -brute -ipv4 -min-for-recursive 2 -timeout 60 -config config/amass_config.ini -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
+            subprocess.run([f"amass enum -brute -nocolor -min-for-recursive 2 -timeout 60 -config config/amass_config.ini -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
         else:
             print("[!] Amass config file NOT detected!  Scanning with default settings...")
-            subprocess.run([f"amass enum -src -ip -brute -ipv4 -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
+            subprocess.run([f"amass enum -brute -nocolor -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
         subprocess.run([f"cp ./temp/amass.tmp ./temp/amass.full.tmp"], stdout=subprocess.DEVNULL, shell=True)
         subprocess.run([f"sed -i -E 's/\[(.*?)\] +//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, shell=True)
-        thisFqdn = get_ips_from_amass(thisFqdn)
+        # thisFqdn = get_ips_from_amass(thisFqdn)
         subprocess.run([f"sed -i -E 's/ ([0-9]{regex}\.)[0-9].*//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        thisFqdn['dns'] = amass_get_dns(args, thisFqdn)
         amass_file = open(f"./temp/amass.tmp", 'r')
         amass_file_lines = amass_file.readlines()
         amass_file.close()
@@ -157,7 +253,11 @@ def amass(args, thisFqdn):
         f = open(f"./temp/amass.tmp", "r")
         amass_arr = f.read().rstrip().split("\n")
         f.close()
-        thisFqdn['recon']['subdomains']['amass'] = amass_arr
+        final_amass_arr = []
+        for amass_finding in amass_arr:
+            if thisFqdn['fqdn'] in amass_finding and amass_finding not in final_amass_arr:
+                final_amass_arr.append(amass_finding)
+        thisFqdn['recon']['subdomains']['amass'] = final_amass_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
         print(f"[!] Something went wrong!  Exception: {str(e)}")
@@ -501,7 +601,8 @@ def send_slack_notification(home_dir, text):
     message_json = {'text':text,'username':'Recon Box','icon_emoji':':eyes:'}
     f = open(f'{home_dir}/.keys/slack_web_hook')
     token = f.read()
-    requests.post(f'https://hooks.slack.com/services/{token}', json=message_json)
+    clean_token = token.replace(u"\u000a","")
+    requests.post(f'https://hooks.slack.com/services/{clean_token}', json=message_json)
 
 def build_cewl_wordlist(args):
     subprocess.run([f'ls; cewl -d 2 -m 5 -o -a -v -w wordlists/cewl_{args.fqdn}.txt https://{args.fqdn}'], shell=True)
@@ -623,32 +724,37 @@ def consolidate_flag(args):
     print("[+] Wrap-Up Function Completed Successfully!  Exiting...")
     exit()
 
-def main(args):
-    starter_timer = Timer()
-    cleanup()
-    print("[-] Running Subdomain Scraping Modules...")
+def run_checks(args):
     if args.limit:
         print("[-] Unique subdomain limit detected.  Checking count...")
         check_limit(args)
-    try:
-        print(f"[-] Running Amass against {args.fqdn}")
-        amass(args, get_fqdn_obj(args))
-    except Exception as e:
-        print(f"[!] Exception: {e}")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
     # input("[!] Debug Pause...")
-    # if args.limit:
-    #     print("[-] Unique subdomain limit detected.  Checking count...")
-    #     check_limit(args)
-    # try:
-    #     print(f"[-] Running Sublist3r against {args.fqdn}")
-    #     sublist3r(args, get_home_dir(), get_fqdn_obj(args))
-    # except Exception as e:
-    #     print(f"[!] Exception: {e}")
+
+def main(args):
+    starter_timer = Timer()
+    network_validator = NetworkValidator()
+    cleanup()
+    print("[-] Running Subdomain Scraping Modules...")
+
+    try:
+        print(f"[-] Running Amass against {args.fqdn}")
+        amass(args, get_fqdn_obj(args))
+        run_checks(args)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+    if args.limit:
+        print("[-] Unique subdomain limit detected.  Checking count...")
+        check_limit(args)
+    try:
+        print(f"[-] Running Sublist3r against {args.fqdn}")
+        sublist3r(args, get_home_dir(), get_fqdn_obj(args))
+    except Exception as e:
+        print(f"[!] Exception: {e}")
     # input("[!] Debug Pause...")
-    print("[!] Sublist3r is not working properly.  Skipping for now...\n[!] Issue - https://github.com/aboul3la/Sublist3r/issues/357")
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)

@@ -54,7 +54,7 @@ def sublist3r_check():
 
 def install_sublist3r():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir}/Tools; git clone https://github.com/aboul3la/Sublist3r.git; sudo apt install -y python3-requests python3-dnspython"], shell=True)
+    subprocess.run([f"cd {home_dir}/Tools; git clone https://github.com/huntergregal/Sublist3r.git; sudo apt install -y python3-requests python3-dnspython"], shell=True)
     install_check = subprocess.run([f"python3 {home_dir}/Tools/Sublist3r/sublist3r.py --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Sublist3r installed successfully!")
@@ -440,7 +440,7 @@ def update_apt():
 
 def install_protonvpn():
     home_dir = get_home_dir()
-    download_protonvpn = subprocess.run([f'cd {home_dir}/Downloads;wget "https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.3_all.deb";sudo apt-get install ~/Downloads/protonvpn-stable-release_1.0.3_all.deb;sudo apt-get update;sudo apt-get install protonvpn -y'], shell=True)
+    download_protonvpn = subprocess.run([f'cd {home_dir}/Downloads;wget "https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.3-2_all.deb";sudo apt-get install ~/Downloads/protonvpn-stable-release_1.0.3_all.deb;sudo apt-get update;sudo apt-get install protonvpn -y'], shell=True)
     if download_protonvpn.returncode == 0:
         print("[+] ProtonVPN was installed successfully!")
     else:
