@@ -1,6 +1,7 @@
 import requests, sys, subprocess, getopt, json, time, math
 import argparse
 from datetime import datetime
+import re
 
 class NetworkValidator:
     def __init__(self):

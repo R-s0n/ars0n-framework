@@ -165,37 +165,52 @@ def remove_duplicate_ips(ip_list):
     except Exception as e:
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def get_ips_from_amass(thisFqdn):
+def parse_amass_file(file_path):
     try:
-        amass_file = open(f"./temp/amass.tmp", 'r')
-        amass_file_lines = amass_file.readlines()
-        amass_file.close()
-        ip_list = []
-        for line in amass_file_lines:
-            ip_string = line.strip().split(" ")[1]
-            if "," in ip_string:
-                new_ip_list = ip_string.split(",")
-                for ip in new_ip_list:
-                    if len(ip) > 4:
-                        ip_obj = {
-                            "ip": ip,
-                            "ports": []
-                        }
-                        ip_list.append(ip_obj)
-            else:
-                ip_obj = {
-                    "ip": ip_string,
-                    "ports": []
-                }
-                ip_list.append(ip_obj)
-        clean_ip_list = remove_duplicate_ips(ip_list)
-        thisFqdn['ips'] = clean_ip_list
-        return thisFqdn  
+        asns = []
+        cidr_subnets = []
+        ipv4_addresses = []
+        with open(file_path, 'r') as file:
+            for line in file:
+                line = line.strip()
+                asn_match = re.match(r'\d+ \(ASN\)', line)
+                if asn_match:
+                    asns.append(asn_match.group().split(" ")[0])
+                cidr_match = re.match(r'\d+\.\d+\.\d+\.\d+\/\d+', line)
+                if cidr_match:
+                    cidr_subnets.append(cidr_match.group())
+                ipv4_match = re.match(r'\d+\.\d+\.\d+\.\d+', line)
+                if ipv4_match:
+                    ipv4_addresses.append(ipv4_match.group())
+        return {
+            "asns": asns,
+            "cidr_subnets": cidr_subnets,
+            "ipv4_addresses": ipv4_addresses
+        }
     except Exception as e:
-        print(f"[!] Something went wrong!  Exception: {str(e)}")
+        print("[!] Unable to pull IPs and/or ASNs...")
+        print(f"[!] Exception: {e}")
+
+def get_ips_from_amass(thisFqdn):
+    result = parse_amass_file("./temp/amass.tmp")
+    thisFqdn['asns'] = result["asns"]
+    thisFqdn['subnets'] = result["cidr_subnets"]
+    for ip_address in result["ipv4_addresses"]:
+        exists = False
+        for ip_obj in thisFqdn['ips']:
+            if ip_address == ip_obj['ip']:
+                exists = True
+        if exists == False:
+            data = {
+                "ip": ip_address,
+                "ports": []
+            }
+            loaded_data = json.dumps(data)
+            thisFqdn['ips'].append(json.loads(loaded_data))
+    return thisFqdn
 
 def amass_get_dns(args):
-    amass_file = open(f"./temp/amass.full.tmp", 'r')
+    amass_file = open(f"./temp/amass.tmp", 'r')
     amass_file_lines = amass_file.readlines()
     amass_file.close()
     dns = {
@@ -205,7 +220,6 @@ def amass_get_dns(args):
         "mxrecord": [],
         "txtrecord": []
     }
-    json_object = json.dumps(dns)
     for line in amass_file_lines:
         if "a_record" in line and "aaaa_record" not in line:
             dns['arecord'].append(line.split("\n")[0])
@@ -217,42 +231,31 @@ def amass_get_dns(args):
             dns['mxrecord'].append(line.split("\n")[0])
         if "txt_record" in line:
             dns['txtrecord'].append(line.split("\n")[0])
-    pretty_dns = json.dumps(dns, indent=4)
-    print(pretty_dns)
     return dns
 
-def amass(args, thisFqdn):
+def amass(args, initFqdn):
     try:
-        regex = "{1,3}"
-        config_test = subprocess.run(["ls config/amass_config.ini"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        config_test = subprocess.run(["ls config/amass_config.yaml"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         if config_test.returncode == 0:
             print("[+] Amass config file detected!  Scanning with custom settings...")
-            subprocess.run([f"amass enum -brute -nocolor -min-for-recursive 2 -timeout 60 -config config/amass_config.ini -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
+            # subprocess.run([f"amass enum -active -alts -brute -nocolor -min-for-recursive 2 -timeout 60 -config config/amass_config.yaml -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
         else:
             print("[!] Amass config file NOT detected!  Scanning with default settings...")
-            subprocess.run([f"amass enum -brute -nocolor -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
-        subprocess.run([f"cp ./temp/amass.tmp ./temp/amass.full.tmp"], stdout=subprocess.DEVNULL, shell=True)
-        subprocess.run([f"sed -i -E 's/\[(.*?)\] +//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, shell=True)
-        # thisFqdn = get_ips_from_amass(thisFqdn)
-        subprocess.run([f"sed -i -E 's/ ([0-9]{regex}\.)[0-9].*//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+            # subprocess.run([f"amass enum -active -alts -brute -nocolor -min-for-recursive 2 -timeout 60 -d {args.fqdn} -o ./temp/amass.tmp"], shell=True)
+        amass_arr = []
+        with open('./temp/amass.tmp', 'r') as file:
+            for line in file:
+                try:
+                    domain_pattern = r'([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})'
+                    match = re.search(domain_pattern, line)
+                    if match:
+                        domain = match.group(1)
+                        amass_arr.append(domain)
+                except Exception as e:
+                    print(f"[!] Error processing line: {line}")
+                    print(f"[!] Exception: {e}")
+        thisFqdn = get_ips_from_amass(initFqdn)
         thisFqdn['dns'] = amass_get_dns(args)
-        amass_file = open(f"./temp/amass.tmp", 'r')
-        amass_file_lines = amass_file.readlines()
-        amass_file.close()
-        new_lines = []
-        for line in amass_file_lines:
-            if " " in line:
-                subdomain = line.split(" ")[0] + "\n"
-                new_lines.append(subdomain)
-            else:
-                new_lines.append(line)
-        subprocess.run(["rm -rf ./temp/amass.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-        amass_file = open(f"./temp/amass.tmp", 'w')
-        amass_file.writelines(new_lines)
-        amass_file.close()
-        f = open(f"./temp/amass.tmp", "r")
-        amass_arr = f.read().rstrip().split("\n")
-        f.close()
         final_amass_arr = []
         for amass_finding in amass_arr:
             if thisFqdn['fqdn'] in amass_finding and amass_finding not in final_amass_arr:
@@ -616,7 +619,8 @@ def get_fqdn_obj(args):
     return r.json()
 
 def update_fqdn_obj(args, thisFqdn):
-    requests.post(f'http://{args.server}:{args.port}/api/auto/update', json=thisFqdn)
+    res = requests.post(f'http://{args.server}:{args.port}/api/auto/update', json=thisFqdn, proxies={"http":"http://127.0.0.1:8080","https":"http://127.0.0.1:8080"})
+    print(res.text)
 
 def cleanup():
     subprocess.run(["rm wordlists/crawl_*"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
@@ -702,7 +706,7 @@ def wrap_up(args):
         print(f"[!] Exception: {e}")
     # input("[!] Debug Pause...")
     send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), False))
-    # populate_burp(args, get_fqdn_obj(args))
+    populate_burp(args, get_fqdn_obj(args))
     cleanup()
 
 def arg_parse():
@@ -724,7 +728,7 @@ def consolidate_flag(args):
     print("[+] Wrap-Up Function Completed Successfully!  Exiting...")
     exit()
 
-def run_checks(args):
+def run_checks(args, starter_timer):
     if args.limit:
         print("[-] Unique subdomain limit detected.  Checking count...")
         check_limit(args)
@@ -749,77 +753,78 @@ def protonvpn_killswitch():
 def main(args):
     starter_timer = Timer()
     network_validator = NetworkValidator()
-    protonvpn_disconnect()
-    cleanup()
+    # cleanup()
     print("[-] Running Subdomain Scraping Modules...")
 
     try:
         print(f"[-] Running Amass against {args.fqdn}")
         amass(args, get_fqdn_obj(args))
-        run_checks(args)
+        run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
+
+    exit()
 
     try:
         print(f"[-] Running Sublist3r against {args.fqdn}")
         sublist3r(args, get_home_dir(), get_fqdn_obj(args))
-        run_checks(args)
+        run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
 
     try:
         print(f"[-] Running Assetfinder against {args.fqdn}")
         assetfinder(args, get_home_dir(), get_fqdn_obj(args))
-        run_checks(args)
+        run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
 
     try:
         print(f"[-] Running Get All URLs against {args.fqdn}")
         gau(args, get_home_dir(), get_fqdn_obj(args))
-        run_checks(args)
+        run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
 
     try:
         print(f"[-] Running CRT against {args.fqdn}")
         crt(args, get_home_dir(), get_fqdn_obj(args))
-        run_checks(args)
+        run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
 
     try:
         print(f"[-] Running Shosubgo against {args.fqdn}")
         shosubgo(args, get_home_dir(), get_fqdn_obj(args))
-        run_checks(args)
+        run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
 
     try:
         print(f"[-] Running Subfinder against {args.fqdn}")
         subfinder(args, get_home_dir(), get_fqdn_obj(args))
-        run_checks(args)
+        run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
 
     try:
         print(f"[-] Running Subfinder in Recursive Mode against {args.fqdn}")
         subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args))
-        run_checks(args)
+        run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
 
     try:
         print(f"[-] Running Github-Subdomains against {args.fqdn}")
         github_subdomains(args, get_home_dir(), get_fqdn_obj(args))
-        run_checks(args)
+        run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
 
     try:
         print(f"[-] Running ShuffleDNS w/ a Default Wordlist against {args.fqdn}")
         shuffle_dns(args, get_home_dir(), get_fqdn_obj(args))
-        run_checks(args)
+        run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
 
@@ -828,7 +833,7 @@ def main(args):
         build_cewl_wordlist(args)
         print(f"[-] Running ShuffleDNS w/ a Custom Wordlist against {args.fqdn}")
         shuffle_dns_custom(args, get_home_dir(), get_fqdn_obj(args))
-        run_checks(args)
+        run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
     
@@ -839,14 +844,14 @@ def main(args):
         print(f"[-] Running DEEP Crawl Scan on {args.fqdn}...")
         try:
             gospider_deep(get_home_dir(), get_fqdn_obj(args))
-            run_checks(args)
+            run_checks(args, starter_timer)
         except Exception as e:
             print(f"[!] Exception: {e}")
     else:
         try:
             print(f"[-] Running Gospider against {args.fqdn}")
             gospider(args, get_home_dir(), get_fqdn_obj(args))
-            run_checks(args)
+            run_checks(args, starter_timer)
         except Exception as e:
             print(f"[!] Exception: {e}")
 
@@ -854,7 +859,7 @@ def main(args):
     try:
         print(f"[-] Running Subdomainizer against {args.fqdn}")
         subdomainizer(get_home_dir(), get_fqdn_obj(args))
-        run_checks(args)
+        run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
 

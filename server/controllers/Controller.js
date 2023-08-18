@@ -60,7 +60,7 @@ module.exports.deleteFqdn = (req, res) => {
 }
 
 module.exports.updateFqdn = (req, res) => {
-    
+    console.log(req.body)
     Fqdn.findOneAndUpdate(
         { _id: req.body._id },
         req.body,
