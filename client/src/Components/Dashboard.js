@@ -101,22 +101,14 @@ const Dashboard = props => {
                     </div>
                 </div>
                 <div className="col-4">
-                    <h5>Server IPs: ({thisFqdn.ips.length}):</h5>
-                    <div style={{width: '300px', height: '130px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                    <h5>Live Domains: {thisFqdn.recon.subdomains.httprobe.length}</h5>
+                    <div style={{width: '300px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
-                            thisFqdn.ips.sort((a, b) => a.ip - b.ip).map((ip, i) => {
+                            thisFqdn.recon.subdomains.httprobe.sort().map((server, i) => {
                                 return (
-                                    <p style={{display: "block", margin: 0}} key={i}>{ip['ip']}</p>
-                                )
-                            })
-                        }
-                    </div>
-                    <h5>AWS IPs: ({thisFqdn.recon.subdomains.cloudRanges.length}):</h5>
-                    <div style={{width: '300px', height: '130px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
-                        {
-                            thisFqdn.recon.subdomains.cloudRanges.sort().map((subdomain, i) => {
-                                return (
-                                    <a style={{display: "block"}} href={subdomain} key={i} target="_blank" rel="noreferrer">{subdomain}</a>
+                                    <div key={i}>
+                                    <a href={server} className="m-0 mt-2" target="_blank" rel="noreferrer">{server}</a><br/>
+                                    </div>
                                 )
                             })
                         }
@@ -141,6 +133,28 @@ const Dashboard = props => {
                     </div>
                 </div>
                 <div className="col-4">
+                    <h5>Server IPs: ({thisFqdn.ips.length}):</h5>
+                    <div style={{width: '300px', height: '130px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                        {
+                            thisFqdn.ips.sort((a, b) => a.ip - b.ip).map((ip, i) => {
+                                return (
+                                    <p style={{display: "block", margin: 0}} key={i}>{ip['ip']}</p>
+                                )
+                            })
+                        }
+                    </div>
+                    <h5>AWS IPs: ({thisFqdn.recon.subdomains.cloudRanges.length}):</h5>
+                    <div style={{width: '300px', height: '130px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                        {
+                            thisFqdn.recon.subdomains.cloudRanges.sort().map((subdomain, i) => {
+                                return (
+                                    <a style={{display: "block"}} href={subdomain} key={i} target="_blank" rel="noreferrer">{subdomain}</a>
+                                )
+                            })
+                        }
+                    </div>
+                </div>
+                <div className="col-4">
                     <h5>Servers/Ports: {thisFqdn.recon.subdomains.masscan.length}</h5>
                     <div style={{width: '300px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
@@ -148,20 +162,6 @@ const Dashboard = props => {
                                 return (
                                     <div key={i}>
                                     <a href={"http://"+server} className="m-0 mt-2" target="_blank" rel="noreferrer">{server}</a><br/>
-                                    </div>
-                                )
-                            })
-                        }
-                    </div>
-                </div>
-                <div className="col-4">
-                    <h5>Live Domains: {thisFqdn.recon.subdomains.httprobe.length}</h5>
-                    <div style={{width: '300px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
-                        {
-                            thisFqdn.recon.subdomains.httprobe.sort().map((server, i) => {
-                                return (
-                                    <div key={i}>
-                                    <a href={server} className="m-0 mt-2" target="_blank" rel="noreferrer">{server}</a><br/>
                                     </div>
                                 )
                             })
