@@ -19,6 +19,18 @@ const FqdnSchema = new mongoose.Schema({
             type: String
         }]
     },
+    ips: [{
+        ip: {type: String},
+        ports: [{
+            type: String
+        }]
+    }],
+    subnets: [{
+        type: String
+    }],
+    asns: [{
+        type: String
+    }],
     recon: {
         subdomains: {
             gospider: [{
@@ -537,12 +549,6 @@ const FqdnSchema = new mongoose.Schema({
     }],
     targetUrls: [{
         type: String
-    }],
-    ips: [{
-        ip: {type: String},
-        ports: [{
-            type: String
-        }]
     }]
 }, {timestamps: true});
 
