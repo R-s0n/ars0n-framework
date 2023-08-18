@@ -2,7 +2,7 @@ server/node_modules
 client/node_modules
 toolkit/h1.json
 toolkit/temp/*
-toolkit/config/amass_config.ini
+toolkit/config/amass_*
 toolkit/screenshots/http*.png
 toolkit/toolkit/nuclei-stacktrace-*.dump
 toolkit/nuclei-stacktrace-*.dump
