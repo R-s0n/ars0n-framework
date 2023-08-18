@@ -134,7 +134,7 @@ const Dashboard = props => {
                 </div>
                 <div className="col-8">
                     <h5>DNS Records</h5>
-                    <div style={{width: '300px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                    <div style={{width: '800px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
                             thisFqdn.dns.arecord.sort().map((record, i) => {
                                 return (
