@@ -71,7 +71,7 @@ const Dashboard = props => {
             <div className="row ml-5 pl-5">
                 <div className="col-4">
                     <h4>Subdomain Count:</h4>
-                    <ul>
+                    <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
                         <li>amass: {thisFqdn.recon.subdomains.amass.length}</li>
                         <li>assetfinder: {thisFqdn.recon.subdomains.assetfinder.length}</li>
                         <li>ctl: {thisFqdn.recon.subdomains.ctl.length}</li>
@@ -132,36 +132,16 @@ const Dashboard = props => {
                         }
                     </div>
                 </div>
-                <div className="col-4">
-                    <h5>Server IPs: ({thisFqdn.ips.length}):</h5>
-                    <div style={{width: '300px', height: '130px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
-                        {
-                            thisFqdn.ips.sort((a, b) => a.ip - b.ip).map((ip, i) => {
-                                return (
-                                    <p style={{display: "block", margin: 0}} key={i}>{ip['ip']}</p>
-                                )
-                            })
-                        }
-                    </div>
-                    <h5>AWS IPs: ({thisFqdn.recon.subdomains.cloudRanges.length}):</h5>
-                    <div style={{width: '300px', height: '130px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
-                        {
-                            thisFqdn.recon.subdomains.cloudRanges.sort().map((subdomain, i) => {
-                                return (
-                                    <a style={{display: "block"}} href={subdomain} key={i} target="_blank" rel="noreferrer">{subdomain}</a>
-                                )
-                            })
-                        }
-                    </div>
-                </div>
-                <div className="col-4">
-                    <h5>Servers/Ports: {thisFqdn.recon.subdomains.masscan.length}</h5>
+                <div className="col-8">
+                    <h5>DNS Records</h5>
                     <div style={{width: '300px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
-                            thisFqdn.recon.subdomains.masscanAdded.sort().map((server, i) => {
+                            thisFqdn.dns.arecord.sort().map((record, i) => {
                                 return (
                                     <div key={i}>
-                                    <a href={"http://"+server} className="m-0 mt-2" target="_blank" rel="noreferrer">{server}</a><br/>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li key={i}>{record}</li>
+                                        </ul>
                                     </div>
                                 )
                             })
