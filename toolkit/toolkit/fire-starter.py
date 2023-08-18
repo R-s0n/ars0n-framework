@@ -194,7 +194,7 @@ def get_ips_from_amass(thisFqdn):
     except Exception as e:
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def amass_get_dns(args, thisFqdn):
+def amass_get_dns(args):
     amass_file = open(f"./temp/amass.full.tmp", 'r')
     amass_file_lines = amass_file.readlines()
     amass_file.close()
@@ -235,7 +235,7 @@ def amass(args, thisFqdn):
         subprocess.run([f"sed -i -E 's/\[(.*?)\] +//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, shell=True)
         # thisFqdn = get_ips_from_amass(thisFqdn)
         subprocess.run([f"sed -i -E 's/ ([0-9]{regex}\.)[0-9].*//g' ./temp/amass.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-        thisFqdn['dns'] = amass_get_dns(args, thisFqdn)
+        thisFqdn['dns'] = amass_get_dns(args)
         amass_file = open(f"./temp/amass.tmp", 'r')
         amass_file_lines = amass_file.readlines()
         amass_file.close()
@@ -733,9 +733,23 @@ def run_checks(args):
         check_timeout(args, starter_timer)
     # input("[!] Debug Pause...")
 
+def protonvpn_connect():
+    command = subprocess.run(["protonvpn-cli c -f"], shell=True)
+
+def protonvpn_disconnect():
+    command = subprocess.run(["protonvpn-cli d"], shell=True)
+
+def protonvpn_status():
+    command = subprocess.run(["protonvpn-cli s"], stdout=subprocess.PIPE, text=True, shell=True)
+    return command.stdout
+    
+def protonvpn_killswitch():
+    command = subprocess.run(["protonvpn-cli ks --permanent"], shell=True)
+
 def main(args):
     starter_timer = Timer()
     network_validator = NetworkValidator()
+    protonvpn_disconnect()
     cleanup()
     print("[-] Running Subdomain Scraping Modules...")
 
@@ -746,154 +760,104 @@ def main(args):
     except Exception as e:
         print(f"[!] Exception: {e}")
 
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
     try:
         print(f"[-] Running Sublist3r against {args.fqdn}")
         sublist3r(args, get_home_dir(), get_fqdn_obj(args))
+        run_checks(args)
     except Exception as e:
         print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    if args.timeout:
-        print("[-] Timeout threshold detected.  Checking timer...")
-        check_timeout(args, starter_timer)
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
+
     try:
         print(f"[-] Running Assetfinder against {args.fqdn}")
         assetfinder(args, get_home_dir(), get_fqdn_obj(args))
+        run_checks(args)
     except Exception as e:
         print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    if args.timeout:
-        print("[-] Timeout threshold detected.  Checking timer...")
-        check_timeout(args, starter_timer)
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
+
     try:
         print(f"[-] Running Get All URLs against {args.fqdn}")
         gau(args, get_home_dir(), get_fqdn_obj(args))
+        run_checks(args)
     except Exception as e:
         print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    if args.timeout:
-        print("[-] Timeout threshold detected.  Checking timer...")
-        check_timeout(args, starter_timer)
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
+
     try:
         print(f"[-] Running CRT against {args.fqdn}")
         crt(args, get_home_dir(), get_fqdn_obj(args))
+        run_checks(args)
     except Exception as e:
         print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    if args.timeout:
-        print("[-] Timeout threshold detected.  Checking timer...")
-        check_timeout(args, starter_timer)
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
+
     try:
         print(f"[-] Running Shosubgo against {args.fqdn}")
         shosubgo(args, get_home_dir(), get_fqdn_obj(args))
+        run_checks(args)
     except Exception as e:
         print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    if args.timeout:
-        print("[-] Timeout threshold detected.  Checking timer...")
-        check_timeout(args, starter_timer)
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
+
     try:
         print(f"[-] Running Subfinder against {args.fqdn}")
         subfinder(args, get_home_dir(), get_fqdn_obj(args))
+        run_checks(args)
     except Exception as e:
         print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    if args.timeout:
-        print("[-] Timeout threshold detected.  Checking timer...")
-        check_timeout(args, starter_timer)
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
+
     try:
         print(f"[-] Running Subfinder in Recursive Mode against {args.fqdn}")
         subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args))
+        run_checks(args)
     except Exception as e:
         print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    if args.timeout:
-        print("[-] Timeout threshold detected.  Checking timer...")
-        check_timeout(args, starter_timer)
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
+
     try:
         print(f"[-] Running Github-Subdomains against {args.fqdn}")
         github_subdomains(args, get_home_dir(), get_fqdn_obj(args))
+        run_checks(args)
     except Exception as e:
         print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    if args.timeout:
-        print("[-] Timeout threshold detected.  Checking timer...")
-        check_timeout(args, starter_timer)
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
+
     try:
         print(f"[-] Running ShuffleDNS w/ a Default Wordlist against {args.fqdn}")
         shuffle_dns(args, get_home_dir(), get_fqdn_obj(args))
+        run_checks(args)
     except Exception as e:
         print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    if args.timeout:
-        print("[-] Timeout threshold detected.  Checking timer...")
-        check_timeout(args, starter_timer)
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
+
     try:
         print(f"[-] Running CEWL against {args.fqdn}")
         build_cewl_wordlist(args)
         print(f"[-] Running ShuffleDNS w/ a Custom Wordlist against {args.fqdn}")
         shuffle_dns_custom(args, get_home_dir(), get_fqdn_obj(args))
+        run_checks(args)
     except Exception as e:
         print(f"[!] Exception: {e}")
+    
     wrap_up(args)
     build_crawl_list(get_fqdn_obj(args))
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
+
     if args.deep:
         print(f"[-] Running DEEP Crawl Scan on {args.fqdn}...")
         try:
             gospider_deep(get_home_dir(), get_fqdn_obj(args))
+            run_checks(args)
         except Exception as e:
             print(f"[!] Exception: {e}")
     else:
         try:
             print(f"[-] Running Gospider against {args.fqdn}")
             gospider(args, get_home_dir(), get_fqdn_obj(args))
+            run_checks(args)
         except Exception as e:
             print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
-    if args.timeout:
-        print("[-] Timeout threshold detected.  Checking timer...")
-        check_timeout(args, starter_timer)
-    if args.limit:
-        print("[-] Unique subdomain limit detected.  Checking count...")
-        check_limit(args)
+
+
     try:
         print(f"[-] Running Subdomainizer against {args.fqdn}")
         subdomainizer(get_home_dir(), get_fqdn_obj(args))
+        run_checks(args)
     except Exception as e:
         print(f"[!] Exception: {e}")
-    # input("[!] Debug Pause...")
+
     if not check_clear_sky_data():
         if not args.update:
             print("[!] Clear Sky data not found!  Skipping AWS IP range scan...")
@@ -903,6 +867,7 @@ def main(args):
     else:
         print(f"[-] Running Clear-Sky against {args.fqdn}")
         search_data(args, get_fqdn_obj(args))
+    
     wrap_up(args)
     starter_timer.stop_timer()
     print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")

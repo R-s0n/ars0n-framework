@@ -2,6 +2,7 @@ import requests
 import subprocess
 import argparse
 import json
+import re
 from datetime import datetime, timedelta
 
 class Timer:
@@ -17,6 +18,88 @@ class Timer:
 
     def get_stop(self):
         return self.stop.strftime("%H:%M:%S")
+
+class NetworkValidator:
+    def __init__(self):
+        self.process_id = None
+        self.interface_data = None
+        self.tunnel_ip = None
+        self.gateway_ip = None
+        self.vpn_on = self.check_vpn()
+        self.resolver_string = self.get_resolver_string()
+        self.vpn_connected = self.check_vpn_connection()
+
+    def __repr__(self):
+        return f"\n** Network Validator **\n\nProtonVPN Running: {self.vpn_on}\nProtonVPN Process ID: {self.process_id}\nProtonVPN Tunnel IP: {self.tunnel_ip}\nProtonVPN Gateway IP: {self.gateway_ip}\nInterface Data:\n{self.interface_data}\nResolvers File:\n{self.resolver_string}\n"
+    
+    def check_vpn(self):
+        print("[-] Checking for ProtonVPN Process ID...")
+        vpn_check = subprocess.run(["pgrep protonvpn"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
+        if vpn_check.returncode == 0:
+            final_process_id = vpn_check.stdout.replace("\n", "")
+            print(f"[+] ProtonVPN found on Process ID {final_process_id}")
+            self.process_id = final_process_id
+            return True
+        else:
+            print("[-] ProtonVPN Process ID not found.  If you are running ProtonVPN, something has gone wrong.  Otherwise, ignore this message :)")
+            return False
+
+    def get_resolver_string(self):
+        print("[-] Storing contents of the /etc/resolv.con file...")
+        resolver_string = subprocess.run(["cat /etc/resolv.conf"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+        if resolver_string.returncode == 0:
+            final_string = resolver_string.stdout
+            print("[+] Contents of /etc/resolv.conf stored successfully!")
+            return final_string
+        else:
+            print("[!] Unable to store contents of /etc/resolv.conf file!  If anything breaks, you're on your own...")
+            return ""
+
+    def check_vpn_connection(self):
+        print("[-] Checking VPN Connection...")
+        validation_count = 0
+        interface_check = subprocess.run(["ifconfig | grep -A 1 proton"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+        if interface_check.returncode == 0:
+            validation_count += 1
+            print("[+] ProtonVPN Connection Found!  Storing relavent data...")
+            interface_check_stdout = interface_check.stdout
+            self.interface_data = interface_check_stdout
+            pattern = r'inet\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+            match = re.search(pattern, interface_check_stdout)
+            if match:
+                validation_count += 1
+                inet_ip = match.group(1)
+                print(f"[+] ProtonVPN Tunnel IP: {inet_ip}")
+                self.tunnel_ip = inet_ip
+            pattern = r'destination\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+            match = re.search(pattern, interface_check_stdout)
+            if match:
+                validation_count += 1
+                found_gateway_ip = match.group(1)
+                print(f"[+] ProtonVPN Gateway IP: {found_gateway_ip}")
+                self.gateway_ip = found_gateway_ip
+        if validation_count == 3:
+            print("[+] ProtonVPN Connection Confirmed!")
+            self.vpn_connected = True
+        else:
+            print("[+] ProtonVPN connection not found.  Continuing without VPN...")
+            self.vpn_connected = False
+
+def protonvpn_connect():
+    command = subprocess.run(["protonvpn-cli c -f"], stdout=subprocess.PIPE, text=True, shell=True)
+
+def protonvpn_disconnect():
+    command = subprocess.run(["protonvpn-cli d"], stdout=subprocess.PIPE, text=True, shell=True)
+
+def protonvpn_status():
+    command = subprocess.run(["protonvpn-cli s"], stdout=subprocess.PIPE, text=True, shell=True)
+    return command.stdout
+    
+def protonvpn_killswitch_on():
+    command = subprocess.run(["protonvpn-cli ks --on"], shell=True)
+
+def protonvpn_killswitch_off():
+    command = subprocess.run(["protonvpn-cli ks --off"], shell=True)
 
 def get_home_dir():
     get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
@@ -91,159 +174,241 @@ def full_nuclei_scan(args, now):
     except Exception as e:
         print("[!] Something went wrong!  Exiting...")
 
+def protonvpn_unnecessary(args, template_name):
+    if args.proton and "No active Proton VPN connection." not in protonvpn_status():
+            print(f"[!] ProtonVPN is NOT needed for the {template_name} scan.  Disconnecting the VPN...")
+            protonvpn_disconnect()
+
+def protonvpn_necessary(args, template_name):
+    if args.proton and "No active Proton VPN connection." in protonvpn_status():
+            print(f"[!] ProtonVPN is needed for the {template_name} scan.  Disconnecting the VPN...")
+            protonvpn_connect()
+
+def technologies_nuclei_scan(args, now):
+    try:
+        print("[-] Running a Nuclei Scan using the Technologies Templates")
+        protonvpn_unnecessary(args, "Technologies")
+        home_dir = get_home_dir()
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/technologies -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        data = process_results(args, now)
+        thisFqdn = get_fqdn_obj(args)
+        update_vulns(args, thisFqdn, data, "Technologies", "vulnsTech")
+        if args.proton:
+            protonvpn_disconnect()
+    except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
+        print(f"[!] Exception: {e}")
+
+
 def misconfiguration_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Misconfiguration Templates")
+        protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/misconfiguration -l /tmp/urls.txt -timeout 7 -vv -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Misconfigurations", "vulnsMisconfig")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Misconfiguration Templates...")
 
 
 def cves_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the CVEs Templates")
+        protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/cves -l /tmp/urls.txt -stats -system-resolvers -timeout 7 -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "CVES", "vulnsCVEs")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the CVEs Templates...")
 
 def cnvd_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the CNVD Templates")
+        protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/cnvd -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "CNVD", "vulnsCNVD")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the CNVD Templates...")
 
 def exposed_panels_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Exposed Panels Templates")
+        protonvpn_necessary(args, "Exposed Panels")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/exposed-panels -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Exposed Panels", "vulnsExposed")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Exposed Panels Templates...")
 
 def exposures_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Exposures Templates")
+        protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/exposures -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Exposures", "vulnsExposure")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Exposures Templates...")
 
 def miscellaneous_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Miscellaneous Templates")
+        protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/miscellaneous -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Miscellaneous", "vulnsMisc")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Miscellaneous Templates...")
 
 def network_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the OSINT Templates")
+        protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/osint -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Network", "vulnsNetwork")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Network Templates...")
 
 def file_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the File Templates")
+        protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/default-logins -l /tmp/urls.txt -vv -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "File", "vulnsFile")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the File Templates...")
 
 def dns_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the DNS Templates")
+        protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/dns -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "DNS", "vulnsDNS")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the DNS Templates...")
 
 def vulnerabilities_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Vulnerabilities Templates")
+        protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/vulnerabilities -l /tmp/urls.txt -stats -system-resolvers -timeout 7 -config config/nuclei_config.yaml -vv -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Vulnerabilities", "vulnsVulns")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Vulnerabilities Templates...")
 
-def technologies_nuclei_scan(args, now):
-    try:
-        print("[-] Running a Nuclei Scan using the Technologies Templates")
-        home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/technologies -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
-        data = process_results(args, now)
-        thisFqdn = get_fqdn_obj(args)
-        update_vulns(args, thisFqdn, data, "Technologies", "vulnsTech")
-    except Exception as e:
-        print("[!] Something went wrong!  Skipping the Technologies Templates...")
 
 def rs0n_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Custom Templates")
+        protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t ./custom -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -sb -hbs 10 -headc 1 -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Custom", "vulnsRs0n")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Custom Templates...")
 
 def headless_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the Headless Templates")
+        protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -sb -hbs 10 -headc 1 -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Headless", "vulnsHeadless")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Headless Templates...")
 
 def ssl_nuclei_scan(args, now):
     try:
         print("[-] Running a Nuclei Scan using the SSL Templates")
+        protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
         subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/ssl -l /tmp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -fhr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "SSL", "vulnsSSL")
+        if args.proton:
+            protonvpn_disconnect()
     except Exception as e:
+        if args.proton:
+            protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the SSL Templates...")
 
 def process_results(args, now):
@@ -303,10 +468,12 @@ def arg_parse():
     parser.add_argument('-P','--port', help='Port of MongoDB API', required=True)
     parser.add_argument('-d','--fqdn', help='Name of the Root/Seed FQDN', required=True)
     parser.add_argument('-f','--full', help='Name of the Root/Seed FQDN', required=False, action='store_true')
+    parser.add_argument('-p','--proton', help='Run all scans through ProtonVPN', required=False, action='store_true')
     return parser.parse_args()
-    
+
 def main(args):
     starter_timer = Timer()
+    network_validator = NetworkValidator()
     clean_screenshots()
     clean_stacktrace_dumps()
     clear_vulns(args)
@@ -335,6 +502,7 @@ def main(args):
         # cnvd_nuclei_scan(args, now)
         # miscellaneous_nuclei_scan(args, now)
     starter_timer.stop_timer()
+    protonvpn_killswitch_off()
     print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
 if __name__ == "__main__":
