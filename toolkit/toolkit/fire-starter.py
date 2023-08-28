@@ -173,12 +173,10 @@ def parse_amass_file(file_path):
         with open(file_path, 'r') as file:
             for line in file:
                 line = line.strip()
-                asn_match = re.match(r'\d+ \(ASN\)', line)
-                if asn_match:
-                    asns.append(asn_match.group().split(" ")[0])
-                cidr_match = re.match(r'\d+\.\d+\.\d+\.\d+\/\d+', line)
-                if cidr_match:
-                    cidr_subnets.append(cidr_match.group())
+                if "contains" in line:
+                    cidr_subnets.append(line.split("\n")[0])
+                if "announces" in line:
+                    asns.append(line.split("\n")[0])
                 ipv4_match = re.match(r'\d+\.\d+\.\d+\.\d+', line)
                 if ipv4_match:
                     ipv4_addresses.append(ipv4_match.group())

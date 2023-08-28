@@ -193,6 +193,40 @@ const Dashboard = props => {
                 </div>
             </div>
             <div className="row ml-5 pl-5">
+            <div className="col-6 mt-3">
+                    <h5>ASNs</h5>
+                    <div style={{width: '600px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                        {
+                            thisFqdn.asns.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li key={i}>{record}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                </div>
+                <div className="col-6 mt-3">
+                    <h5>Subnets</h5>
+                    <div style={{width: '600px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                        {
+                            thisFqdn.subnets.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li key={i}>{record}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                </div>
+            </div>
+            <div className="row ml-5 pl-5">
             <div className="col-4 mt-3">
                 <h5>Impactful Nuclei Vulns: {impactfulVulnCount}/{vulnCount}</h5>
                 <div style={{width: '1500px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll', overflowX: 'hidden'}}>
