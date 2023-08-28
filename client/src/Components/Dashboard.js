@@ -130,7 +130,7 @@ const Dashboard = props => {
                                                             <li style={{paddingLeft:"100px"}} key={j}>{subnet}
                                                                 <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
                                                                     {
-                                                                        thisFqdn.dns.arecord.concat(thisFqdn.dns.aaaarecord).sort().filter(tempRecord => tempRecord.includes(subnet.split(" ")[5])).map((tempRecord, k) => (
+                                                                        thisFqdn.dns.arecord.concat(thisFqdn.dns.aaaarecord).sort().filter(tempRecord => tempRecord.split(" ")[5] === subnet.split(" ")[5]).map((tempRecord, k) => (
                                                                             <li style={{paddingLeft:"100px"}} key={k}>{tempRecord} --- LINK: <a href={"https://" + tempRecord.split(" ")[0]} target="_blank" rel="noreferrer">{"https://" + tempRecord.split(" ")[0]}</a></li>
                                                                         ))
                                                                     }
