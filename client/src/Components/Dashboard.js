@@ -131,15 +131,7 @@ const Dashboard = props => {
                                                                 <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
                                                                     {
                                                                         thisFqdn.dns.arecord.concat(thisFqdn.dns.aaaarecord).sort().filter(tempRecord => tempRecord.includes(subnet.split(" ")[5])).map((tempRecord, k) => (
-                                                                            <li style={{paddingLeft:"100px"}} key={k}>{tempRecord}
-                                                                                {
-                                                                                    thisFqdn.dns.cnamerecord.sort().filter(cnameRecord => cnameRecord.includes(tempRecord.split(" ")[0])).map((cnameRecord, l) => (
-                                                                                        <div style={{paddingLeft:"100px"}}>
-                                                                                             <a key={l} href={"https://" + cnameRecord.split(" ")[0]} target="_blank" rel="noreferrer">{cnameRecord}</a>
-                                                                                        </div>
-                                                                                    ))
-                                                                                }
-                                                                            </li>
+                                                                            <li style={{paddingLeft:"100px"}} key={k}>{tempRecord} --- LINK: <a href={"https://" + tempRecord.split(" ")[0]} target="_blank" rel="noreferrer">{"https://" + tempRecord.split(" ")[0]}</a></li>
                                                                         ))
                                                                     }
                                                                 </ul>
@@ -149,6 +141,68 @@ const Dashboard = props => {
                                                 </ul>
                                                 <br></br>
                                             </li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                </div>
+            </div>
+            <div className="row ml-5 pl-5">
+                <div className="col-12 mt-3">
+                    <h5>DNS Records</h5>
+                    <div style={{width: '1500px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                        {
+                            thisFqdn.dns.cnamerecord.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '')}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                                                {
+                            thisFqdn.dns.arecord.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li key={i}>{record}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                                                {
+                            thisFqdn.dns.aaaarecord.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li key={i}>{record}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                                                {
+                            thisFqdn.dns.mxrecord.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li key={i}>{record}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                                                {
+                            thisFqdn.dns.txtrecord.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li key={i}>{record}</li>
                                         </ul>
                                     </div>
                                 )
