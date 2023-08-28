@@ -115,109 +115,40 @@ const Dashboard = props => {
                 </div>
             </div>
             <div className="row ml-5 pl-5">
-            <div className="col-4 mt-3">
-                    <h5>IP Addresses</h5>
-                    <div style={{width: '300px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
-                        {
-                            thisFqdn.ips.sort().map((ip, i) => {
-                                return (
-                                    <div key={i}>
-                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}>{ip['ip']}</li>
-                                        </ul>
-                                    </div>
-                                )
-                            })
-                        }
-                    </div>
-                </div>
-                <div className="col-8 mt-3">
-                    <h5>DNS Records</h5>
-                    <div style={{width: '900px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
-                        {
-                            thisFqdn.dns.arecord.sort().map((record, i) => {
-                                return (
-                                    <div key={i}>
-                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}>{record}</li>
-                                        </ul>
-                                    </div>
-                                )
-                            })
-                        }
-                                                {
-                            thisFqdn.dns.aaaarecord.sort().map((record, i) => {
-                                return (
-                                    <div key={i}>
-                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}>{record}</li>
-                                        </ul>
-                                    </div>
-                                )
-                            })
-                        }
-                                                {
-                            thisFqdn.dns.cnamerecord.sort().map((record, i) => {
-                                return (
-                                    <div key={i}>
-                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}>{record}</li>
-                                        </ul>
-                                    </div>
-                                )
-                            })
-                        }
-                                                {
-                            thisFqdn.dns.mxrecord.sort().map((record, i) => {
-                                return (
-                                    <div key={i}>
-                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}>{record}</li>
-                                        </ul>
-                                    </div>
-                                )
-                            })
-                        }
-                                                {
-                            thisFqdn.dns.txtrecord.sort().map((record, i) => {
-                                return (
-                                    <div key={i}>
-                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}>{record}</li>
-                                        </ul>
-                                    </div>
-                                )
-                            })
-                        }
-                    </div>
-                </div>
-            </div>
-            <div className="row ml-5 pl-5">
-            <div className="col-6 mt-3">
-                    <h5>ASNs</h5>
-                    <div style={{width: '600px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+            <div className="col-12 mt-3">
+                    <h5>Infrastructure Map</h5>
+                    <div style={{width: '1500px', height: '600px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
                             thisFqdn.asns.sort().map((record, i) => {
                                 return (
                                     <div key={i}>
                                         <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}>{record}</li>
-                                        </ul>
-                                    </div>
-                                )
-                            })
-                        }
-                    </div>
-                </div>
-                <div className="col-6 mt-3">
-                    <h5>Subnets</h5>
-                    <div style={{width: '600px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
-                        {
-                            thisFqdn.subnets.sort().map((record, i) => {
-                                return (
-                                    <div key={i}>
-                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}>{record}</li>
+                                            <li key={i}>{record}
+                                                <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                                    {
+                                                        thisFqdn.subnets.sort().filter(subnet => subnet.includes(record.split(" ")[5])).map((subnet, j) => (
+                                                            <li style={{paddingLeft:"100px"}} key={j}>{subnet}
+                                                                <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                                                    {
+                                                                        thisFqdn.dns.arecord.concat(thisFqdn.dns.aaaarecord).sort().filter(tempRecord => tempRecord.includes(subnet.split(" ")[5])).map((tempRecord, k) => (
+                                                                            <li style={{paddingLeft:"100px"}} key={k}>{tempRecord}
+                                                                                {
+                                                                                    thisFqdn.dns.cnamerecord.sort().filter(cnameRecord => cnameRecord.includes(tempRecord.split(" ")[0])).map((cnameRecord, l) => (
+                                                                                        <div style={{paddingLeft:"100px"}}>
+                                                                                             <a key={l} href={"https://" + cnameRecord.split(" ")[0]} target="_blank" rel="noreferrer">{cnameRecord}</a>
+                                                                                        </div>
+                                                                                    ))
+                                                                                }
+                                                                            </li>
+                                                                        ))
+                                                                    }
+                                                                </ul>
+                                                            </li>
+                                                        ))
+                                                    }
+                                                </ul>
+                                                <br></br>
+                                            </li>
                                         </ul>
                                     </div>
                                 )
@@ -226,8 +157,8 @@ const Dashboard = props => {
                     </div>
                 </div>
             </div>
-            <div className="row ml-5 pl-5">
-            <div className="col-4 mt-3">
+        <div className="row ml-5 pl-5">
+            <div className="col-12 mt-3">
                 <h5>Impactful Nuclei Vulns: {impactfulVulnCount}/{vulnCount}</h5>
                 <div style={{width: '1500px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll', overflowX: 'hidden'}}>
                     {
@@ -245,6 +176,7 @@ const Dashboard = props => {
                 </div>
             </div>
         </div>
+        
     );
 }
 
