@@ -20,8 +20,8 @@ const Fqdn = props => {
     const methodologyTabs = [
         "Dashboard",
         "Recon",
-        "CVE Testing",
         "Enumeration",
+        "CVE Testing",
         "Ops Testing",
         "Input Testing",
         "Bypass Testing",
@@ -71,12 +71,12 @@ const Fqdn = props => {
         }
         {
             activeTab === 2 ?
-            <CveTesting thisFqdn={props.thisFqdn} /> :
+            <Enumeration thisFqdn={props.thisFqdn} /> :
             ""
         }
         {
             activeTab === 3 ?
-            <Enumeration thisFqdn={props.thisFqdn} /> :
+            <CveTesting thisFqdn={props.thisFqdn} /> :
             ""
         }
         {

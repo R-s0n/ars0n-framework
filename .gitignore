@@ -1,5 +1,6 @@
 server/node_modules
 client/node_modules
+client/public/screenshots/*
 toolkit/h1.json
 toolkit/temp/*
 toolkit/config/amass_*
