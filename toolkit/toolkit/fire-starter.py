@@ -470,7 +470,7 @@ def consolidate(args):
                 consolidatedNew.append(subdomain)
             if args.fqdn in subdomain and "?" not in subdomain and "http" not in subdomain:
                 consolidated.append(subdomain)
-    thisFqdn['recon']['subdomains']['consolidated'] = consolidated
+    thisFqdn['recon']['subdomains']['consolidated'] = set(consolidated)
     thisFqdn['recon']['subdomains']['consolidatedNew'] = consolidatedNew
     temp = []
     for subdomain in thisFqdn['recon']['subdomains']['consolidated']:
@@ -711,7 +711,7 @@ def arg_parse():
     parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=True)
     parser.add_argument('-P','--port', help='Port of MongoDB API', required=True)
     parser.add_argument('-d','--fqdn', help='Name of the Root/Seed FQDN', required=True)
-    parser.add_argument('-p','--proxy', help='IP Address of Burp Suite Proxy', required=False)
+    parser.add_argument('-p','--proxy', help='IP Address of Burp Suite Proxy', required=False, default="127.0.0.1")
     parser.add_argument('-t','--timeout', help='Adds a timeout check after each module (in minutes)', required=False)
     parser.add_argument('--deep', help='Crawl all live servers for subdomains', required=False, action='store_true')
     parser.add_argument('-u', '--update', help='Update AWS IP Certificate Data ( Can Take 48+ Hours! )', required=False, action='store_true')

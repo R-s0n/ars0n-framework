@@ -69,7 +69,7 @@ const Dashboard = props => {
                 </div>
             </div>
             <div className="row ml-5 pl-5">
-                <div className="col-4">
+                <div className="col-2">
                     <h4>Subdomain Count</h4>
                     <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
                         <li>amass: {thisFqdn.recon.subdomains.amass.length}</li>
@@ -88,10 +88,10 @@ const Dashboard = props => {
                     </ul>
                 </div>
                 <div className="col-4">
-                    <h5>New Unique Subdomains ({thisFqdn.recon.subdomains.consolidatedNew.length}/{thisFqdn.recon.subdomains.consolidated.length})</h5>
-                    <div style={{width: '300px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                    <h5>Subdomains (New: {thisFqdn.recon.subdomains.consolidatedNew.length}/{thisFqdn.recon.subdomains.consolidated.length})</h5>
+                    <div style={{width: '550px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
-                            thisFqdn.recon.subdomains.consolidatedNew.sort().map((subdomain, i) => {
+                            thisFqdn.recon.subdomains.consolidated.sort().map((subdomain, i) => {
                                 return (
                                     <a style={{display: "block"}} href={"https://" + subdomain} key={i} target="_blank" rel="noreferrer">{subdomain}</a>
                                 )
@@ -99,11 +99,11 @@ const Dashboard = props => {
                         }
                     </div>
                 </div>
-                <div className="col-4">
-                    <h5>New Live Domains {thisFqdn.recon.subdomains.httprobeAdded.length}/{thisFqdn.recon.subdomains.httprobe.length}</h5>
-                    <div style={{width: '300px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                <div className="col-4 ml-5">
+                    <h5>Live URLs: (New: {thisFqdn.recon.subdomains.httprobeAdded.length}/{thisFqdn.recon.subdomains.httprobe.length})</h5>
+                    <div style={{width: '550px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
-                            thisFqdn.recon.subdomains.httprobeAdded.sort().map((server, i) => {
+                            thisFqdn.recon.subdomains.httprobe.sort().map((server, i) => {
                                 return (
                                     <div key={i}>
                                     <a href={server} className="m-0 mt-2" target="_blank" rel="noreferrer">{server}</a><br/>
@@ -227,6 +227,40 @@ const Dashboard = props => {
                         })
                     }
                 </div>
+                </div>
+            </div>
+            <div className="row ml-5 pl-5">
+            <div className="col-6 mt-3">
+                    <h5>ASNs</h5>
+                    <div style={{width: '600px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                        {
+                            thisFqdn.asns.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li key={i}>{record}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                </div>
+                <div className="col-6 mt-3">
+                    <h5>Subnets</h5>
+                    <div style={{width: '600px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                        {
+                            thisFqdn.subnets.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li key={i}>{record}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
                 </div>
             </div>
         </div>
