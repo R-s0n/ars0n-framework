@@ -3,9 +3,17 @@ import axios from 'axios';
 import '../Component.css';
 
 const Enumeration = props => {
+    const [loaded, setLoaded] = useState(false)
     const [urls, setUrls] = useState(props.thisFqdn.recon.subdomains.httprobe)
     const [selectedUrl, setSelectedUrl] = useState(props.thisFqdn.recon.subdomains.httprobe[0])
-    const [selectedScreenshot, setSelectedScreenshot] = useState("")
+    const [aRecords, setARecords] = useState([])
+    const [cnameRecords, setCnameRecords] = useState([])
+
+    useEffect(()=>{
+        setARecords(props.thisFqdn.dns.arecord)
+        setCnameRecords(props.thisFqdn.dns.cnamerecord)
+        setLoaded(true)
+    }, [props.index]);
 
     const changeUrl = (e, i) => {
         setSelectedUrl(urls[i])
@@ -34,6 +42,18 @@ const Enumeration = props => {
         </div>
         <div className="bg-secondary workTableStyle col-8">
             <h2><a href={selectedUrl}>{selectedUrl}</a></h2>
+            <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+            {
+                aRecords.sort().filter(record => record.split(" ")[0] === selectedUrl.split("//")[1].split(":")[0]).map((record, i) => { return (
+                    <li key={i}>{record}</li>
+                    )})
+            }
+            {
+                cnameRecords.sort().filter(record => record.split(" ")[0] === selectedUrl.split("//")[1].split(":")[0]).map((record, i) => { return (
+                    <li key={i}>{record}</li>
+                    )})
+            }
+            </ul>
             <img src={"/screenshots/" + selectedUrl.replace("//","__") + ".png"} style={{width: '50%', height: '50%'}}/>
         </div>
         </div>
