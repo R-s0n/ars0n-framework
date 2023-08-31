@@ -462,6 +462,9 @@ def clean_screenshots():
 def clean_stacktrace_dumps():
     subprocess.run("mv -f nuclei-*.dump ./logs/", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
+def move_screenshots():
+    subprocess.run("""for file in ./screenshots/*; do cp -f "$file" "../client/public/screenshots/$(basename "$file")"; done""", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+
 def arg_parse():
     parser = argparse.ArgumentParser()
     parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=True)
@@ -501,8 +504,9 @@ def main(args):
         # network_nuclei_scan(args, now)
         # cnvd_nuclei_scan(args, now)
         # miscellaneous_nuclei_scan(args, now)
+    move_screenshots()   
     starter_timer.stop_timer()
-    protonvpn_killswitch_off()
+    # protonvpn_killswitch_off()
     print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
 if __name__ == "__main__":

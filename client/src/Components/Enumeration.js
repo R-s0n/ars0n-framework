@@ -33,7 +33,7 @@ const Enumeration = props => {
             </ul>
         </div>
         <div className="bg-secondary workTableStyle col-8">
-            <h2>{selectedUrl}</h2>
+            <h2><a href={selectedUrl}>{selectedUrl}</a></h2>
             <img src={"/screenshots/" + selectedUrl.replace("//","__") + ".png"} style={{width: '50%', height: '50%'}}/>
         </div>
         </div>
