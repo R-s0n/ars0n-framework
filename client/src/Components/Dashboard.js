@@ -93,6 +93,8 @@ const Dashboard = props => {
                         {
                             thisFqdn.recon.subdomains.consolidated.sort().map((subdomain, i) => {
                                 return (
+                                    thisFqdn.recon.subdomains.consolidatedNew.includes(subdomain) ?
+                                    <a style={{display: "block", color: "red"}} href={"https://" + subdomain} key={i} target="_blank" rel="noreferrer">{subdomain}</a> :
                                     <a style={{display: "block"}} href={"https://" + subdomain} key={i} target="_blank" rel="noreferrer">{subdomain}</a>
                                 )
                             })
@@ -105,9 +107,9 @@ const Dashboard = props => {
                         {
                             thisFqdn.recon.subdomains.httprobe.sort().map((server, i) => {
                                 return (
-                                    <div key={i}>
-                                    <a href={server} className="m-0 mt-2" target="_blank" rel="noreferrer">{server}</a><br/>
-                                    </div>
+                                        thisFqdn.recon.subdomains.httprobeAdded.includes(server) ?
+                                        <a style={{display: "block", color: "red"}} key={i} href={server} target="_blank" rel="noreferrer">{server}</a> :
+                                        <a style={{display: "block"}} key={i} href={server} target="_blank" rel="noreferrer">{server}</a>
                                 )
                             })
                         }
