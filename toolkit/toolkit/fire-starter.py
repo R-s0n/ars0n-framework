@@ -1,55 +1,3 @@
-# ### Hakrawler
-# 
-# try:
-#     hakrawler = subprocess.run([f"ls {home_dir}/go/bin/hakrawler"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
-#     if hakrawler.returncode == 0:
-#         print("[+] Hakrawler is already installed")
-#     else :
-#         print("[!] Hakrawler is NOT already installed -- Installing now...")
-#         cloning = subprocess.run(["go install github.com/hakluke/hakrawler@latest"], stdout=subprocess.DEVNULL, shell=True)
-#         print("[+] Hakrawler successfully installed!")
-#     print(f"[-] Running Hakrawler against {fqdn}...")
-#     # Add after debug: stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, 
-#     subprocess.run([f'cd {home_dir}/go/bin; cat ./temp/amass.tmp | ./hakrawler -subs -d 3 -v > ./temp/hakrawler.tmp'], shell=True)
-#     f = open(f"./temp/hakrawler.tmp", "r")
-#     hakrawler_arr = f.read().rstrip().split("\n")
-#     hakrawler_link_arr = []
-#     for line in hakrawler_arr:
-#         new_arr = line.split(" ")
-#         if len(new_arr) > 1:
-#             temp_arr = new_arr[1].split("/")
-#             if len(temp_arr) > 2:
-#                 if temp_arr[2] not in hakrawler_link_arr:
-#                     hakrawler_link_arr.append(temp_arr[2])
-#     f.close()
-#     subprocess.run(["rm -rf ./temp/hakrawler"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
-#     print("[+] Hakwraler completed successfully!")
-#     thisFqdn['recon']['subdomains']['hakrawler'] = hakrawler_link_arr
-# except Exception as e:
-#     print(f'[!] Exception: {e}')
-#     print("[!] Hakrawler module did NOT complete successfully -- skipping...")
-
-
-# eyewitness_check = httprobe_check = subprocess.run([f"ls {home_dir}/Tools/EyeWitness"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-# if httprobe_check.returncode == 0:
-#     print("[+] EyeWitness is already installed")
-# else :
-#     print("[!] EyeWitness is NOT already installed -- Installing now...")
-#     cloning = subprocess.run([f"cd {home_dir}/Tools; git clone https://github.com/FortyNorthSecurity/EyeWitness.git;  cd EyeWitness/Python/setup/;  sudo ./setup.sh"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-#     print("[+] EyeWitness successfully installed!")
-# httprobe_string = ""
-# for subdomain in httprobe:
-#     httprobe_string += f"{subdomain}\n"
-# f = open("./temp/httprobe_results.tmp", "w")
-# f.write(httprobe_string)
-# f.close()
-# now = datetime.now().strftime("%d-%m-%y_%I%p")
-# print(f"[-] Running EyeWitness report against {fqdn} httprobe results...")
-# subprocess.run([f"rm -rf {home_dir}/Reports/EyeWitness_kindling_{fqdn}_*"], shell=True)
-# subprocess.run([f"cd {home_dir}/Tools/EyeWitness/Python; ./EyeWitness.py -f ./temp/httprobe_results.tmp -d {home_dir}/Reports/EyeWitness_kindling_{fqdn}_{now} --no-prompt --jitter 5 --timeout 10"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-# print(f"[+] EyeWitness report complete!")
-
-
 import requests
 import subprocess
 import argparse
@@ -299,21 +247,6 @@ def crt(args, home_dir, thisFqdn):
     except Exception as e:
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def shosubgo(args, home_dir, thisFqdn):
-    try:
-        f = open(f"{home_dir}/.keys/.keystore", "r")
-        tempArr = f.read().split("\n")
-        for line in tempArr:
-            temp = line.split(":")
-            if temp[0] == "shodan":
-                key = temp[1]
-        shosubgo_results = subprocess.run([f"{home_dir}/Tools/shosubgo -d {args.fqdn} -s {key}"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
-        shosubgo_arr = shosubgo_results.stdout.rstrip().split("\n")
-        thisFqdn['recon']['subdomains']['shosubgo'] = shosubgo_arr
-        update_fqdn_obj(args, thisFqdn)
-    except Exception as e:
-        print(f"[!] Something went wrong!  Exception: {str(e)}")
-
 def subfinder(args, home_dir, thisFqdn):
     try:
         subprocess.run([f'{home_dir}/go/bin/subfinder -d {args.fqdn} -o ./temp/subfinder.tmp'], shell=True)
@@ -333,29 +266,8 @@ def subfinder_recursive(args, home_dir, thisFqdn):
         subfinder_arr = f.read().rstrip().split("\n")
         f.close()
         subprocess.run(["rm -rf ./temp/subfinder.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
-        thisFqdn['recon']['subdomains']['subfinder'] = subfinder_arr
-        update_fqdn_obj(args, thisFqdn)
-    except Exception as e:
-        print(f"[!] Something went wrong!  Exception: {str(e)}")
-
-def github_subdomains(args, home_dir, thisFqdn):
-    try:
-        f = open(f"{home_dir}/.keys/.keystore", "r")
-        tempArr = f.read().split("\n")
-        for line in tempArr:
-            temp = line.split(":")
-            if temp[0] == "github":
-                key = temp[1]
-        github_search_iteration_arr = []
-        for x in range(5):
-            i = x + 1
-            github_search_results = subprocess.run([f"python3 {home_dir}/Tools/github-search/github-subdomains.py -d {args.fqdn} -t {key}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
-            github_search_arr = github_search_results.stdout.rstrip().split("\n")
-            for link in github_search_arr:
-                if link not in github_search_iteration_arr:
-                    github_search_iteration_arr.append(link)
-            print(f"[-] Iteration {i} complete -- {len(github_search_arr)} subdomains found this round!")
-        thisFqdn['recon']['subdomains']['githubSearch'] = github_search_iteration_arr
+        combined_subfinder_results = list(set(subfinder_arr + thisFqdn['recon']['subdomains']['subfinder']))
+        thisFqdn['recon']['subdomains']['subfinder'] = combined_subfinder_results
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
         print(f"[!] Something went wrong!  Exception: {str(e)}")
@@ -390,7 +302,7 @@ def gospider_deep(home_dir, thisFqdn):
         f = open('wordlists/crawl_list.tmp', 'r')
         domain_arr = f.read().rstrip().split("\n")
         for domain in domain_arr:
-            subprocess.run([f'{home_dir}/go/bin/gospider -s "{domain}" -o ./temp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
+            subprocess.run([f'{home_dir}/go/bin/gospider -S ./wordlists/live_servers.txt -o ./temp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
             fqdn = domain.split("/")[2]
             outputFile = fqdn.replace(".", "_")
             f = open(f"./temp/gospider/{outputFile}", "r")
@@ -412,7 +324,15 @@ def gospider_deep(home_dir, thisFqdn):
 
 def subdomainizer(home_dir, thisFqdn):
     try:
-        subprocess.run([f"python3 {home_dir}/Tools/SubDomainizer/SubDomainizer.py -l wordlists/crawl_list.tmp -o ./temp/subdomainizer.tmp -sop ./temp/secrets.tmp"], shell=True)
+        file_path = './wordlists/live_servers.txt'
+        max_lines = 250
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+        line_count = len(lines)
+        if line_count > max_lines:
+            with open(file_path, 'w') as file:
+                file.writelines(lines[:max_lines])
+        subprocess.run([f"timeout 1h python3 {home_dir}/Tools/SubDomainizer/SubDomainizer.py -l ./wordlists/live_servers.txt -o ./temp/subdomainizer.tmp -sop ./temp/secrets.tmp; cp ./temp/secrets.tmp /tmp"], shell=True)
         f = open("./temp/subdomainizer.tmp", "r")
         subdomainizer_arr = f.read().rstrip().split("\n")
         f.close()
@@ -427,7 +347,7 @@ def shuffle_dns(args, home_dir, thisFqdn):
         subprocess.run([f'{home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp'], shell=True)
         f = open(f"./temp/shuffledns.tmp", "r")
         shuffledns_arr = f.read().rstrip().split("\n")
-        for subdomain in shuffledns_arr:
+        for subdomain in shuffledns_arr and subdomain != "":
             if args.fqdn not in subdomain:
                 i = shuffledns_arr.index(subdomain)
                 del shuffledns_arr[i]
@@ -449,7 +369,8 @@ def shuffle_dns_custom(args, home_dir, thisFqdn):
         shuffledns_custom_arr = f.read().rstrip().split("\n")
         f.close()
         subprocess.run(["rm -rf ./temp/shuffledns_custom.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
-        thisFqdn['recon']['subdomains']['shufflednsCustom'] = shuffledns_custom_arr
+        clean_shuffledns_custom_arr = [item for item in shuffledns_custom_arr if item != ""]
+        thisFqdn['recon']['subdomains']['shufflednsCustom'] = clean_shuffledns_custom_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
         print(f"[!] ShuffleDNS w/ Custom Wordlist Failed!\n[!] Exception: {str(e)}")
@@ -521,24 +442,10 @@ def remove_duplicates(string_list):
 
 def build_crawl_list(thisFqdn):
     live_servers = thisFqdn['recon']['subdomains']['httprobe']
-    f = open('wordlists/live_servers.tmp', 'w')
+    f = open('./wordlists/live_servers.txt', 'w')
     for domain in live_servers:
         f.write(f"{domain}\n")
     f.close()
-    subprocess.run([f"ffuf -u 'FUZZ' -fc 403 -w wordlists/live_servers.tmp -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36' -o ./temp/build_crawl_list.tmp"], shell=True)
-    with open('./temp/build_crawl_list.tmp', 'r') as json_file:
-        data = json.load(json_file)
-    f = open("wordlists/crawl_list.tmp", 'w')
-    for result in data['results']:
-        subdomain = result['input']['FUZZ']
-        print(subdomain)
-        try:
-            subdomain = subdomain.split("/")[2]
-            f.write(f"{subdomain}\n")
-        except:
-            continue
-    f.close()
-
 
 # Clear Sky
 
@@ -706,6 +613,14 @@ def wrap_up(args):
     populate_burp(args, get_fqdn_obj(args))
     cleanup()
 
+def collect_screenshots(home_dir, thisFqdn):
+    with open('./temp/urls.txt', 'w') as file:
+        for url in thisFqdn['recon']['subdomains']['httprobe']:
+            file.write(url + '\n')
+    subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless/screenshot.yaml -l ./temp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -sb -hbs 10 -headc 1 -fhr -hm"], shell=True)
+    subprocess.run("""for file in ./screenshots/*; do cp -f "$file" "../client/public/screenshots/$(basename "$file")"; done""", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+
+
 def arg_parse():
     parser = argparse.ArgumentParser()
     parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=True)
@@ -750,9 +665,9 @@ def protonvpn_killswitch():
 def main(args):
     starter_timer = Timer()
     network_validator = NetworkValidator()
-    # cleanup()
+    cleanup()
     print("[-] Running Subdomain Scraping Modules...")
-
+    # Amass
     try:
         print(f"[-] Running Amass against {args.fqdn}")
         amass(args, get_fqdn_obj(args))
@@ -760,6 +675,7 @@ def main(args):
     except Exception as e:
         print(f"[!] Exception: {e}")
 
+    # Subdomain Scraping
     try:
         print(f"[-] Running Sublist3r against {args.fqdn}")
         sublist3r(args, get_home_dir(), get_fqdn_obj(args))
@@ -789,13 +705,6 @@ def main(args):
         print(f"[!] Exception: {e}")
 
     try:
-        print(f"[-] Running Shosubgo against {args.fqdn}")
-        shosubgo(args, get_home_dir(), get_fqdn_obj(args))
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
         print(f"[-] Running Subfinder against {args.fqdn}")
         subfinder(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
@@ -809,13 +718,7 @@ def main(args):
     except Exception as e:
         print(f"[!] Exception: {e}")
 
-    try:
-        print(f"[-] Running Github-Subdomains against {args.fqdn}")
-        github_subdomains(args, get_home_dir(), get_fqdn_obj(args))
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
+    # Subdomain Brute Force
     try:
         print(f"[-] Running ShuffleDNS w/ a Default Wordlist against {args.fqdn}")
         shuffle_dns(args, get_home_dir(), get_fqdn_obj(args))
@@ -835,6 +738,7 @@ def main(args):
     wrap_up(args)
     build_crawl_list(get_fqdn_obj(args))
 
+    # Subdomain Link/JS Discovery
     if args.deep:
         print(f"[-] Running DEEP Crawl Scan on {args.fqdn}...")
         try:
@@ -850,9 +754,9 @@ def main(args):
         except Exception as e:
             print(f"[!] Exception: {e}")
 
-
     try:
         print(f"[-] Running Subdomainizer against {args.fqdn}")
+        print(f"[-] Current Time: {datetime.now()}")
         subdomainizer(get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -867,8 +771,9 @@ def main(args):
     else:
         print(f"[-] Running Clear-Sky against {args.fqdn}")
         search_data(args, get_fqdn_obj(args))
-    
+
     wrap_up(args)
+    collect_screenshots(get_home_dir(), get_fqdn_obj(args))
     starter_timer.stop_timer()
     print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 

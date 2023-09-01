@@ -11,3 +11,4 @@ toolkit/wordlists/*.tmp
 toolkit/wordlists/cewl_*
 toolkit/http*
 toolkit/logs/*
+toolkit/wordlists/live_servers.txt

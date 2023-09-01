@@ -57,7 +57,7 @@ const Dashboard = props => {
         <div className="bg-secondary dashboard">
             <div className="row pl-5">
                 <div className="col-4 mb-4">
-                    <h4>FQDN: {thisFqdn.fqdn}</h4>
+                    <h4>FQDN: <a href={"https://" + thisFqdn.fqdn}>{thisFqdn.fqdn}</a></h4>
                 </div>
                 <div className="col-4 mb-4">
                     {
@@ -69,27 +69,28 @@ const Dashboard = props => {
                 </div>
             </div>
             <div className="row ml-5 pl-5">
-                <div className="col-2">
+                <div className="col-3">
                     <h4>Subdomain Count</h4>
                     <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                        <li>amass: {thisFqdn.recon.subdomains.amass.length}</li>
-                        <li>assetfinder: {thisFqdn.recon.subdomains.assetfinder.length}</li>
-                        <li>ctl: {thisFqdn.recon.subdomains.ctl.length}</li>
-                        <li>cloud-ranges: {thisFqdn.recon.subdomains.cloudRanges.length}</li>
-                        <li>gau: {thisFqdn.recon.subdomains.gau.length}</li>
-                        <li>github-search: {thisFqdn.recon.subdomains.githubSearch.length}</li>
-                        <li>gospider: {thisFqdn.recon.subdomains.gospider.length}</li>
-                        <li>hakrawler: {thisFqdn.recon.subdomains.hakrawler.length}</li>
-                        <li>shosubgo: {thisFqdn.recon.subdomains.shosubgo.length}</li>
-                        <li>shuffledns: {thisFqdn.recon.subdomains.shuffledns.length}</li>
-                        <li>subdomainizer: {thisFqdn.recon.subdomains.subdomainizer.length}</li>
-                        <li>subfinder: {thisFqdn.recon.subdomains.subfinder.length}</li>
-                        <li>sublist3r: {thisFqdn.recon.subdomains.sublist3r.length}</li>
+                        <li style={{paddingTop:"10px", paddingBottom:"10px", fontSize:"20px", fontWeight:"bold"}}>Amass: {thisFqdn.recon.subdomains.amass.length}</li>
+                        <h5 style={{paddingTop:"10px", fontWeight:"600"}}>Web Scraping</h5>
+                        <li>Sublist3r: {thisFqdn.recon.subdomains.sublist3r.length}</li>
+                        <li>Assetfinder: {thisFqdn.recon.subdomains.assetfinder.length}</li>
+                        <li>GetAllUrls (GAU): {thisFqdn.recon.subdomains.gau.length}</li>
+                        <li>Certificate Transparency Logs (CTL): {thisFqdn.recon.subdomains.ctl.length}</li>
+                        <li>Subfinder: {thisFqdn.recon.subdomains.subfinder.length}</li>
+                        <h5 style={{paddingTop:"10px", fontWeight:"600"}}>Brute Force</h5>
+                        <li>ShuffleDNS Standard: {thisFqdn.recon.subdomains.shuffledns.length}</li>
+                        <li>ShuffleDNS CeWL: {thisFqdn.recon.subdomains.shufflednsCustom.length}</li>
+                        <h5 style={{paddingTop:"10px", fontWeight:"600"}}>Link & JavaScript Discovery</h5>
+                        <li>GoSpider: {thisFqdn.recon.subdomains.gospider.length}</li>
+                        <li>Subdomainizer: {thisFqdn.recon.subdomains.subdomainizer.length}</li>
+                        <h5 style={{paddingTop:"10px", fontWeight:"600"}}>Favicon & Marketing</h5>
                     </ul>
                 </div>
                 <div className="col-4">
                     <h5>Subdomains (New: {thisFqdn.recon.subdomains.consolidatedNew.length}/{thisFqdn.recon.subdomains.consolidated.length})</h5>
-                    <div style={{width: '550px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                    <div style={{width: '400px', height: '500px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
                             thisFqdn.recon.subdomains.consolidated.sort().map((subdomain, i) => {
                                 return (
@@ -103,7 +104,7 @@ const Dashboard = props => {
                 </div>
                 <div className="col-4 ml-5">
                     <h5>Live URLs: (New: {thisFqdn.recon.subdomains.httprobeAdded.length}/{thisFqdn.recon.subdomains.httprobe.length})</h5>
-                    <div style={{width: '550px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                    <div style={{width: '400px', height: '500px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
                             thisFqdn.recon.subdomains.httprobe.sort().map((server, i) => {
                                 return (
