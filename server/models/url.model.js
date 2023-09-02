@@ -5,29 +5,13 @@ const UrlSchema = new mongoose.Schema({
     fqdn: {type: String},
     endpoints: [{
         endpoint: String,
+        httpVerb: {
+            type: String,
+            enum: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
+            default: "GET"
+        },
         statusCode: Number,
         responseLength: Number,
-        arjun: {
-            method: String,
-            params: [{
-                type: String
-            }]
-        },
-        arjunPost: {
-            method: String,
-            params: [{
-                type: String
-            }]
-        },
-        arjunJson: {
-            method: String,
-            params: [{
-                type: String
-            }]
-        }
-    }],
-    completedWordlists: [{
-        type: String
     }],
 }, {timestamps: true});
 

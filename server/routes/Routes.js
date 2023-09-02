@@ -25,4 +25,6 @@ module.exports = function(app){
     app.post('/api/url/auto/delete', Controller.autoDeleteUrl);
 
     app.post('/api/populate-burp', Controller.populateBurp);
+    app.post('/api/scan/default', Controller.runBurpScanDefault);
+    app.post('/api/scan/deep', Controller.runBurpScanDeep);
 }

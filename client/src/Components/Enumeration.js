@@ -6,6 +6,7 @@ const Enumeration = props => {
     const [loaded, setLoaded] = useState(false)
     const [urls, setUrls] = useState(props.thisFqdn.recon.subdomains.httprobe)
     const [selectedUrl, setSelectedUrl] = useState(props.thisFqdn.recon.subdomains.httprobe[0])
+    const [targetUrl, setTargetUrl] = useState(props.thisFqdn.recon.subdomains.httprobe[0])
     const [aRecords, setARecords] = useState([])
     const [cnameRecords, setCnameRecords] = useState([])
 
@@ -23,13 +24,41 @@ const Enumeration = props => {
           .catch(err=>console.log(err))
       }
 
+    const runDefaultScan = () => {
+    const data = {
+        targetUrl: targetUrl
+    }
+    axios.post('http://localhost:8000/api/scan/default', data)
+        .then(res=>{
+        console.log(res);
+        })
+        .catch(err=>console.log(err))
+    }
+
+    const runDeepScan = () => {
+        const data = {
+            targetUrl: targetUrl
+        }
+        axios.post('http://localhost:8000/api/scan/deep', data)
+            .then(res=>{
+            console.log(res);
+            })
+            .catch(err=>console.log(err))
+        }
+
+    const handleTargetUrl = () => {
+        setTargetUrl(selectedUrl)
+    }
+
     return (
         <div>
         <nav style={{borderBottom: '2px groove #284B63'}} className="pl-2 pt-0 navbar navbar-expand-lg bg-primary">
             <div className="container-fluid">
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
                     <button onClick={populateBurp} style={{width: '135px'}} className="border border-info nav-link btn btn-primary text-secondary">Populate Burp</button>
-                    <h5 className="text-secondary ml-4 pt-0 mb-0">Target URL : &nbsp;&nbsp;<a className="text-secondary" target="_blank" rel="noreferrer" href="">Coming Soon...</a></h5>
+                    <h5 className="text-secondary ml-4 pt-0 mb-0">Target URL : &nbsp;&nbsp;<a className="text-secondary" target="_blank" rel="noreferrer" href="">{targetUrl}</a></h5>
+                    <button onClick={runDefaultScan} style={{width: '135px'}} className="border border-info nav-link btn btn-primary text-secondary ml-5">Default Scan</button>
+                    <button onClick={runDeepScan} style={{width: '135px'}} className="border border-info nav-link btn btn-primary text-secondary ml-2">Deep Scan</button>
                 </div>
             </div>
         </nav>
@@ -38,7 +67,6 @@ const Enumeration = props => {
         <div className="bg-secondary checklistStyle ml-4 col-3" style={{width: '1500px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
             <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
             {
-                
                 urls.map((url, i) => { return (
                     <li key={i} onClick={(e)=>setSelectedUrl(urls[i])}>{url}</li>
                 )})
@@ -46,6 +74,7 @@ const Enumeration = props => {
             </ul>
         </div>
         <div className="bg-secondary workTableStyle col-8">
+            <button  onClick={handleTargetUrl} className="border border-info nav-link btn btn-primary text-secondary mt-3 mb-3">Set as Target URL</button>
             <h2><a href={selectedUrl}>{selectedUrl}</a></h2>
             <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
             {
@@ -59,7 +88,7 @@ const Enumeration = props => {
                     )})
             }
             </ul>
-            <img src={"/screenshots/" + selectedUrl.replace("//","__") + ".png"} style={{width: '50%', height: '50%'}}/>
+            <img className="mt-3" src={"/screenshots/" + selectedUrl.replace("//","__") + ".png"} style={{width: '50%', height: '50%'}}/>
         </div>
         </div>
         </div>

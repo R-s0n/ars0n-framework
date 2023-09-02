@@ -190,3 +190,36 @@ module.exports.populateBurp = (req, res) => {
       console.error('Error:', err);
     });
 }
+
+module.exports.runBurpScanDefault = (req, res) => {
+    console.log(req.body.targetUrl)
+    const burpScan = {
+            urls: [req.body.targetUrl]
+    }
+    axios.post("http://127.0.0.1:1337/v0.1/scan", burpScan)
+        .then((response) => {
+            console.log('Response:', response.data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+}
+
+module.exports.runBurpScanDeep = (req, res) => {
+    console.log(req.body.targetUrl)
+    const burpScan = {
+            urls: [req.body.targetUrl],
+            scan_configurations: [{
+                type: "NamedConfiguration",
+                name: "Crawl and Audit - Deep"
+    }]
+    }
+    console.log(burpScan)
+    axios.post("http://127.0.0.1:1337/v0.1/scan", burpScan)
+        .then((response) => {
+            console.log('Response:', response.data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+}
