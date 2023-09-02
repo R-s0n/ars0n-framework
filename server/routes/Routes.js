@@ -23,4 +23,6 @@ module.exports = function(app){
     app.post('/api/url/auto', Controller.autoGetUrl);
     app.post('/api/url/auto/update', Controller.autoUpdateUrl);
     app.post('/api/url/auto/delete', Controller.autoDeleteUrl);
+
+    app.post('/api/populate-burp', Controller.populateBurp);
 }

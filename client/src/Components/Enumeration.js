@@ -15,15 +15,20 @@ const Enumeration = props => {
         setLoaded(true)
     }, [props.index]);
 
-    const changeUrl = (e, i) => {
-        setSelectedUrl(urls[i])
-    }
+    const populateBurp = () => {
+        axios.post('http://localhost:8000/api/populate-burp', urls)
+          .then(res=>{
+            console.log(res);
+          })
+          .catch(err=>console.log(err))
+      }
 
     return (
         <div>
         <nav style={{borderBottom: '2px groove #284B63'}} className="pl-2 pt-0 navbar navbar-expand-lg bg-primary">
             <div className="container-fluid">
                 <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                    <button onClick={populateBurp} style={{width: '135px'}} className="border border-info nav-link btn btn-primary text-secondary">Populate Burp</button>
                     <h5 className="text-secondary ml-4 pt-0 mb-0">Target URL : &nbsp;&nbsp;<a className="text-secondary" target="_blank" rel="noreferrer" href="">Coming Soon...</a></h5>
                 </div>
             </div>

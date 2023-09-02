@@ -1,6 +1,9 @@
 const { Fqdn } = require("../models/fqdn.model");
 const { Url } = require("../models/url.model");
-const { Cve } = require("../models/cve.model")
+const { Cve } = require("../models/cve.model");
+const { exec } = require("child_process");
+const axios = require('axios');
+const https = require('https');
 
 module.exports.ping = (req, res) => {
     res.json({ message: "pong" });
@@ -148,4 +151,42 @@ module.exports.autoDeleteUrl = (req, res) => {
     Url.deleteOne({ url: req.body.url })
         .then(result=>res.json({success:true}))
         .catch(err=>res.status(400).json(err))
+}
+
+// Scanning Controllers
+
+const proxyConfig = {
+    protocol: 'http',
+    host: '127.0.0.1',
+    port: 8080,
+  };
+
+const httpsAgent = new https.Agent({  
+    rejectUnauthorized: false
+  });
+
+async function fetchUrlsThroughProxy(urlList) {
+    for (const url of urlList) {
+      try {
+        const response = await axios.get(url, {
+          proxy: proxyConfig,
+          httpsAgent: httpsAgent
+        });
+      } catch (error) {
+        console.error(`Error while fetching ${url}:`);
+        console.error(error.message);
+      }
+    }
+  }
+    
+module.exports.populateBurp = (req, res) => {
+    
+    fetchUrlsThroughProxy(req.body)
+    .then((responses) => {
+      console.log('All requests completed:');
+      console.log(responses);
+    })
+    .catch((err) => {
+      console.error('Error:', err);
+    });
 }
