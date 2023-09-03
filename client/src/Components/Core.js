@@ -15,7 +15,7 @@ const Core = props => {
         <div className="container-fluid">
             <div className="row">
         <div className="bg-secondary checklistStyle pt-2 ml-4 col-3">
-            <h4 className="ml-3">Core Application Testing</h4>
+            <h4 className="ml-3 pt-2">Core Application Testing</h4>
             <ul>
                 <li style={{fontWeight: "bold"}}>Global Application Config Testing</li>
                 <ul>
