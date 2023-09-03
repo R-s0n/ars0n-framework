@@ -7,6 +7,7 @@ const HopHeaders = props => {
         <div className="container mt-2">
             <div className="row">
                 <div className="col-12">
+                    <h3 className="pb-3 pt-3">Abusing Hop-by-Hop Headers</h3>
                     <p><b>Summary:</b> Adding known Hop-by-Hop Headers to the "Connection:" header values can force misconfigured reverse-proxy servers and/or load balancers to remove these Hop-by-Hop Headers, producing unpredicitable responses.</p>
                     <p><b>Goal(s):</b></p>
                     <ol>

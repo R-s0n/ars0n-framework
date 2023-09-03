@@ -4,9 +4,10 @@ import Modal from 'react-modal';
 const HostHeader = props => {
 
     return (
-        <div className="container mt-2" style={{overflowX: 'scroll', overflowY: 'scroll', height: '95%', padding: '10px'}}>
+        <div className="container mt-2">
             <div className="row">
                 <div className="col-12">
+                    <h3 className="pb-3 pt-3">Host Header Injection</h3>
                     <p><b>Summary:</b> The HTTP Host Header is used by web servers, reverse proxies, and load balancers to route HTTP requests sent to an IP address to a specific application identified by an FQDN.  Misconfigurations in how the HTTP Host Header is handled can be exploited in a variety of ways.</p>
                     <p><b>Goal(s):</b></p>
                     <ol>

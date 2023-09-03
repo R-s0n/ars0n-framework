@@ -16,15 +16,36 @@ const Creative = props => {
             <div className="row">
         <div className="bg-secondary checklistStyle pt-2 ml-4 col-3">
             <ul>
-                <li>Internal</li>
+                <li style={{fontWeight: "bold"}}>External Identify Access Management (IAM) Testing</li>
                 <ul>
-                    <li onClick={(e)=>setCurrentStep(0)}>Indirect Object Reference (IDOR)</li>
-                    <li onClick={(e)=>setCurrentStep(1)}>HTTP Parameter Pollution</li>
+                    <li onClick={(e)=>setCurrentStep(0)}>OAuth Misconfiguration</li>
+                    <li onClick={(e)=>setCurrentStep(1)}>SAML Misconfiguration</li>
+                    <li onClick={(e)=>setCurrentStep(1)}>Google Firebase IAM Misconfiguration</li>
+                    <li onClick={(e)=>setCurrentStep(1)}>Keycloak IAM Misconfiguration</li>
                 </ul>
-                <li>External</li>
+                <li style={{fontWeight: "bold"}}>Application Logic Testing</li>
                 <ul>
-                    <li onClick={(e)=>setCurrentStep(2)}>Subdomain Takeover</li>
-                    <li onClick={(e)=>setCurrentStep(3)}>GitHub Sensitive Data Leak</li>
+                    <li onClick={(e)=>setCurrentStep(2)}>In-Direct Object Reference (IDOR) - Read/Write</li>
+                    <li onClick={(e)=>setCurrentStep(3)}>In-Direct Object Reference (IDOR) - Read Only</li>
+                    <li onClick={(e)=>setCurrentStep(2)}>Insufficient Access Controls - Read/Write</li>
+                    <li onClick={(e)=>setCurrentStep(3)}>Insufficient Access Controls - Read Only</li>
+                    <li onClick={(e)=>setCurrentStep(2)}>Bypass Access Controls - Read/Write</li>
+                    <li onClick={(e)=>setCurrentStep(3)}>Bypass Access Controls - Read Only</li>
+                    <li onClick={(e)=>setCurrentStep(3)}>2FA/MFA Bypass</li>
+                    <li onClick={(e)=>setCurrentStep(3)}>Captcha Bypass</li>
+                    <li onClick={(e)=>setCurrentStep(3)}>Rate Limiting/Brute-force Bypass</li>
+                    <li onClick={(e)=>setCurrentStep(3)}>Bypass Registration Restrictions</li>
+                    <li onClick={(e)=>setCurrentStep(3)}>Bypass Payment Process Restrictions</li>
+                    <li onClick={(e)=>setCurrentStep(3)}>Bypass Password Reset Restrictions</li>
+                    <li onClick={(e)=>setCurrentStep(3)}>Race Conditions</li>
+                    <li onClick={(e)=>setCurrentStep(3)}>Username Enumeration</li>
+                </ul>
+                <li style={{fontWeight: "bold"}}>Public Repository & OSINT Testing</li>
+                <ul>
+                    <li onClick={(e)=>setCurrentStep(0)}>Internal Source Code on Public GitHub Repo</li>
+                    <li onClick={(e)=>setCurrentStep(1)}>Internal/Priviledged Creds on Public GitHub Repo</li>
+                    <li onClick={(e)=>setCurrentStep(1)}>Internal Source Code Found in Web Scraping</li>
+                    <li onClick={(e)=>setCurrentStep(1)}>Internal/Priviledged Creds Found in Web Scraping</li>
                 </ul>
             </ul>
         </div>

@@ -7,6 +7,7 @@ const H2cSmuggling = props => {
         <div className="container mt-2">
             <div className="row">
                 <div className="col-12">
+                <h3 className="pb-3 pt-3">HTTP to Clear-text Smuggling</h3>
                     <p><b>Summary:</b> When using HTTP/2, many front-end services downgrade the request to HTTP/1.1 before forwarding a request to the back-end servers.  This downgrading process can be exploited to execute HTTP request smuggling attacks.</p>
                     <p><b>Goal(s):</b></p>
                     <ol>

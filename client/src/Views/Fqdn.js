@@ -6,10 +6,11 @@ import Recon from '../Components/Recon';
 import Enumeration from '../Components/Enumeration';
 import Ops from '../Components/Ops';
 import Chaining from '../Components/Chaining';
-import Input from '../Components/Input';
+import Core from '../Components/Core';
 import Bypass from '../Components/Bypass';
 import Feature from '../Components/Feature';
 import Creative from '../Components/Creative';
+import ComingSoon from '../Components/ComingSoon';
 
 
 const Fqdn = props => {
@@ -23,12 +24,12 @@ const Fqdn = props => {
         "Enumeration",
         "CVE Testing",
         "Ops Testing",
-        "Input Testing",
-        "Bypass Testing",
-        "Feature Testing",
+        "Core Testing",
         "Creative Testing",
         "Chaining",
-        "Report"
+        "Report",
+        "Resources",
+        "Logging"
     ]
 
     const deleteFqdn = () => {
@@ -87,27 +88,32 @@ const Fqdn = props => {
         
         {
             activeTab === 5 ?
-            <Input thisFqdn={props.thisFqdn} /> :
+            <Core thisFqdn={props.thisFqdn} /> :
             ""
         }
         {
             activeTab === 6 ?
-            <Bypass thisFqdn={props.thisFqdn} /> :
-            ""
-        }
-        {
-            activeTab === 7 ?
-            <Feature thisFqdn={props.thisFqdn} /> :
-            ""
-        }
-        {
-            activeTab === 8 ?
             <Creative thisFqdn={props.thisFqdn} /> :
             ""
         }
         {
+            activeTab === 7 ?
+            <ComingSoon thisFqdn={props.thisFqdn} /> :
+            ""
+        }
+        {
+            activeTab === 8 ?
+            <ComingSoon thisFqdn={props.thisFqdn} /> :
+            ""
+        }
+        {
             activeTab === 9 ?
-            <Chaining thisFqdn={props.thisFqdn} /> :
+            <ComingSoon thisFqdn={props.thisFqdn} /> :
+            ""
+        }
+        {
+            activeTab === 10 ?
+            <ComingSoon thisFqdn={props.thisFqdn} /> :
             ""
         }
         </>

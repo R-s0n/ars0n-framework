@@ -7,6 +7,7 @@ const CachePoisoning = props => {
         <div className="container mt-2">
             <div className="row">
                 <div className="col-12">
+                <h3 className="pb-3 pt-3">Web Cache Poisoning</h3>
                     <p><b>Summary:</b> Web Cache Poisoning occurs when the attacker forces the web cache to <strong>store malicious content and serve that malicious content to victim clients</strong>.  Web Cache Poisoning is more a means of delivering attacks instead of an attack itself, and can be used to build impact for vulnerabilities like XSS.</p>
                     <p><b>Goal(s):</b> Web Cache Poisoning is accomplished in two phases:</p>
                     <ol>

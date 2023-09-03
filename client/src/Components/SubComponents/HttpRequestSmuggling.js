@@ -4,9 +4,10 @@ import Modal from 'react-modal';
 const HttpRequestSmuggling = props => {
 
     return (
-        <div className="container mt-3 ml-5 mr-0" style={{overflowX: 'scroll', overflowY: 'scroll', height: '95%', padding: '10px'}}>
+        <div className="container mt-2">
             <div className="row">
                 <div className="col-12">
+                <h3 className="pb-3 pt-3">HTTP Request Smuggling</h3>
                     <p><b>Summary:</b> HTTP Request Smuggling occurs when the attacker sends a specially crafted request that causes the front-end proxies and back-end servers to desynchronize.  This vulnerablity occurs when the front-end proxies interpret the request as a single request while the back-end servers interpret it as two separate requests (or vice versa).</p>
                     <p><b>Variations:</b></p>
                     <ul style={{listStyleType: "none"}}>

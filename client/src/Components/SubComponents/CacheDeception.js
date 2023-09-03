@@ -7,6 +7,7 @@ const CacheDeception = props => {
         <div className="container mt-2">
             <div className="row">
                 <div className="col-12">
+                <h3 className="pb-3 pt-3">Web Cache Deception</h3>
                     <p><b>Summary:</b> Web Cache Deception occurs when the attacker forces the web cache to <strong>store sensitive content belonging to another user in the cache, allowing the attacker to retreive that sensitive data</strong>.</p>
                     <p><b>Goal(s):</b></p>
                     <ol>
