@@ -169,7 +169,13 @@ def amass_get_dns(args):
         "aaaarecord": [],
         "cnamerecord": [],
         "mxrecord": [],
-        "txtrecord": []
+        "txtrecord": [],
+        "node": [],
+        "nsrecord": [],
+        "srvrecord": [],
+        "ptrrecord": [],
+        "spfrecord": [],
+        "soarecord": []
     }
     for line in amass_file_lines:
         if "a_record" in line and "aaaa_record" not in line:

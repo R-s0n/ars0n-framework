@@ -161,18 +161,29 @@ const Dashboard = props => {
                                 return (
                                     <div key={i}>
                                         <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '')}</li>
+                                            <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '').replace(record.split(" ")[5], '')}<a href={"https://" + record.split(" ")[5]} target="_blank" rel="noreferrer"> {record.split(" ")[5]}</a></li>
                                         </ul>
                                     </div>
                                 )
                             })
                         }
-                                                {
+                        {
+                            thisFqdn.dns.node.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                        <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '').replace(record.split(" ")[5], '')}<a href={"https://" + record.split(" ")[5]} target="_blank" rel="noreferrer"> {record.split(" ")[5]}</a></li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                        {
                             thisFqdn.dns.arecord.sort().map((record, i) => {
                                 return (
                                     <div key={i}>
                                         <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}>{record}</li>
+                                        <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '').replace(record.split(" ")[5], '')}<a href={"https://" + record.split(" ")[5]} target="_blank" rel="noreferrer"> {record.split(" ")[5]}</a></li>
                                         </ul>
                                     </div>
                                 )
@@ -183,7 +194,7 @@ const Dashboard = props => {
                                 return (
                                     <div key={i}>
                                         <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}>{record}</li>
+                                        <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '').replace(record.split(" ")[5], '')}<a href={"https://" + record.split(" ")[5]} target="_blank" rel="noreferrer"> {record.split(" ")[5]}</a></li>
                                         </ul>
                                     </div>
                                 )
@@ -194,18 +205,73 @@ const Dashboard = props => {
                                 return (
                                     <div key={i}>
                                         <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}>{record}</li>
+                                        <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '').replace(record.split(" ")[5], '')}<a href={"https://" + record.split(" ")[5]} target="_blank" rel="noreferrer"> {record.split(" ")[5]}</a></li>
                                         </ul>
                                     </div>
                                 )
                             })
                         }
-                                                {
+                        {
+                            thisFqdn.dns.nsrecord.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                        <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '').replace(record.split(" ")[5], '')}<a href={"https://" + record.split(" ")[5]} target="_blank" rel="noreferrer"> {record.split(" ")[5]}</a></li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                        {
+                            thisFqdn.dns.ptrrecord.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                        <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '').replace(record.split(" ")[5], '')}<a href={"https://" + record.split(" ")[5]} target="_blank" rel="noreferrer"> {record.split(" ")[5]}</a></li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                        {
+                            thisFqdn.dns.soarecord.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                        <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '').replace(record.split(" ")[5], '')}<a href={"https://" + record.split(" ")[5]} target="_blank" rel="noreferrer"> {record.split(" ")[5]}</a></li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                        {
+                            thisFqdn.dns.spfrecord.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                        <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '').replace(record.split(" ")[5], '')}<a href={"https://" + record.split(" ")[5]} target="_blank" rel="noreferrer"> {record.split(" ")[5]}</a></li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                        {
+                            thisFqdn.dns.srvrecord.sort().map((record, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                        <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '').replace(record.split(" ")[5], '')}<a href={"https://" + record.split(" ")[5]} target="_blank" rel="noreferrer"> {record.split(" ")[5]}</a></li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                        {
                             thisFqdn.dns.txtrecord.sort().map((record, i) => {
                                 return (
                                     <div key={i}>
                                         <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                            <li key={i}>{record}</li>
+                                        <li key={i}><a href={"https://" + record.split(" ")[0]} target="_blank" rel="noreferrer">{record.split(" ")[0]} </a>{record.replace(record.split(" ")[0], '').replace(record.split(" ")[5], '')}<a href={"https://" + record.split(" ")[5]} target="_blank" rel="noreferrer"> {record.split(" ")[5]}</a></li>
                                         </ul>
                                     </div>
                                 )

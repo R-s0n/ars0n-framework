@@ -5,8 +5,8 @@ import '../Component.css';
 const Enumeration = props => {
     const [loaded, setLoaded] = useState(false)
     const [urls, setUrls] = useState(props.thisFqdn.recon.subdomains.httprobe)
-    const [selectedUrl, setSelectedUrl] = useState(props.thisFqdn.recon.subdomains.httprobe[0])
-    const [targetUrl, setTargetUrl] = useState(props.thisFqdn.recon.subdomains.httprobe[0])
+    const [selectedUrl, setSelectedUrl] = useState(props.thisFqdn.recon.subdomains.httprobe[0]  || "https://" + props.thisFqdn.fqdn)
+    const [targetUrl, setTargetUrl] = useState(props.thisFqdn.recon.subdomains.httprobe[0] || "https://" + props.thisFqdn.fqdn)
     const [aRecords, setARecords] = useState([])
     const [cnameRecords, setCnameRecords] = useState([])
 
@@ -68,7 +68,20 @@ const Enumeration = props => {
             <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
             {
                 urls.map((url, i) => { return (
-                    <li key={i} onClick={(e)=>setSelectedUrl(urls[i])}>{url}</li>
+                    <div>
+                        <li
+                            key={i}
+                            onClick={(e) => setSelectedUrl(urls[i])}
+                            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                        >
+                            <span>{url}</span>
+                            <img
+                            className="mt-3"
+                            src={"/screenshots/" + url.replace("//", "__") + ".png"}
+                            style={{ width: '10%', height: '10%' }}
+                            />
+                        </li>
+                    </div>
                 )})
             }        
             </ul>
@@ -88,7 +101,7 @@ const Enumeration = props => {
                     )})
             }
             </ul>
-            <img className="mt-3" src={"/screenshots/" + selectedUrl.replace("//","__") + ".png"} style={{width: '50%', height: '50%'}}/>
+            <img className="mt-3" src={"/screenshots/" + selectedUrl.replace("//","__") + ".png"} style={{width: '95%', height: '95%'}}/>
         </div>
         </div>
         </div>
