@@ -117,6 +117,7 @@ def parse_amass_file(file_path):
     try:
         asns = []
         cidr_subnets = []
+        isps = []
         ipv4_addresses = []
         with open(file_path, 'r') as file:
             for line in file:
@@ -125,12 +126,15 @@ def parse_amass_file(file_path):
                     cidr_subnets.append(line.split("\n")[0])
                 if "announces" in line:
                     asns.append(line.split("\n")[0])
+                if "managed_by" in line:
+                    isps.append(line.split("\n")[0])
                 ipv4_match = re.match(r'\d+\.\d+\.\d+\.\d+', line)
                 if ipv4_match:
                     ipv4_addresses.append(ipv4_match.group())
         return {
             "asns": asns,
             "cidr_subnets": cidr_subnets,
+            "isps": isps,
             "ipv4_addresses": ipv4_addresses
         }
     except Exception as e:
@@ -141,6 +145,7 @@ def get_ips_from_amass(thisFqdn):
     result = parse_amass_file("./temp/amass.tmp")
     thisFqdn['asns'] = result["asns"]
     thisFqdn['subnets'] = result["cidr_subnets"]
+    thisFqdn['isps']
     for ip_address in result["ipv4_addresses"]:
         exists = False
         for ip_obj in thisFqdn['ips']:
@@ -177,6 +182,18 @@ def amass_get_dns(args):
             dns['mxrecord'].append(line.split("\n")[0])
         if "txt_record" in line:
             dns['txtrecord'].append(line.split("\n")[0])
+        if "node" in line:
+            dns['node'].append(line.split("\n")[0])
+        if "ns_record" in line:
+            dns['nsrecord'].append(line.split("\n")[0])
+        if "srv_record" in line:
+            dns['srvrecord'].append(line.split("\n")[0])
+        if "ptr_record" in line:
+            dns['ptrrecord'].append(line.split("\n")[0])
+        if "spf_record" in line:
+            dns['spfrecord'].append(line.split("\n")[0])
+        if "soa_record" in line:
+            dns['soarecord'].append(line.split("\n")[0])
     return dns
 
 def amass(args, initFqdn):

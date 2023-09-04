@@ -17,6 +17,24 @@ const FqdnSchema = new mongoose.Schema({
         }],
         txtrecord: [{
             type: String
+        }],
+        node: [{
+            type: String
+        }],
+        nsrecord: [{
+            type: String
+        }],
+        srvrecord: [{
+            type: String
+        }],
+        ptrrecord: [{
+            type: String
+        }],
+        spfrecord: [{
+            type: String
+        }],
+        soarecord: [{
+            type: String
         }]
     },
     ips: [{
@@ -29,6 +47,9 @@ const FqdnSchema = new mongoose.Schema({
         type: String
     }],
     asns: [{
+        type: String
+    }],
+    isps: [{
         type: String
     }],
     recon: {
