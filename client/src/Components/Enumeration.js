@@ -6,13 +6,16 @@ const Enumeration = props => {
     const [loaded, setLoaded] = useState(false)
     const [urls, setUrls] = useState(props.thisFqdn.recon.subdomains.httprobe)
     const [selectedUrl, setSelectedUrl] = useState(props.thisFqdn.recon.subdomains.httprobe[0]  || "https://" + props.thisFqdn.fqdn)
+    const [finalSelectedUrl, setFinalSelectedUrl] = useState(props.thisFqdn.recon.subdomains.httprobe[0]  || "https://" + props.thisFqdn.fqdn)
     const [targetUrl, setTargetUrl] = useState(props.thisFqdn.recon.subdomains.httprobe[0] || "https://" + props.thisFqdn.fqdn)
     const [aRecords, setARecords] = useState([])
     const [cnameRecords, setCnameRecords] = useState([])
+    const [nodeRecords, setNodeRecords] = useState([])
 
     useEffect(()=>{
         setARecords(props.thisFqdn.dns.arecord)
         setCnameRecords(props.thisFqdn.dns.cnamerecord)
+        setNodeRecords(props.thisFqdn.dns.node)
         setLoaded(true)
     }, [props.index]);
 
@@ -50,6 +53,26 @@ const Enumeration = props => {
         setTargetUrl(selectedUrl)
     }
 
+    async function getFinalRedirectUrl(initialUrl) {
+        try {
+          const response = await axios.get(initialUrl, {
+            maxRedirects: 10,
+            validateStatus: (status) => status >= 200 && status < 400,
+          });
+          if (initialUrl !== response.request.res.responseUrl) {
+            
+          }
+          return response.request.res.responseUrl;
+        } catch (error) {
+          console.error('Error:', error);
+          throw error;
+        }
+    }
+
+    const handleSelectUrl = (e, i) => {
+        setSelectedUrl(urls[i]);
+    }
+
     return (
         <div>
         <nav style={{borderBottom: '2px groove #284B63'}} className="pl-2 pt-0 navbar navbar-expand-lg bg-primary">
@@ -71,7 +94,7 @@ const Enumeration = props => {
                     <div>
                         <li
                             key={i}
-                            onClick={(e) => setSelectedUrl(urls[i])}
+                            onClick={(e) => handleSelectUrl(e, i)}
                             style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                         >
                             <span>{url}</span>
@@ -86,8 +109,8 @@ const Enumeration = props => {
             }        
             </ul>
         </div>
-        <div className="bg-secondary workTableStyle col-8">
-            <button  onClick={handleTargetUrl} className="border border-info nav-link btn btn-primary text-secondary mt-3 mb-3">Set as Target URL</button>
+        <div style={{overflowY:"scroll"}} className="bg-secondary workTableStyle col-8">
+            <button onClick={handleTargetUrl} className="border border-info nav-link btn btn-primary text-secondary mt-3 mb-3">Set as Target URL</button>
             <h2><a href={selectedUrl}>{selectedUrl}</a></h2>
             <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
             {
@@ -97,6 +120,11 @@ const Enumeration = props => {
             }
             {
                 cnameRecords.sort().filter(record => record.split(" ")[0] === selectedUrl.split("//")[1].split(":")[0]).map((record, i) => { return (
+                    <li key={i}>{record}</li>
+                    )})
+            }
+            {
+                nodeRecords.sort().filter(record => record.split(" ")[0] === selectedUrl.split("//")[1].split(":")[0]).map((record, i) => { return (
                     <li key={i}>{record}</li>
                     )})
             }

@@ -145,7 +145,7 @@ def get_ips_from_amass(thisFqdn):
     result = parse_amass_file("./temp/amass.tmp")
     thisFqdn['asns'] = result["asns"]
     thisFqdn['subnets'] = result["cidr_subnets"]
-    thisFqdn['isps']
+    thisFqdn['isps'] = result["isps"]
     for ip_address in result["ipv4_addresses"]:
         exists = False
         for ip_obj in thisFqdn['ips']:

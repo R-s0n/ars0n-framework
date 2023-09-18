@@ -1,0 +1,35 @@
+id: get-final-url
+
+info:
+  name: Get Final URL
+  author: rs0n
+  severity: info
+  description: |
+    The URL does not match {{BaseURL}} when the page is fully loaded. 
+
+headless:
+  - steps:
+      - args:
+          url: "{{BaseURL}}"
+        action: navigate
+
+      - action: waitload
+
+      - action: script
+        name: extract
+        args:
+          code: |
+            () => {
+             return window.location.href
+            }
+
+    matchers:
+      - type: dsl
+        dsl:
+          - "contains({{BaseURL}})"
+
+    extractors:
+      - type: kval
+        part: extract
+        kval:
+          - extract

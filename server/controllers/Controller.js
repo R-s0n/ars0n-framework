@@ -161,16 +161,14 @@ const proxyConfig = {
     port: 8080,
   };
 
-const httpsAgent = new https.Agent({  
-    rejectUnauthorized: false
-  });
-
 async function fetchUrlsThroughProxy(urlList) {
     for (const url of urlList) {
-      try {
+        if (url.includes("https://")){
+            continue;
+        }
+        try {
         const response = await axios.get(url, {
-          proxy: proxyConfig,
-          httpsAgent: httpsAgent
+          proxy: proxyConfig
         });
       } catch (error) {
         console.error(`Error while fetching ${url}:`);
@@ -179,8 +177,7 @@ async function fetchUrlsThroughProxy(urlList) {
     }
   }
     
-module.exports.populateBurp = (req, res) => {
-    
+module.exports.getHttpOnly = (req, res) => {
     fetchUrlsThroughProxy(req.body)
     .then((responses) => {
       console.log('All requests completed:');
@@ -189,6 +186,24 @@ module.exports.populateBurp = (req, res) => {
     .catch((err) => {
       console.error('Error:', err);
     });
+}
+
+module.exports.populateBurp = (req, res) => {
+    console.log(req.body)
+    const burpScan = {
+            urls: req.body,
+            scan_configurations: [{
+                type: "NamedConfiguration",
+                name: "Crawl and Audit - Fast"
+            }]
+    }
+    axios.post("http://127.0.0.1:1337/v0.1/scan", burpScan)
+        .then((response) => {
+            console.log('Response:', response.data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
 }
 
 module.exports.runBurpScanDefault = (req, res) => {

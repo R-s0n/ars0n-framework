@@ -127,6 +127,13 @@ const Dashboard = props => {
                                     <div key={i}>
                                         <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
                                             <li key={i}>{record}
+                                            {
+                                                thisFqdn.isps.filter(isp => isp.includes(record.split(" --> ")[0])).map((isp, q) => {
+                                                    return (
+                                                        <span> -- ({isp.split(" --> ")[2]})</span>
+                                                    )
+                                                })
+                                            }
                                                 <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
                                                     {
                                                         thisFqdn.subnets.sort().filter(subnet => subnet.includes(record.split(" ")[5])).map((subnet, j) => (
