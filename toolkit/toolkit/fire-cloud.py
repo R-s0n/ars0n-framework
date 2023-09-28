@@ -127,6 +127,33 @@ def s3_bucket_download_exploit(buckets):
         except requests.exceptions.RequestException as e:
             print(f"[-] An error occurred -- check {bucket} manually")
 
+def s3_takover_exploit(buckets, cloudfronts):
+    print("[+] Checking S3 buckets and Cloudfront instances for S3 takeover")
+    # https://hackingthe.cloud/aws/exploitation/orphaned_%20cloudfront_or_dns_takeover_via_s3/
+    # This will check for the response "Bucket does not exist, which could lead to a subdomain takeover"
+    # This will search known buckets and Cloudfront instances, but can be checked against any subdomain
+    for bucket in buckets:
+        try: 
+            response = requests.get(f"http://{bucket}", timeout=5)
+            if response.text == "Bucket does not exist":
+                print(f"[!] Bucket deleted improperly, subdomain takeover may be possible on {bucket}")
+            else:
+                print(f"[-] Bucket: {bucket} exists, not vulnerable")
+        except requests.exceptions.Timeout:
+            print("[-] Request timed out.")
+        except requests.exceptions.RequestException as e:
+            print(f"[-] An error occurred -- check {bucket} manually")
+    for cloudfront in cloudfronts:
+        try:
+            response = requests.get(f"http://{cloudfront}", timeout=5)
+            if response.text == "Bucket does not exist":
+                print(f"[!] Bucket deleted improperly, subdomain takeover may be possible on {cloudfront}")
+            else:
+                print(f"[-] Instance: {cloudfront} not vulnerable")
+        except requests.exceptions.Timeout:
+            print("[-] Request timed out.")
+        except requests.exceptions.RequestException as e:
+            print(f"[-] An error occurred -- check {bucket} manually")
 
 def get_fqdn_obj(args):
     r = requests.post(f'http://{args.server}:{args.port}/api/auto', data={'fqdn':args.fqdn})
@@ -154,6 +181,7 @@ def main(args):
     s3_bucket_download_exploit(open_s3_buckets)
     s3_bucket_authenticated(s3_list)
     s3_bucket_upload_exploit(open_s3_buckets)
+    s3_takover_exploit(s3_list, cloudfront_list)
 
 if __name__ == '__main__':
     args = arg_parse()
