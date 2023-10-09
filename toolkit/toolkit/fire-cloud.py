@@ -10,6 +10,8 @@ open_s3_buckets = []
 ec2_list = []
 cloudfront_list = []
 elb_list = []
+documentdb_list = []
+api_gateway_list = []
 
 def get_home_dir():
     get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
@@ -37,12 +39,16 @@ def service_detection(cnames):
     ec2_pattern = r'.*(ec2|compute\.amazonaws\.com).*'
     cloudfront_pattern = r'.*(cloudfront\.net).*'
     elb_pattern = r'.*(elb\.amazonaws\.com).*'
+    documentdb_pattern = r'\b\w+\.docdb\.amazonaws\.com\b'
+    api_gateway_pattern = r'.*(execute-api\.[A-Za-z0-9.-]+\.amazonaws\.com).*'
 
     for cname in cnames:
         s3 = re.findall(s3_pattern, cname)
         ec2 = re.findall(ec2_pattern, cname)   
         cloudfront = re.findall(cloudfront_pattern, cname)
         elb = re.findall(elb_pattern, cname)
+        documentdb = re.findall(documentdb_pattern, cname)
+        api_gateway = re.findall(api_gateway_pattern, cname)
 
         if s3:
             s3_list.append(cname)
@@ -50,6 +56,7 @@ def service_detection(cnames):
         elif ec2:
             ec2_list.append(cname)
             print(f"[+] AWS EC2 Instance Found: {cname}")
+            # ec2_checks(cname)
         elif cloudfront:
             cloudfront_list.append(cname)
             print(f"[+] AWS Cloudfront Distribution Found: {cname}")
@@ -58,6 +65,12 @@ def service_detection(cnames):
             elb_list.append(cname)
             print(f"[+] AWS ELB Found: {cname}")
             # elb_checks(cname)
+        elif documentdb:
+            documentdb_list.append(cname)
+            print(f"[+] AWS DocumentDB Found: {cname}")
+        elif api_gateway:
+            api_gateway_list.append(cname)
+            print(f"[+] AWS API Gateway Found: {cname}")
     print(f"[-] Service Detection Complete")
     print("\n")
 
@@ -153,7 +166,25 @@ def s3_takover_exploit(buckets, cloudfronts):
         except requests.exceptions.Timeout:
             print("[-] Request timed out.")
         except requests.exceptions.RequestException as e:
-            print(f"[-] An error occurred -- check {bucket} manually")
+            print(f"[-] An error occurred -- check {cloudfront} manually")
+
+def ec2_checks(cname):
+    print(f"[-] Checking EC2 instance: {cname}")
+    try:
+        response = requests.get(f"http://{cname}", timeout=5)
+        if response.status_code == 200:
+            print(f"[!] EC2 instance is accessible at {cname}")
+        else:
+            print(f"[-] EC2 instance is not accessible at {cname}")
+    except requests.exceptions.Timeout:
+        print("[-] Request timed out.")  
+    except requests.exceptions.RequestException as e:
+        print(f"[-] An error occurred -- check {cname} manually")
+    ec2_nmap = subprocess.run(["nmap", "-Pn", "-p-", "-sT", "--reason", "--open", "-oA", "../temp/{cname}_tcp_full_port_scan", cname], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    if ec2_nmap.returncode == 0:
+        print(f"[!] TCP Full Port Scan completed on {cname}")
+    else:
+        print(f"[-] TCP Full Port Scan failed on {cname}")
 
 def get_fqdn_obj(args):
     r = requests.post(f'http://{args.server}:{args.port}/api/auto', data={'fqdn':args.fqdn})
@@ -166,15 +197,19 @@ def arg_parse():
     parser.add_argument('-d','--fqdn', help='Name of the Root/Seed FQDN', required=True)
     return parser.parse_args() 
 
+def get_cnames(fqdn):
+    cname_list = []
+    for fqdn in fqdn["dns"]['cnamerecord']:
+        pattern = r"cname_record\s*-->\s*(.*?)\s*\("
+        cname = re.findall(pattern, fqdn)
+        cname_list.append(cname[0])
+    return cname_list
+
 def main(args):
     thisFqdn = get_fqdn_obj(args)
     if args.fqdn:
         thisFqdn = get_fqdn_obj(args)
-    cname_list = []
-    for fqdn in thisFqdn["dns"]['cnamerecord']:
-        pattern = r"cname_record\s*-->\s*(.*?)\s*\("
-        cname = re.findall(pattern, fqdn)
-        cname_list.append(cname[0])
+    cname_list = get_cnames(thisFqdn)
     aws_access_key_check()
     service_detection(cname_list)
     s3_bucket_public(s3_list)
