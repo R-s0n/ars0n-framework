@@ -12,6 +12,7 @@ cloudfront_list = []
 elb_list = []
 documentdb_list = []
 api_gateway_list = []
+elasticbeanstalk_list = []
 
 def get_home_dir():
     get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
@@ -41,6 +42,7 @@ def service_detection(cnames):
     elb_pattern = r'.*(elb\.amazonaws\.com).*'
     documentdb_pattern = r'\b\w+\.docdb\.amazonaws\.com\b'
     api_gateway_pattern = r'.*(execute-api\.[A-Za-z0-9.-]+\.amazonaws\.com).*'
+    elasticbeanstalk_pattern = r'.*(elasticbeanstalk\.com).*'
 
     for cname in cnames:
         s3 = re.findall(s3_pattern, cname)
@@ -49,6 +51,7 @@ def service_detection(cnames):
         elb = re.findall(elb_pattern, cname)
         documentdb = re.findall(documentdb_pattern, cname)
         api_gateway = re.findall(api_gateway_pattern, cname)
+        elasticbeanstalk = re.findall(elasticbeanstalk_pattern, cname)
 
         if s3:
             s3_list.append(cname)
@@ -71,6 +74,9 @@ def service_detection(cnames):
         elif api_gateway:
             api_gateway_list.append(cname)
             print(f"[+] AWS API Gateway Found: {cname}")
+        elif elasticbeanstalk:
+            print(f"[+] AWS Elastic Beanstalk Found: {cname}")
+            print("[!] Check for subdomain takeover - https://github.com/EdOverflow/can-i-take-over-xyz/issues/194")            
     print(f"[-] Service Detection Complete")
     print("\n")
 
