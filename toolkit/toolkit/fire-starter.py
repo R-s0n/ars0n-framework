@@ -637,12 +637,13 @@ def wrap_up(args):
     cleanup()
 
 def collect_screenshots(home_dir, thisFqdn):
+    subprocess.run(["rm -f screenshots/*.png"], shell=True)
     with open('./temp/urls.txt', 'w') as file:
         for url in thisFqdn['recon']['subdomains']['httprobe']:
             file.write(url + '\n')
     subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless/screenshot.yaml -l ./temp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -sb -hbs 10 -headc 1 -fhr -hm"], shell=True)
     subprocess.run("""for file in ./screenshots/*; do cp -f "$file" "../client/public/screenshots/$(basename "$file")"; done""", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-
+    subprocess.run(["rm -f screenshots/*.png"], shell=True)
 
 def arg_parse():
     parser = argparse.ArgumentParser()
@@ -655,6 +656,7 @@ def arg_parse():
     parser.add_argument('-u', '--update', help='Update AWS IP Certificate Data ( Can Take 48+ Hours! )', required=False, action='store_true')
     parser.add_argument('-l', '--limit', help='Stop the scan when the number of unique subdomains goes above 999', required=False, action='store_true')
     parser.add_argument('-c', '--consolidate', help='Consolidate and Run HTTProbe Against Discovered Subdomains', required=False, action='store_true')
+    parser.add_argument('-s', '--screenshots', help='Collect a new round of screenshots for all live URLs', required=False, action='store_true')
     return parser.parse_args()
 
 def consolidate_flag(args):
@@ -804,4 +806,7 @@ if __name__ == "__main__":
     args = arg_parse()
     if args.consolidate:
        consolidate_flag(args)
+    if args.screenshots:
+       collect_screenshots(get_home_dir(), get_fqdn_obj(args))
+       exit()
     main(args)

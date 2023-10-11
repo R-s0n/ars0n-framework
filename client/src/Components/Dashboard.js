@@ -3,52 +3,255 @@ import axios from 'axios';
 import '../Component.css';
 
 const Dashboard = props => {
+    const thisFqdn = props.thisFqdn;
     const [vulnCount, setVulnCount] = useState(0)
     const [impactfulVulnCount, setImpactfulVulnCount] = useState(0)
     const [impactfulVulnArray, setImpactfulVulnArray] = useState([])
-    const thisFqdn = props.thisFqdn;
     const formatUpdated = thisFqdn.updatedAt.replace(/([A-Z])+/g, " ").replace(/(\.[0-9]+)/g, " GMT");
+    const [currentStep, setCurrentStep] = useState(0);
+    const [impactfulVulnCountSSL, setImpactfulVulnCountSSL] = useState(0)
+    const [impactfulVulnCountFile, setImpactfulVulnCountFile] = useState(0)
+    const [impactfulVulnCountDNS, setImpactfulVulnCountDNS] = useState(0)
+    const [impactfulVulnCountVulns, setImpactfulVulnCountVulns] = useState(0)
+    const [impactfulVulnCountTech, setImpactfulVulnCountTech] = useState(0)
+    const [impactfulVulnCountMisconfig, setImpactfulVulnCountMisconfig] = useState(0)
+    const [impactfulVulnCountCVEs, setImpactfulVulnCountCVEs] = useState(0)
+    const [impactfulVulnCountCNVD, setImpactfulVulnCountCNVD] = useState(0)
+    const [impactfulVulnCountExposed, setImpactfulVulnCountExposed] = useState(0)
+    const [impactfulVulnCountExposure, setImpactfulVulnCountExposure] = useState(0)
+    const [impactfulVulnCountMisc, setImpactfulVulnCountMisc] = useState(0)
+    const [impactfulVulnCountNetwork, setImpactfulVulnCountNetwork] = useState(0)
+    const [impactfulVulnCountRs0n, setImpactfulVulnCountRs0n] = useState(0)
+    const [impactfulVulnCountHeadless, setImpactfulVulnCountHeadless] = useState(0)
+    const [impactfulVulnFoundCount, setImpactfulVulnFoundCount] = useState(false)
+    const [impactfulVulnFoundSSL, setImpactfulVulnFoundSSL] = useState(false)
+    const [impactfulVulnFoundFile, setImpactfulVulnFoundFile] = useState(false)
+    const [impactfulVulnFoundDNS, setImpactfulVulnFoundDNS] = useState(false)
+    const [impactfulVulnFoundVulns, setImpactfulVulnFoundVulns] = useState(false)
+    const [impactfulVulnFoundTech, setImpactfulVulnFoundTech] = useState(false)
+    const [impactfulVulnFoundMisconfig, setImpactfulVulnFoundMisconfig] = useState(false)
+    const [impactfulVulnFoundCVEs, setImpactfulVulnFoundCVEs] = useState(false)
+    const [impactfulVulnFoundCNVD, setImpactfulVulnFoundCNVD] = useState(false)
+    const [impactfulVulnFoundExposed, setImpactfulVulnFoundExposed] = useState(false)
+    const [impactfulVulnFoundExposure, setImpactfulVulnFoundExposure] = useState(false)
+    const [impactfulVulnFoundMisc, setImpactfulVulnFoundMisc] = useState(false)
+    const [impactfulVulnFoundNetwork, setImpactfulVulnFoundNetwork] = useState(false)
+    const [impactfulVulnFoundRs0n, setImpactfulVulnFoundRs0n] = useState(false)
+    const [impactfulVulnFoundHeadless, setImpactfulVulnFoundHeadless] = useState(false)
     
     useEffect(()=>{
         axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
-            .then(res=>{
-                if (res.data !== null){
-                    let tempVulns = [];
-                    if (res.data.vulns.length > 1){
-                        tempVulns = res.data.vulns;
-                    } else {
-                        let tempVulnsA = res.data.vulnsSSL;
-                        let tempVulnsB = tempVulnsA.concat(res.data.vulnsFile);
-                        let tempVulnsC = tempVulnsB.concat(res.data.vulnsDNS);
-                        let tempVulnsD = tempVulnsC.concat(res.data.vulnsVulns);
-                        let tempVulnsE = tempVulnsD.concat(res.data.vulnsTech);
-                        let tempVulnsF = tempVulnsE.concat(res.data.vulnsMisconfig);
-                        let tempVulnsG = tempVulnsF.concat(res.data.vulnsCVEs);
-                        let tempVulnsH = tempVulnsG.concat(res.data.vulnsCNVD);
-                        let tempVulnsI = tempVulnsH.concat(res.data.vulnsExposed);
-                        let tempVulnsJ = tempVulnsI.concat(res.data.vulnsExposure);
-                        let tempVulnsK = tempVulnsJ.concat(res.data.vulnsMisc);
-                        let tempVulnsL = tempVulnsK.concat(res.data.vulnsNetwork);
-                        let tempVulnsM = tempVulnsL.concat(res.data.vulnsRs0n);
-                        tempVulns = tempVulnsM.concat(res.data.vulnsHeadless);
-                    }
-                    let vulnCount = 0;
-                    let impactfulVulnCount = 0;
-                    let tempImpactfulVulnArray = []
-                    for (let i=0; i<tempVulns.length; i++){
-                        if (tempVulns[i].info.severity !== "foo"){
-                            vulnCount++;
+        .then((res) => {
+            if (res.data !== null) {
+                setImpactfulVulnFoundMisconfig(false)
+                setImpactfulVulnFoundSSL(false)
+                setImpactfulVulnFoundFile(false)
+                setImpactfulVulnFoundDNS(false)
+                setImpactfulVulnFoundVulns(false)
+                setImpactfulVulnFoundTech(false)
+                setImpactfulVulnFoundCVEs(false)
+                setImpactfulVulnFoundCNVD(false)
+                setImpactfulVulnFoundExposed(false)
+                setImpactfulVulnFoundExposure(false)
+                setImpactfulVulnFoundMisc(false)
+                setImpactfulVulnFoundNetwork(false)
+                setImpactfulVulnFoundRs0n(false)
+                setImpactfulVulnFoundHeadless(false)
+                const vulnArrays = [
+                    res.data.vulns,
+                    res.data.vulnsSSL,
+                    res.data.vulnsFile,
+                    res.data.vulnsDNS,
+                    res.data.vulnsVulns,
+                    res.data.vulnsTech,
+                    res.data.vulnsMisconfig,
+                    res.data.vulnsCVEs,
+                    res.data.vulnsCNVD,
+                    res.data.vulnsExposed,
+                    res.data.vulnsExposure,
+                    res.data.vulnsMisc,
+                    res.data.vulnsNetwork,
+                    res.data.vulnsRs0n,
+                    res.data.vulnsHeadless,
+                ];
+            
+                let impactfulVulnArrays = [];
+                let vulnCount = 0;
+                let impactfulVulnCount = 0;
+            
+                vulnArrays.forEach((vulnArray) => {
+                    vulnArray.forEach((vuln) => {
+                    if (vuln.info.severity !== "foo") {
+                        vulnCount++;
+                        if (vuln.info.severity !== "foo" && vuln.info.severity !== "info") {
+                        impactfulVulnCount++;
+                        impactfulVulnArrays.push(vuln);
                         }
-                        if (tempVulns[i].info.severity !== "foo" && tempVulns[i].info.severity !== "info"){
-                            impactfulVulnCount++;
-                            tempImpactfulVulnArray.push(tempVulns[i])
-                        }
                     }
-                    setImpactfulVulnArray(tempImpactfulVulnArray)
-                    setVulnCount(vulnCount);
-                    setImpactfulVulnCount(impactfulVulnCount);
+                    });
+                });
+            
+                setImpactfulVulnArray(impactfulVulnArrays);
+                setVulnCount(vulnCount);
+                setImpactfulVulnCount(impactfulVulnCount);
+            
+                let counterSSL = 0;
+                        for (let i=0; i<res.data.vulnsSSL.length; i++){
+                            // console.log(res.data.vulnsSSL[i].info.severity)
+                            if (res.data.vulnsSSL[i].info.severity !== "foo"){
+                                counterSSL++;
+                            }
+                            if (res.data.vulnsSSL[i].info.severity !== "foo" && res.data.vulnsSSL[i].info.severity !== "info"){
+                                console.log(res.data.vulnsSSL[i].info.severity)
+                                setImpactfulVulnFoundSSL(true);
+                            }
+                        }
+                        setImpactfulVulnCountSSL(counterSSL);
+                        let counterFile = 0;
+                        for (let i=0; i<res.data.vulnsFile.length; i++){
+                            if (res.data.vulnsFile[i].info.severity !== "foo"){
+                                counterFile++;
+                            }
+                            if (res.data.vulnsFile[i].info.severity !== "foo" && res.data.vulnsFile[i].info.severity !== "info"){
+                                console.log(res.data.vulnsFile[i].info.severity)
+                                setImpactfulVulnFoundFile(true);
+                            }
+                        }
+                        setImpactfulVulnCountFile(counterFile);
+                        let counterDNS = 0;
+                        for (let i=0; i<res.data.vulnsDNS.length; i++){
+                            if (res.data.vulnsDNS[i].info.severity !== "foo"){
+                                counterDNS++;
+                            }
+                            if (res.data.vulnsDNS[i].info.severity !== "foo" && res.data.vulnsDNS[i].info.severity !== "info"){
+                                console.log(res.data.vulnsDNS[i].info.severity)
+                                setImpactfulVulnFoundDNS(true);
+                            }
+                        }
+                        setImpactfulVulnCountDNS(counterDNS);
+                        let counterVulns = 0;
+                        for (let i=0; i<res.data.vulnsVulns.length; i++){
+                            if (res.data.vulnsVulns[i].info.severity !== "foo"){
+                                counterVulns++;
+                            }
+                            if (res.data.vulnsVulns[i].info.severity !== "foo" && res.data.vulnsVulns[i].info.severity !== "info"){
+                                console.log(res.data.vulnsVulns[i].info.severity)
+                                setImpactfulVulnFoundVulns(true);
+                            }
+                        }
+                        setImpactfulVulnCountVulns(counterVulns);
+                        let counterTech = 0;
+                        for (let i=0; i<res.data.vulnsTech.length; i++){
+                            if (res.data.vulnsTech[i].info.severity !== "foo"){
+                                counterTech++;
+                            }
+                            if (res.data.vulnsTech[i].info.severity !== "foo" && res.data.vulnsTech[i].info.severity !== "info"){
+                                console.log(res.data.vulnsTech[i].info.severity)
+                                setImpactfulVulnFoundTech(true);
+                            }
+                        }
+                        setImpactfulVulnCountTech(counterTech);
+                        let counterMisconfig = 0;
+                        for (let i=0; i<res.data.vulnsMisconfig.length; i++){
+                            if (res.data.vulnsMisconfig[i].info.severity !== "foo"){
+                                counterMisconfig++;
+                            }
+                            if (res.data.vulnsMisconfig[i].info.severity !== "foo" && res.data.vulnsMisconfig[i].info.severity !== "info"){
+                                console.log(res.data.vulnsMisconfig[i].info.severity)
+                                setImpactfulVulnFoundMisconfig(true);
+                            }
+                        }
+                        setImpactfulVulnCountMisconfig(counterMisconfig);
+                        let counterCVEs = 0;
+                        for (let i=0; i<res.data.vulnsCVEs.length; i++){
+                            if (res.data.vulnsCVEs[i].info.severity !== "foo"){
+                                counterCVEs++;
+                            }
+                            if (res.data.vulnsCVEs[i].info.severity !== "foo" && res.data.vulnsCVEs[i].info.severity !== "info"){
+                                console.log(res.data.vulnsCVEs[i].info.severity)
+                                setImpactfulVulnFoundCVEs(true);
+                            }
+                        }
+                        setImpactfulVulnCountCVEs(counterCVEs);
+                        let counterCNVD = 0;
+                        for (let i=0; i<res.data.vulnsCNVD.length; i++){
+                            if (res.data.vulnsCNVD[i].info.severity !== "foo"){
+                                counterCNVD++;
+                            }
+                            if (res.data.vulnsCNVD[i].info.severity !== "foo" && res.data.vulnsCNVD[i].info.severity !== "info"){
+                                console.log(res.data.vulnsCNVD[i].info.severity)
+                                setImpactfulVulnFoundCNVD(true);
+                            }
+                        }
+                        setImpactfulVulnCountCNVD(counterCNVD);
+                        let counterExposed = 0;
+                        for (let i=0; i<res.data.vulnsExposed.length; i++){
+                            if (res.data.vulnsExposed[i].info.severity !== "foo"){
+                                counterExposed++;
+                            }
+                            if (res.data.vulnsExposed[i].info.severity !== "foo" && res.data.vulnsExposed[i].info.severity !== "info"){
+                                console.log(res.data.vulnsExposed[i].info.severity)
+                                setImpactfulVulnFoundExposed(true);
+                            }
+                        }
+                        setImpactfulVulnCountExposed(counterExposed);
+                        let counterExposure = 0;
+                        for (let i=0; i<res.data.vulnsExposure.length; i++){
+                            if (res.data.vulnsExposure[i].info.severity !== "foo"){
+                                counterExposure++;
+                            }
+                            if (res.data.vulnsExposure[i].info.severity !== "foo" && res.data.vulnsExposure[i].info.severity !== "info"){
+                                console.log(res.data.vulnsExposure[i].info.severity)
+                                setImpactfulVulnFoundExposure(true);
+                            }
+                        }
+                        setImpactfulVulnCountExposure(counterExposure);
+                        let counterMisc = 0;
+                        for (let i=0; i<res.data.vulnsMisc.length; i++){
+                            if (res.data.vulnsMisc[i].info.severity !== "foo"){
+                                counterMisc++;
+                            }
+                            if (res.data.vulnsMisc[i].info.severity !== "foo" && res.data.vulnsMisc[i].info.severity !== "info"){
+                                console.log(res.data.vulnsMisc[i].info.severity)
+                                setImpactfulVulnFoundMisc(true);
+                            }
+                        }
+                        setImpactfulVulnCountMisc(counterMisc);
+                        let counterNetwork = 0;
+                        for (let i=0; i<res.data.vulnsNetwork.length; i++){
+                            if (res.data.vulnsNetwork[i].info.severity !== "foo"){
+                                counterNetwork++;
+                            }
+                            if (res.data.vulnsNetwork[i].info.severity !== "foo" && res.data.vulnsNetwork[i].info.severity !== "info"){
+                                console.log(res.data.vulnsNetwork[i].info.severity)
+                                setImpactfulVulnFoundNetwork(true);
+                            }
+                        }
+                        setImpactfulVulnCountNetwork(counterNetwork);
+                        let counterRs0n = 0;
+                        for (let i=0; i<res.data.vulnsRs0n.length; i++){
+                            if (res.data.vulnsRs0n[i].info.severity !== "foo"){
+                                counterRs0n++;
+                            }
+                            if (res.data.vulnsRs0n[i].info.severity !== "foo" && res.data.vulnsRs0n[i].info.severity !== "info"){
+                                console.log(res.data.vulnsRs0n[i].info.severity)
+                                setImpactfulVulnFoundRs0n(true);
+                            }
+                        }
+                        setImpactfulVulnCountRs0n(counterRs0n);
+                        let counterHeadless = 0;
+                        for (let i=0; i<res.data.vulnsHeadless.length; i++){
+                            if (res.data.vulnsHeadless[i].info.severity !== "foo"){
+                                counterHeadless++;
+                            }
+                            if (res.data.vulnsHeadless[i].info.severity !== "foo" && res.data.vulnsHeadless[i].info.severity !== "info"){
+                                console.log(res.data.vulnsHeadless[i].info.severity)
+                                setImpactfulVulnFoundHeadless(true);
+                            }
+                        }
+                        setImpactfulVulnCountHeadless(counterHeadless);
                 }
-            })
+          })          
     }, [props])
 
     console.log(`Impactful Vuln Count: ${impactfulVulnCount} -- Vuln Count: ${vulnCount}`);
@@ -69,7 +272,7 @@ const Dashboard = props => {
                 </div>
             </div>
             <div className="row ml-5 pl-5">
-                <div className="col-3">
+                <div className="col-2">
                     <h4>Subdomain Count</h4>
                     <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
                         <li style={{paddingTop:"10px", paddingBottom:"10px", fontSize:"20px", fontWeight:"bold"}}>Amass: {thisFqdn.recon.subdomains.amass.length}</li>
@@ -77,7 +280,7 @@ const Dashboard = props => {
                         <li>Sublist3r: {thisFqdn.recon.subdomains.sublist3r.length}</li>
                         <li>Assetfinder: {thisFqdn.recon.subdomains.assetfinder.length}</li>
                         <li>GetAllUrls (GAU): {thisFqdn.recon.subdomains.gau.length}</li>
-                        <li>Certificate Transparency Logs (CTL): {thisFqdn.recon.subdomains.ctl.length}</li>
+                        <li>Cert Transparency Logs (CTL): {thisFqdn.recon.subdomains.ctl.length}</li>
                         <li>Subfinder: {thisFqdn.recon.subdomains.subfinder.length}</li>
                         <h5 style={{paddingTop:"10px", fontWeight:"600"}}>Brute Force</h5>
                         <li>ShuffleDNS Standard: {thisFqdn.recon.subdomains.shuffledns.length}</li>
@@ -88,7 +291,7 @@ const Dashboard = props => {
                         <h5 style={{paddingTop:"10px", fontWeight:"600"}}>Favicon & Marketing</h5>
                     </ul>
                 </div>
-                <div className="col-4">
+                <div className="col-3">
                     <h5>Subdomains (New: {thisFqdn.recon.subdomains.consolidatedNew.length}/{thisFqdn.recon.subdomains.consolidated.length})</h5>
                     <div style={{width: '400px', height: '500px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
@@ -102,7 +305,7 @@ const Dashboard = props => {
                         }
                     </div>
                 </div>
-                <div className="col-4 ml-5">
+                <div className="col-3 ml-3">
                     <h5>Live URLs: (New: {thisFqdn.recon.subdomains.httprobeAdded.length}/{thisFqdn.recon.subdomains.httprobe.length})</h5>
                     <div style={{width: '400px', height: '500px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
@@ -115,6 +318,83 @@ const Dashboard = props => {
                             })
                         }
                     </div>
+                </div>
+                <div className="col-3 ml-3">
+                    <h5>Impactful Nuclei Vulns: {impactfulVulnCount}/{vulnCount}</h5>
+                    <br></br>
+                    <ul style={{listStyleType:"none"}}> 
+                        <li classNme="mt-5" onClick={(e)=>setCurrentStep(0)}>Full (Vuln Count: {impactfulVulnCount})</li>
+                        {
+                            impactfulVulnFoundSSL ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(1)}>SSL (Vuln Count: {impactfulVulnCountSSL})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(1)}>SSL (Vuln Count: {impactfulVulnCountSSL})</li> 
+                        }
+                        {
+                            impactfulVulnFoundFile ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(2)}>File (Vuln Count: {impactfulVulnCountFile})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(2)}>File (Vuln Count: {impactfulVulnCountFile})</li>
+                        }
+                        {
+                            impactfulVulnFoundDNS ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(3)}>DNS (Vuln Count: {impactfulVulnCountDNS})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(3)}>DNS (Vuln Count: {impactfulVulnCountDNS})</li>
+                        }
+                        {
+                            impactfulVulnFoundVulns ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(4)}>Vulns (Vuln Count: {impactfulVulnCountVulns})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(4)}>Vulns (Vuln Count: {impactfulVulnCountVulns})</li>
+                        }
+                        {
+                            impactfulVulnFoundTech ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(5)}>Tech (Vuln Count: {impactfulVulnCountTech})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(5)}>Tech (Vuln Count: {impactfulVulnCountTech})</li>
+                        }
+                        {
+                            impactfulVulnFoundMisconfig ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(6)}>Misconfigs (Vuln Count: {impactfulVulnCountMisconfig})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(6)}>Misconfigs (Vuln Count: {impactfulVulnCountMisconfig})</li>
+                        }
+                        {
+                            impactfulVulnFoundCVEs ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(7)}>CVEs (Vuln Count: {impactfulVulnCountCVEs})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(7)}>CVEs (Vuln Count: {impactfulVulnCountCVEs})</li>
+                        }
+                        {
+                            impactfulVulnFoundCNVD ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(8)}>CNVD (Vuln Count: {impactfulVulnCountCNVD})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(8)}>CNVD (Vuln Count: {impactfulVulnCountCNVD})</li>
+                        }
+                        {
+                            impactfulVulnFoundExposed ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(9)}>Exposed (Vuln Count: {impactfulVulnCountExposed})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(9)}>Exposed (Vuln Count: {impactfulVulnCountExposed})</li>
+                        }
+                        {
+                            impactfulVulnFoundExposure ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(10)}>Exposure (Vuln Count: {impactfulVulnCountExposure})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(10)}>Exposure (Vuln Count: {impactfulVulnCountExposure})</li>
+                        }
+                        {
+                            impactfulVulnFoundMisc ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(11)}>Misc (Vuln Count: {impactfulVulnCountMisc})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(11)}>Misc (Vuln Count: {impactfulVulnCountMisc})</li>
+                        }
+                        {
+                            impactfulVulnFoundNetwork ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(12)}>Network (Vuln Count: {impactfulVulnCountNetwork})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(12)}>Network (Vuln Count: {impactfulVulnCountNetwork})</li>
+                        }
+                        {
+                            impactfulVulnFoundRs0n ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(13)}>Rs0n (Vuln Count: {impactfulVulnCountRs0n})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(13)}>Rs0n (Vuln Count: {impactfulVulnCountRs0n})</li>
+                        }
+                        {
+                            impactfulVulnFoundHeadless ?
+                            <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(14)}>Headless (Vuln Count: {impactfulVulnCountHeadless})</li> :
+                            <li className="mt-2" onClick={(e)=>setCurrentStep(14)}>Headless (Vuln Count: {impactfulVulnCountHeadless})</li>
+                        }
+                    </ul>
                 </div>
             </div>
             <div className="row ml-5 pl-5">

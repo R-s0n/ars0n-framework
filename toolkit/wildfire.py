@@ -1,4 +1,4 @@
-import requests, argparse, subprocess, json
+import requests, argparse, subprocess, json, os
 from time import sleep
 from datetime import datetime
 
@@ -19,6 +19,21 @@ class Timer:
 def get_fqdns(args):
     res = requests.post(f"http://{args.server}:{args.port}/api/fqdn/all")
     return res
+
+def clean_screenshots(args):
+    res = get_fqdns(args)
+    fqdns = json.loads(res.text)
+    screenshots = os.listdir("../client/public/screenshots")
+    for screenshot in screenshots:
+        delete_screenshot = True
+        print(f"[-] Checking Screenshot: {screenshot}")
+        for fqdn in fqdns:
+            if fqdn['fqdn'] in screenshot:
+                print(f"[+] Screenshot {screenshot} should NOT be deleted.")
+                delete_screenshot = False
+        if delete_screenshot:
+            subprocess.run([f"rm -f ../client/public/screenshots/{screenshot}"], shell=True)
+
 
 def sort_fqdns(fqdns):
     sorted_fqdns = []
@@ -67,6 +82,7 @@ def start(args):
                     print(f"[!] Exception: {e}")
         else:
             print(f"[!] {fqdn['fqdn']} has been blacklisted for this round of scanning.  Skipping...")
+    clean_screenshots(args)
     return True
 
 def spread(args):
