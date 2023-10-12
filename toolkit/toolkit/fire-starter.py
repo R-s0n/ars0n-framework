@@ -547,7 +547,7 @@ def get_fqdn_obj(args):
     return r.json()
 
 def update_fqdn_obj(args, thisFqdn):
-    res = requests.post(f'http://{args.server}:{args.port}/api/auto/update', json=thisFqdn, proxies={"http":"http://127.0.0.1:8080","https":"http://127.0.0.1:8080"})
+    res = requests.post(f'http://{args.server}:{args.port}/api/auto/update', json=thisFqdn)
 
 def cleanup():
     subprocess.run(["rm wordlists/crawl_*"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
@@ -633,7 +633,10 @@ def wrap_up(args):
         print(f"[!] Exception: {e}")
     # input("[!] Debug Pause...")
     send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), False))
-    populate_burp(args, get_fqdn_obj(args))
+    try:
+        populate_burp(args, get_fqdn_obj(args))
+    except Exception as e:
+        print("[!] Burp Suite Proxy NOT Found.  Skipping Populate Burp Module...")
     cleanup()
 
 def collect_screenshots(home_dir, thisFqdn):
