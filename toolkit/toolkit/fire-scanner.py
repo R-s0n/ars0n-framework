@@ -18,6 +18,23 @@ class Timer:
 
     def get_stop(self):
         return self.stop.strftime("%H:%M:%S")
+    
+class Logger:
+    def __init__(self):
+        with open("logs/log.txt", "r") as file:
+            self.init_log_data = file.readlines()
+            self.init_log_len = len(self.init_log_data)
+        with open("logs/log.txt", "a") as file:
+            log_start_time = datetime.now()
+            flag = "[INIT]"
+            running_script = "Fire-Scanner.py"
+            message = "Logger Initialized"
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
+
+    def write_to_log(self, flag, running_script, message):
+        with open("logs/log.txt", "a") as file:
+            log_start_time = datetime.now()
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
 class NetworkValidator:
     def __init__(self):
@@ -184,7 +201,8 @@ def protonvpn_necessary(args, template_name):
             print(f"[!] ProtonVPN is needed for the {template_name} scan.  Disconnecting the VPN...")
             protonvpn_connect()
 
-def technologies_nuclei_scan(args, now):
+def technologies_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (Technologies) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the Technologies Templates")
         protonvpn_unnecessary(args, "Technologies")
@@ -201,7 +219,8 @@ def technologies_nuclei_scan(args, now):
         print(f"[!] Exception: {e}")
 
 
-def misconfiguration_nuclei_scan(args, now):
+def misconfiguration_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (Misconfiguration) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the Misconfiguration Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -218,7 +237,8 @@ def misconfiguration_nuclei_scan(args, now):
         print("[!] Something went wrong!  Skipping the Misconfiguration Templates...")
 
 
-def cves_nuclei_scan(args, now):
+def cves_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (CVEs) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the CVEs Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -234,7 +254,8 @@ def cves_nuclei_scan(args, now):
             protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the CVEs Templates...")
 
-def cnvd_nuclei_scan(args, now):
+def cnvd_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (CNVD) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the CNVD Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -250,7 +271,8 @@ def cnvd_nuclei_scan(args, now):
             protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the CNVD Templates...")
 
-def exposed_panels_nuclei_scan(args, now):
+def exposed_panels_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (Exposed Panels) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the Exposed Panels Templates")
         protonvpn_necessary(args, "Exposed Panels")
@@ -266,7 +288,8 @@ def exposed_panels_nuclei_scan(args, now):
             protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Exposed Panels Templates...")
 
-def exposures_nuclei_scan(args, now):
+def exposures_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (Exposures) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the Exposures Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -282,7 +305,8 @@ def exposures_nuclei_scan(args, now):
             protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Exposures Templates...")
 
-def miscellaneous_nuclei_scan(args, now):
+def miscellaneous_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (MIscellaneous) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the Miscellaneous Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -298,7 +322,8 @@ def miscellaneous_nuclei_scan(args, now):
             protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Miscellaneous Templates...")
 
-def network_nuclei_scan(args, now):
+def network_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (Network) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the OSINT Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -314,7 +339,8 @@ def network_nuclei_scan(args, now):
             protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Network Templates...")
 
-def file_nuclei_scan(args, now):
+def file_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (File) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the File Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -330,7 +356,8 @@ def file_nuclei_scan(args, now):
             protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the File Templates...")
 
-def dns_nuclei_scan(args, now):
+def dns_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (DNS) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the DNS Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -346,7 +373,8 @@ def dns_nuclei_scan(args, now):
             protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the DNS Templates...")
 
-def vulnerabilities_nuclei_scan(args, now):
+def vulnerabilities_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (Vulnerabilities) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the Vulnerabilities Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -363,7 +391,8 @@ def vulnerabilities_nuclei_scan(args, now):
         print("[!] Something went wrong!  Skipping the Vulnerabilities Templates...")
 
 
-def rs0n_nuclei_scan(args, now):
+def rs0n_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (rs0n) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the Custom Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -379,7 +408,8 @@ def rs0n_nuclei_scan(args, now):
             protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Custom Templates...")
 
-def headless_nuclei_scan(args, now):
+def headless_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (Headless) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the Headless Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -395,7 +425,8 @@ def headless_nuclei_scan(args, now):
             protonvpn_disconnect()
         print("[!] Something went wrong!  Skipping the Headless Templates...")
 
-def ssl_nuclei_scan(args, now):
+def ssl_nuclei_scan(args, now, logger):
+    logger.write_to_log("[NOTE]","Fire-Scanner.py",f"Running Nuclei (SSL) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the SSL Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -460,7 +491,7 @@ def clean_screenshots():
     subprocess.run("mv -f http*.png ./screenshots/", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
 def clean_stacktrace_dumps():
-    subprocess.run("mv -f nuclei-*.dump ./logs/", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    subprocess.run("rm -f nuclei-*.dump", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
 def move_screenshots():
     subprocess.run("""for file in ./screenshots/*; do cp -f "$file" "../client/public/screenshots/$(basename "$file")"; done""", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
@@ -477,6 +508,7 @@ def arg_parse():
 def main(args):
     starter_timer = Timer()
     network_validator = NetworkValidator()
+    logger = Logger()
     clean_screenshots()
     clean_stacktrace_dumps()
     clear_vulns(args)
@@ -489,24 +521,25 @@ def main(args):
         full_nuclei_scan(args, now)
     else:
         ## Safe Templates
-        technologies_nuclei_scan(args, now)
-        exposed_panels_nuclei_scan(args, now)
-        misconfiguration_nuclei_scan(args, now)
-        exposures_nuclei_scan(args, now)
-        rs0n_nuclei_scan(args, now)
-        headless_nuclei_scan(args, now)
-        dns_nuclei_scan(args, now)
-        ssl_nuclei_scan(args, now)
-        vulnerabilities_nuclei_scan(args, now)
-        cves_nuclei_scan(args, now)
+        technologies_nuclei_scan(args, now, logger)
+        exposed_panels_nuclei_scan(args, now, logger)
+        misconfiguration_nuclei_scan(args, now, logger)
+        exposures_nuclei_scan(args, now, logger)
+        rs0n_nuclei_scan(args, now, logger)
+        headless_nuclei_scan(args, now, logger)
+        dns_nuclei_scan(args, now, logger)
+        ssl_nuclei_scan(args, now, logger)
+        vulnerabilities_nuclei_scan(args, now, logger)
+        cves_nuclei_scan(args, now, logger)
         ## Unsafe Templates
-        # file_nuclei_scan(args, now)
-        # network_nuclei_scan(args, now)
-        # cnvd_nuclei_scan(args, now)
-        # miscellaneous_nuclei_scan(args, now)
+        # file_nuclei_scan(args, now, logger)
+        # network_nuclei_scan(args, now, logger)
+        # cnvd_nuclei_scan(args, now, logger)
+        # miscellaneous_nuclei_scan(args, now, logger)
     move_screenshots()   
     starter_timer.stop_timer()
     # protonvpn_killswitch_off()
+    logger.write_to_log("[DONE]","Fire-Scanner.py",f"Fire-Scanner Completed Successfully -> {args.fqdn}")
     print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
 if __name__ == "__main__":

@@ -19,6 +19,23 @@ class Timer:
 
     def get_stop(self):
         return self.stop.strftime("%H:%M:%S")
+    
+class Logger:
+    def __init__(self):
+        with open("logs/log.txt", "r") as file:
+            self.init_log_data = file.readlines()
+            self.init_log_len = len(self.init_log_data)
+        with open("logs/log.txt", "a") as file:
+            log_start_time = datetime.now()
+            flag = "[INIT]"
+            running_script = "Fire-Starter.py"
+            message = "Logger Initialized"
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
+
+    def write_to_log(self, flag, running_script, message):
+        with open("logs/log.txt", "a") as file:
+            log_start_time = datetime.now()
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
 class NetworkValidator:
     def __init__(self):
@@ -297,7 +314,7 @@ def subfinder_recursive(args, home_dir, thisFqdn):
 
 def gospider(args, home_dir, thisFqdn):
     try:
-        subprocess.run([f'{home_dir}/go/bin/gospider -s "https://{args.fqdn}" -o ./temp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
+        subprocess.run([f'echo "https://{args.fqdn}" | {home_dir}/go/bin/gospider -o ./temp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
         fqdn = args.fqdn
         outputFile = fqdn.replace(".", "_")
         f = open(f"./temp/gospider/{outputFile}", "r")
@@ -365,13 +382,13 @@ def subdomainizer(home_dir, thisFqdn):
     except Exception as e:
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def shuffle_dns(args, home_dir, thisFqdn):
+def shuffle_dns(args, home_dir, thisFqdn, logger):
     try:
-        subprocess.run([f'{home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp'], shell=True)
+        subprocess.run([f'echo {args.fqdn} | {home_dir}/go/bin/shuffledns -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp'], shell=True)
         f = open(f"./temp/shuffledns.tmp", "r")
         shuffledns_arr = f.read().rstrip().split("\n")
-        for subdomain in shuffledns_arr and subdomain != "":
-            if args.fqdn not in subdomain:
+        for subdomain in shuffledns_arr:
+            if args.fqdn not in subdomain and subdomain != "":
                 i = shuffledns_arr.index(subdomain)
                 del shuffledns_arr[i]
         f.close()
@@ -379,11 +396,12 @@ def shuffle_dns(args, home_dir, thisFqdn):
         thisFqdn['recon']['subdomains']['shuffledns'] = shuffledns_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
+        logger.write_to_log("[ERROR]","Fire-Starter.py",f"ShuffleDNS (Default) Was NOT Successful! -> {args.fqdn}")
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def shuffle_dns_custom(args, home_dir, thisFqdn):
+def shuffle_dns_custom(args, home_dir, thisFqdn, logger):
     try:
-        subprocess.run([f'{home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/cewl_{args.fqdn}.txt -r wordlists/resolvers.txt -o ./temp/shuffledns_custom.tmp'], shell=True)
+        subprocess.run([f'echo {args.fqdn} | {home_dir}/go/bin/shuffledns -w wordlists/cewl_{args.fqdn}.txt -r wordlists/resolvers.txt -o ./temp/shuffledns_custom.tmp'], shell=True)
         try:
             f = open(f"./temp/shuffledns_custom.tmp", "r")
         except:
@@ -396,6 +414,7 @@ def shuffle_dns_custom(args, home_dir, thisFqdn):
         thisFqdn['recon']['subdomains']['shufflednsCustom'] = clean_shuffledns_custom_arr
         update_fqdn_obj(args, thisFqdn)
     except Exception as e:
+        logger.write_to_log("[WARN]","Fire-Starter.py",f"ShuffleDNS (Custom) Was NOT Successful! -> {args.fqdn}")
         print(f"[!] ShuffleDNS w/ Custom Wordlist Failed!\n[!] Exception: {str(e)}")
 
 def consolidate(args):
@@ -535,8 +554,11 @@ def send_slack_notification(home_dir, text):
     clean_token = token.replace(u"\u000a","")
     requests.post(f'https://hooks.slack.com/services/{clean_token}', json=message_json)
 
-def build_cewl_wordlist(args):
-    subprocess.run([f'ls; cewl -d 2 -m 5 -o -a -v -w wordlists/cewl_{args.fqdn}.txt https://{args.fqdn}'], shell=True)
+def build_cewl_wordlist(args, logger):
+    try:
+        subprocess.run([f'ls; cewl -d 2 -m 5 -o -a -v -w wordlists/cewl_{args.fqdn}.txt https://{args.fqdn}'], shell=True)
+    except Exception as e:
+        logger.write_to_log("[WARN]","Fire-Starter.py",f"CeWL Failed to Build Custom Wordlist! -> {args.fqdn}")
 
 def get_home_dir():
     get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
@@ -554,6 +576,7 @@ def cleanup():
     subprocess.run(["rm wordlists/cewl_*"],  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     subprocess.run(["rm wordlists/live_*"],  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     subprocess.run(["rm temp/*.tmp"],  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    subprocess.run(["rm log/nuclei*.dump"],  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
 def get_live_server_text(args, thisFqdn, first):
     if first is True:
@@ -690,11 +713,13 @@ def protonvpn_killswitch():
 def main(args):
     starter_timer = Timer()
     network_validator = NetworkValidator()
+    logger = Logger()
     cleanup()
     print("[-] Running Subdomain Scraping Modules...")
     # Amass
     try:
         print(f"[-] Running Amass against {args.fqdn}")
+        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running Amass -> {args.fqdn}")
         amass(args, get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -703,6 +728,7 @@ def main(args):
     # Subdomain Scraping
     try:
         print(f"[-] Running Sublist3r against {args.fqdn}")
+        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running Sublist3r -> {args.fqdn}")
         sublist3r(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -710,6 +736,7 @@ def main(args):
 
     try:
         print(f"[-] Running Assetfinder against {args.fqdn}")
+        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running Assetfinder -> {args.fqdn}")
         assetfinder(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -717,6 +744,7 @@ def main(args):
 
     try:
         print(f"[-] Running Get All URLs against {args.fqdn}")
+        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running GAU -> {args.fqdn}")
         gau(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -724,6 +752,7 @@ def main(args):
 
     try:
         print(f"[-] Running CRT against {args.fqdn}")
+        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running CRT -> {args.fqdn}")
         crt(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -731,6 +760,7 @@ def main(args):
 
     try:
         print(f"[-] Running Subfinder against {args.fqdn}")
+        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running Subfinder -> {args.fqdn}")
         subfinder(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -738,6 +768,7 @@ def main(args):
 
     try:
         print(f"[-] Running Subfinder in Recursive Mode against {args.fqdn}")
+        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running Subfinder (Recursive) -> {args.fqdn}")
         subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -746,16 +777,19 @@ def main(args):
     # Subdomain Brute Force
     try:
         print(f"[-] Running ShuffleDNS w/ a Default Wordlist against {args.fqdn}")
-        shuffle_dns(args, get_home_dir(), get_fqdn_obj(args))
+        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running ShuffleDNS (Default) -> {args.fqdn}")
+        shuffle_dns(args, get_home_dir(), get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
 
     try:
         print(f"[-] Running CEWL against {args.fqdn}")
-        build_cewl_wordlist(args)
+        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Building CeWL Wordlist -> {args.fqdn}")
+        build_cewl_wordlist(args, logger)
         print(f"[-] Running ShuffleDNS w/ a Custom Wordlist against {args.fqdn}")
-        shuffle_dns_custom(args, get_home_dir(), get_fqdn_obj(args))
+        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running ShuffleDNS (Custom) -> {args.fqdn}")
+        shuffle_dns_custom(args, get_home_dir(), get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
@@ -766,6 +800,7 @@ def main(args):
     # Subdomain Link/JS Discovery
     if args.deep:
         print(f"[-] Running DEEP Crawl Scan on {args.fqdn}...")
+        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running GoSpider (Deep) -> {args.fqdn}")
         try:
             gospider_deep(get_home_dir(), get_fqdn_obj(args))
             run_checks(args, starter_timer)
@@ -774,6 +809,7 @@ def main(args):
     else:
         try:
             print(f"[-] Running Gospider against {args.fqdn}")
+            logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running GoSpider -> {args.fqdn}")
             gospider(args, get_home_dir(), get_fqdn_obj(args))
             run_checks(args, starter_timer)
         except Exception as e:
@@ -781,6 +817,7 @@ def main(args):
 
     try:
         print(f"[-] Running Subdomainizer against {args.fqdn}")
+        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running Subdomainizer -> {args.fqdn}")
         print(f"[-] Current Time: {datetime.now()}")
         subdomainizer(get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
@@ -789,6 +826,7 @@ def main(args):
 
     if not check_clear_sky_data():
         if not args.update:
+            logger.write_to_log("[NOTE]","Fire-Starter.py",f"Clear Sky Data NOT Found.  Skipping...")
             print("[!] Clear Sky data not found!  Skipping AWS IP range scan...")
             print("[!] To enable the Clear Sky module, run fire-starter.py in UPDATE MODE (--update)")
         else:
@@ -800,6 +838,7 @@ def main(args):
     wrap_up(args)
     collect_screenshots(get_home_dir(), get_fqdn_obj(args))
     starter_timer.stop_timer()
+    logger.write_to_log("[DONE]","Fire-Starter.py",f"Fire-Starter Completed Successfully -> {args.fqdn}")
     print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
 if __name__ == "__main__":

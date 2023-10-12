@@ -1,7 +1,11 @@
 const { Fqdn } = require("../models/fqdn.model");
 const { Url } = require("../models/url.model");
 const { Cve } = require("../models/cve.model");
-const { exec } = require("child_process");
+const util = require('util');
+const exec = require('child_process').exec;
+const spawn = require('child_process').spawn;
+const execFile = require('child_process').execFile;
+const execSync = util.promisify(require('child_process').execSync);
 const axios = require('axios');
 const https = require('https');
 
@@ -237,4 +241,42 @@ module.exports.runBurpScanDeep = (req, res) => {
         .catch((error) => {
             console.error('Error:', error);
         });
+}
+
+async function runWildfireProcess(flags) {
+    try {
+        process.chdir('./toolkit')
+        const { stdout, stderr } = await exec("python3 wildfire.py" + flags);
+        // const { stdout, stderr } = await exec("echo floqast.studio | /home/rs0n/go/bin/shuffledns -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp");
+        // console.log('stdout:', stdout);
+        // console.log('stderr:', stderr);
+        // const test = spawn("/home/rs0n/go/bin/shuffledns", ["-d","floqast.studio","-w","wordlists/all.txt","-r","wordlists/resolvers.txt"], {shell:true});
+        // test.stdout.on('data', (data) => {
+        //     console.log(`stdout: ${data}`);
+        // });
+        // test.stderr.on('data', (data) => {
+        //     console.error(`stderr: ${data}`);
+        // });
+        // test.on('close', (code) => {
+        //     console.log(`child process exited with code ${code}`);
+        // }); 
+        process.chdir('../')
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+module.exports.runWildfire = (req, res) => {
+    console.log(req.body);
+    let flags = " ";
+    if (req.body.fireStarter){
+        flags = flags + "--start ";
+    }
+    if (req.body.fireCloud){
+        flags = flags + "--cloud ";
+    }
+    if (req.body.fireScanner){
+        flags = flags + "--scan ";
+    }
+    runWildfireProcess(flags);
 }

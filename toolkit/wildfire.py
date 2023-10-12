@@ -15,6 +15,24 @@ class Timer:
 
     def get_stop(self):
         return self.stop.strftime("%H:%M:%S")
+    
+class Logger:
+    def __init__(self):
+        with open("logs/log.txt", "r") as file:
+            self.init_log_data = file.readlines()
+            self.init_log_len = len(self.init_log_data)
+        with open("logs/log.txt", "a") as file:
+            log_start_time = datetime.now()
+            flag = "[INIT]"
+            running_script = "Wildfire.py"
+            message = "Logger Initialized"
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
+
+    def write_to_log(self, flag, running_script, message):
+        with open("logs/log.txt", "a") as file:
+            log_start_time = datetime.now()
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
+
 
 def get_fqdns(args):
     res = requests.post(f"http://{args.server}:{args.port}/api/fqdn/all")
@@ -46,7 +64,7 @@ def sort_fqdns(fqdns):
         sorted_fqdns.append(last_updated)
     return sorted_fqdns
 
-def start(args):
+def start(args, logger):
     res = get_fqdns(args)
     fqdn_json = json.loads(res.text)
     sorted_fqdns = sort_fqdns(fqdn_json)
@@ -65,6 +83,7 @@ def start(args):
                 return True
             seed = fqdn['fqdn']
             print(f"[-] Running Fire-Starter Modules (Subdomain Recon) against {seed}")
+            logger.write_to_log("[NOTE]","Wildfire.py",f"Running Fire-Starter.py -> {seed}")
             if args.deep:
                 try:
                     subprocess.run([f'python3 toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} -p {args.proxy} --deep'], shell=True)
@@ -123,7 +142,7 @@ def spread(args):
             print(f"[!] {fqdn['fqdn']} has been blacklisted for this round of scanning.  Skipping...")
     return True
 
-def scan(args):
+def scan(args, logger):
     res = get_fqdns(args)
     fqdn_json = json.loads(res.text)
     sorted_fqdns = sort_fqdns(fqdn_json)
@@ -139,6 +158,7 @@ def scan(args):
                 return True
             seed = fqdn['fqdn']
             print(f"[-] Running Drifting-Embers Modules (Vuln Scanning) against {seed}")
+            logger.write_to_log("[NOTE]","Wildfire.py",f"Running Fire-Scanner.py -> {seed}")
             try:
                 subprocess.run([f'python3 toolkit/fire-scanner.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
             except Exception as e:
@@ -209,34 +229,33 @@ def arg_parse():
     parser.add_argument('--start', help='Run Fire-Starter Modules', required=False, action='store_true')
     parser.add_argument('--spread', help='Run Fire-Spreader Modules (Expect a LONG scan time)', required=False, action='store_true')
     parser.add_argument('--scan', help='Run Vuln Scan Modules', required=False, action='store_true')
-    parser.add_argument('--enum', help='Run Enumeration Modules', required=False, action='store_true')
+    parser.add_argument('--cloud', help='Run Cloud Enumeration Modules', required=False, action='store_true')
     parser.add_argument('--deep', help='Crawl all live servers for subdomains', required=False, action='store_true')
     parser.add_argument('--bridge', help='Bridge-the-Gap Mode -- Only performs the Firestarter Module on a target FQDN if that module has not yet been run against that target', required=False, action='store_true')
     parser.add_argument('-t','--timeout', help='Adds a timeout check after each module (in minutes)', required=False)
     return parser.parse_args()
 
 def main(args):
+    logger = Logger()
     if (args.blacklist):
         args = build_blacklist(args)
     else:
         args.blacklist = ""
-    wildfire_timer = Timer()
-    if args.start is True and args.spread is True:
-        start(args)
-        spread(args)
-    elif args.start is True and args.spread is False:
-        start(args)
-    elif args.spread is True and args.start is False:
-        spread(args)
-    if args.scan is True:
-        scan(args)
     if not args.proxy:
         args.proxy = "127.0.0.1"
-    if args.enum is True:
-        enum(args)
+    wildfire_timer = Timer()
+    if args.start:
+        logger.write_to_log("[NOTE]","Wildfire.py","Start Flag Detected")
+        start(args, logger)
+    if args.scan:
+        logger.write_to_log("[NOTE]","Wildfire.py","Scan Flag Detected")
+        scan(args, logger)
+    if args.cloud:
+        print("Cloud Flag Detected")
     if args.start is False and args.spread is False and args.scan is False and args.enum is False:
         print("[!] Please Choose a Module!\n[!] Options:\n\n   --start   [Run Fire-Starter Modules]\n   --spread  [Run Fire-Spreader Modules] (Expect a LONG scan time)\n   --scan    [Run Vuln Scan Modules]\n   --enum    [Run Enumeration Modules]\n")
     wildfire_timer.stop_timer()
+    logger.write_to_log("[DONE]","Wildfire.py","Wildfire Completed Successfully")
     print(f"[+] Wildfire Scan Done!  Start: {wildfire_timer.get_start()}  |  Stop: {wildfire_timer.get_stop()}")
 
 if __name__ == "__main__":
