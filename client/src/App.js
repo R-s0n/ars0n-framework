@@ -51,7 +51,7 @@ function App() {
       fireCloud: fireCloud,
       fireScanner: fireScanner
     };
-    axios.post('http://localhost:8000/api/wildfire', flags)
+    axios.post('http://localhost:5000/wildfire', flags)
       .then(res=>{
         console.log("Wildfire Running...");
       })

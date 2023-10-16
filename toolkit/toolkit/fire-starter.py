@@ -22,6 +22,7 @@ class Timer:
     
 class Logger:
     def __init__(self):
+        subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt"], shell=True)
         with open("logs/log.txt", "r") as file:
             self.init_log_data = file.readlines()
             self.init_log_len = len(self.init_log_data)
@@ -722,7 +723,7 @@ def main(args):
     # Amass
     try:
         print(f"[-] Running Amass against {args.fqdn}")
-        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running Amass -> {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Amass -> {args.fqdn}")
         amass(args, get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -731,7 +732,7 @@ def main(args):
     # Subdomain Scraping
     try:
         print(f"[-] Running Sublist3r against {args.fqdn}")
-        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running Sublist3r -> {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Sublist3r -> {args.fqdn}")
         sublist3r(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -739,7 +740,7 @@ def main(args):
 
     try:
         print(f"[-] Running Assetfinder against {args.fqdn}")
-        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running Assetfinder -> {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Assetfinder -> {args.fqdn}")
         assetfinder(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -747,7 +748,7 @@ def main(args):
 
     try:
         print(f"[-] Running Get All URLs against {args.fqdn}")
-        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running GAU -> {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GAU -> {args.fqdn}")
         gau(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -755,7 +756,7 @@ def main(args):
 
     try:
         print(f"[-] Running CRT against {args.fqdn}")
-        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running CRT -> {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running CRT -> {args.fqdn}")
         crt(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -763,7 +764,7 @@ def main(args):
 
     try:
         print(f"[-] Running Subfinder against {args.fqdn}")
-        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running Subfinder -> {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder -> {args.fqdn}")
         subfinder(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -771,7 +772,7 @@ def main(args):
 
     try:
         print(f"[-] Running Subfinder in Recursive Mode against {args.fqdn}")
-        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running Subfinder (Recursive) -> {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder (Recursive) -> {args.fqdn}")
         subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
     except Exception as e:
@@ -780,7 +781,7 @@ def main(args):
     # Subdomain Brute Force
     try:
         print(f"[-] Running ShuffleDNS w/ a Default Wordlist against {args.fqdn}")
-        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running ShuffleDNS (Default) -> {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running ShuffleDNS (Default) -> {args.fqdn}")
         shuffle_dns(args, get_home_dir(), get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
@@ -788,10 +789,10 @@ def main(args):
 
     try:
         print(f"[-] Running CEWL against {args.fqdn}")
-        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Building CeWL Wordlist -> {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Building CeWL Wordlist -> {args.fqdn}")
         build_cewl_wordlist(args, logger)
         print(f"[-] Running ShuffleDNS w/ a Custom Wordlist against {args.fqdn}")
-        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running ShuffleDNS (Custom) -> {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running ShuffleDNS (Custom) -> {args.fqdn}")
         shuffle_dns_custom(args, get_home_dir(), get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
@@ -803,7 +804,7 @@ def main(args):
     # Subdomain Link/JS Discovery
     if args.deep:
         print(f"[-] Running DEEP Crawl Scan on {args.fqdn}...")
-        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running GoSpider (Deep) -> {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GoSpider (Deep) -> {args.fqdn}")
         try:
             gospider_deep(get_home_dir(), get_fqdn_obj(args))
             run_checks(args, starter_timer)
@@ -812,7 +813,7 @@ def main(args):
     else:
         try:
             print(f"[-] Running Gospider against {args.fqdn}")
-            logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running GoSpider -> {args.fqdn}")
+            logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GoSpider -> {args.fqdn}")
             gospider(args, get_home_dir(), get_fqdn_obj(args))
             run_checks(args, starter_timer)
         except Exception as e:
@@ -820,7 +821,7 @@ def main(args):
 
     try:
         print(f"[-] Running Subdomainizer against {args.fqdn}")
-        logger.write_to_log("[NOTE]","Fire-Starter.py",f"Running Subdomainizer -> {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subdomainizer -> {args.fqdn}")
         print(f"[-] Current Time: {datetime.now()}")
         subdomainizer(get_home_dir(), get_fqdn_obj(args))
         run_checks(args, starter_timer)
@@ -829,7 +830,7 @@ def main(args):
 
     if not check_clear_sky_data():
         if not args.update:
-            logger.write_to_log("[NOTE]","Fire-Starter.py",f"Clear Sky Data NOT Found.  Skipping...")
+            logger.write_to_log("[MSG]","Fire-Starter.py",f"Clear Sky Data NOT Found.  Skipping...")
             print("[!] Clear Sky data not found!  Skipping AWS IP range scan...")
             print("[!] To enable the Clear Sky module, run fire-starter.py in UPDATE MODE (--update)")
         else:

@@ -18,6 +18,7 @@ class Timer:
     
 class Logger:
     def __init__(self):
+        subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt"], shell=True)
         with open("logs/log.txt", "r") as file:
             self.init_log_data = file.readlines()
             self.init_log_len = len(self.init_log_data)
@@ -83,7 +84,7 @@ def start(args, logger):
                 return True
             seed = fqdn['fqdn']
             print(f"[-] Running Fire-Starter Modules (Subdomain Recon) against {seed}")
-            logger.write_to_log("[NOTE]","Wildfire.py",f"Running Fire-Starter.py -> {seed}")
+            logger.write_to_log("[MSG]","Wildfire.py",f"Running Fire-Starter.py -> {seed}")
             if args.deep:
                 try:
                     subprocess.run([f'python3 toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} -p {args.proxy} --deep'], shell=True)
@@ -158,7 +159,7 @@ def scan(args, logger):
                 return True
             seed = fqdn['fqdn']
             print(f"[-] Running Drifting-Embers Modules (Vuln Scanning) against {seed}")
-            logger.write_to_log("[NOTE]","Wildfire.py",f"Running Fire-Scanner.py -> {seed}")
+            logger.write_to_log("[MSG]","Wildfire.py",f"Running Fire-Scanner.py -> {seed}")
             try:
                 subprocess.run([f'python3 toolkit/fire-scanner.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
             except Exception as e:
@@ -245,10 +246,10 @@ def main(args):
         args.proxy = "127.0.0.1"
     wildfire_timer = Timer()
     if args.start:
-        logger.write_to_log("[NOTE]","Wildfire.py","Start Flag Detected")
+        logger.write_to_log("[MSG]","Wildfire.py","Start Flag Detected")
         start(args, logger)
     if args.scan:
-        logger.write_to_log("[NOTE]","Wildfire.py","Scan Flag Detected")
+        logger.write_to_log("[MSG]","Wildfire.py","Scan Flag Detected")
         scan(args, logger)
     if args.cloud:
         print("Cloud Flag Detected")
