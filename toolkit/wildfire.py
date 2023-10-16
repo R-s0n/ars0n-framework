@@ -44,6 +44,8 @@ def clean_screenshots(args):
     fqdns = json.loads(res.text)
     screenshots = os.listdir("../client/public/screenshots")
     for screenshot in screenshots:
+        if ".gitkeep" in screenshot:
+            continue
         delete_screenshot = True
         print(f"[-] Checking Screenshot: {screenshot}")
         for fqdn in fqdns:
