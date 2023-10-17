@@ -15,6 +15,21 @@ class Timer:
 
     def get_stop(self):
         return self.stop.strftime("%H:%M:%S")
+    
+def flask_cors_check():
+    flask_cors_check = subprocess.run([f"pip3 show flask_cors"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+    if flask_cors_check.returncode == 0:
+        print("[+] Flask_CORS is already installed.")
+        return True
+    print("[!] Flask_CORS is NOT installed.  Installing now...")
+    return False
+
+def install_flask_cors():
+    install_check = subprocess.run([f"pip3 install flask_cors"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+    if install_check.returncode == 0:
+        print("[+] Flask_CORS was installed successfully!")
+    else:
+        print("[!] Something went wrong!  Flask_CORS was NOT installed successfully...")    
 
 def tools_dir_check():
     home_dir = get_home_dir()
@@ -455,6 +470,8 @@ def validate_install():
     print("[-] Validating installation...")
     if tools_dir_check() is False:
         return False
+    if flask_cors_check() is False:
+        return False
     if node_check() is False:
         return False
     if npm_check is False:
@@ -508,6 +525,8 @@ def main(args):
     update_apt()
     if tools_dir_check() is False:
         create_tools_dir()
+    if flask_cors_check() is False:
+        install_flask_cors()
     if node_check() is False:
         install_node()
     if npm_check() is False:
