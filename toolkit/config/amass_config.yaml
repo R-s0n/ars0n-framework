@@ -1,0 +1,55 @@
+scope:
+  ports: # ports to be used when actively reaching a service
+    - 80
+    - 443
+    - 81
+    - 444
+    - 591
+    - 593
+    - 8080
+    - 8081
+    - 8088
+    - 8888
+    - 9000
+    - 9090
+    - 9999
+    - 10000
+    - 12345
+    - 18091
+    - 18092
+    - 20720
+    - 22222
+    - 24444
+    - 27374
+    - 32768
+options:
+  resolvers:
+  - 1.1.1.1
+  - 8.8.8.8
+  - 76.76.19.19
+  - 64.6.64.6
+  - 74.82.42.42
+  - 1.0.0.1
+  - 8.8.4.4
+  - 64.6.65.6
+  - 77.88.8.8
+  - 129.250.35.250
+  - 208.67.220.222
+  - 129.250.35.251
+  - 198.82.247.34
+  - 9.9.9.9
+  - 208.67.222.222
+  - 80.67.169.12
+  - 195.113.144.194
+  datasources: "./amass_datasources.yaml" # the file path that will point to the data source configuration
+  wordlist: # global wordlist(s) to uses 
+    - "../wordlists/deepmagic.com_top50kprefixes.txt"
+    - "../wordlists/deepmagic.com_top500prefixes.txt"
+  bruteforce: # specific option to use when brute forcing is needed
+    enabled: true
+    wordlists: # wordlist(s) to use that are specific to brute forcing
+      - "../wordlists/subdomains-top1mil-5000.txt"
+  alterations: # specific option to use when brute forcing is needed
+    enabled: true
+    wordlists: # wordlist(s) to use that are specific to alterations
+      - "../wordlists/subdomains-top1mil-110000.txt"
