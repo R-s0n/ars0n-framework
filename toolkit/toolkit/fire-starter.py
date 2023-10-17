@@ -105,7 +105,7 @@ class NetworkValidator:
             self.vpn_connected = False
 
 
-def sublist3r(args, home_dir, thisFqdn):
+def sublist3r(args, home_dir, thisFqdn, logger):
     try:
         subprocess.run([f"python3 {home_dir}/Tools/Sublist3r/sublist3r.py -d {args.fqdn} -t 50 -o ./temp/sublist3r.tmp"], text=True, shell=True)
         f = open("./temp/sublist3r.tmp", "r")
@@ -114,9 +114,12 @@ def sublist3r(args, home_dir, thisFqdn):
         subprocess.run(["rm ./temp/sublist3r.tmp"], stdout=subprocess.DEVNULL, shell=True)
         thisFqdn['recon']['subdomains']['sublist3r'] = sublist3r_arr
         update_fqdn_obj(args, thisFqdn)
+        subdomains_found = len(thisFqdn['recon']['subdomains']['sublist3r'])
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Sublist3r Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
         if """[Errno 2] No such file or directory: './temp/sublist3r.tmp'""" not in str(e):
             print(f"[!] Something went wrong!  Exception: {str(e)}")
+            logger.write_to_log("[ERROR]","Fire-Starter.py",f"Sublist3r Exception: {str(e)}")
         else:
             print("[-] Sublist3r did not find any results.  Continuing scan...")
 
@@ -220,7 +223,7 @@ def amass_get_dns(args):
             dns['soarecord'].append(line.split("\n")[0])
     return dns
 
-def amass(args, initFqdn):
+def amass(args, initFqdn, logger):
     try:
         config_test = subprocess.run(["ls config/amass_config.yaml"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         if config_test.returncode == 0:
@@ -249,10 +252,13 @@ def amass(args, initFqdn):
                 final_amass_arr.append(amass_finding)
         thisFqdn['recon']['subdomains']['amass'] = final_amass_arr
         update_fqdn_obj(args, thisFqdn)
+        subdomains_found = len(thisFqdn['recon']['subdomains']['amass'])
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Amass Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
+        logger.write_to_log("[ERROR]","Fire-Starter.py",f"Amass Exception: {str(e)}")
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def assetfinder(args, home_dir, thisFqdn):
+def assetfinder(args, home_dir, thisFqdn, logger):
     try:
         subprocess.run([f"{home_dir}/go/bin/assetfinder --subs-only {args.fqdn} > ./temp/assetfinder.tmp"], shell=True)
         f = open(f"./temp/assetfinder.tmp", "r")
@@ -261,10 +267,13 @@ def assetfinder(args, home_dir, thisFqdn):
         subprocess.run(["rm ./temp/assetfinder.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['assetfinder'] = assetfinder_arr
         update_fqdn_obj(args, thisFqdn)
+        subdomains_found = len(thisFqdn['recon']['subdomains']['assetfinder'])
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Assetfinder Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
+        logger.write_to_log("[ERROR]","Fire-Starter.py",f"Assetfinder Exception: {str(e)}")
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def gau(args, home_dir, thisFqdn):
+def gau(args, home_dir, thisFqdn, logger):
     try:
         subprocess.run([f"{home_dir}/go/bin/gau --subs {args.fqdn} | cut -d / -f 3 | sort -u > ./temp/gau.tmp"], shell=True)
         f = open(f"./temp/gau.tmp", "r")
@@ -273,10 +282,13 @@ def gau(args, home_dir, thisFqdn):
         subprocess.run(["rm ./temp/gau.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['gau'] = gau_arr
         update_fqdn_obj(args, thisFqdn)
+        subdomains_found = len(thisFqdn['recon']['subdomains']['gau'])
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"GAU Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
+        logger.write_to_log("[ERROR]","Fire-Starter.py",f"GAU Exception: {str(e)}")
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def crt(args, home_dir, thisFqdn):
+def crt(args, home_dir, thisFqdn, logger):
     try:
         subprocess.run([f"{home_dir}/Tools/tlshelpers/getsubdomain {args.fqdn} > ./temp/ctl.tmp"], shell=True)
         f = open(f"./temp/ctl.tmp", "r")
@@ -285,10 +297,13 @@ def crt(args, home_dir, thisFqdn):
         subprocess.run(["rm ./temp/ctl.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['ctl'] = ctl_arr
         update_fqdn_obj(args, thisFqdn)
+        subdomains_found = len(thisFqdn['recon']['subdomains']['ctl'])
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"CTL Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
+        logger.write_to_log("[ERROR]","Fire-Starter.py",f"CTL Exception: {str(e)}")
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def subfinder(args, home_dir, thisFqdn):
+def subfinder(args, home_dir, thisFqdn, logger):
     try:
         subprocess.run([f'{home_dir}/go/bin/subfinder -d {args.fqdn} -o ./temp/subfinder.tmp'], shell=True)
         f = open(f"./temp/subfinder.tmp", "r")
@@ -297,10 +312,13 @@ def subfinder(args, home_dir, thisFqdn):
         subprocess.run(["rm -rf ./temp/subfinder.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['subfinder'] = subfinder_arr
         update_fqdn_obj(args, thisFqdn)
+        subdomains_found = len(thisFqdn['recon']['subdomains']['subfinder'])
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Subfinder Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
+        logger.write_to_log("[ERROR]","Fire-Starter.py",f"Subfinder Exception: {str(e)}")
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def subfinder_recursive(args, home_dir, thisFqdn):
+def subfinder_recursive(args, home_dir, thisFqdn, logger):
     try:
         subprocess.run([f'{home_dir}/go/bin/subfinder -d {args.fqdn} -recursive -o ./temp/subfinder.tmp'], shell=True)
         f = open(f"./temp/subfinder.tmp", "r")
@@ -310,10 +328,13 @@ def subfinder_recursive(args, home_dir, thisFqdn):
         combined_subfinder_results = list(set(subfinder_arr + thisFqdn['recon']['subdomains']['subfinder']))
         thisFqdn['recon']['subdomains']['subfinder'] = combined_subfinder_results
         update_fqdn_obj(args, thisFqdn)
+        subdomains_found = len(subfinder_arr)
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Subfinder (Recursive) Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
+        logger.write_to_log("[ERROR]","Fire-Starter.py",f"Subfinder (Recursive) Exception: {str(e)}")
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def gospider(args, home_dir, thisFqdn):
+def gospider(args, home_dir, thisFqdn, logger):
     try:
         subprocess.run([f'echo "https://{args.fqdn}" | {home_dir}/go/bin/gospider -o ./temp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
         fqdn = args.fqdn
@@ -335,10 +356,13 @@ def gospider(args, home_dir, thisFqdn):
                 gospider_link_arr.remove(item)
         thisFqdn['recon']['subdomains']['gospider'] = gospider_link_arr
         update_fqdn_obj(args, thisFqdn)
+        subdomains_found = len(thisFqdn['recon']['subdomains']['gospider'])
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"GoSpider Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
+        logger.write_to_log("[ERROR]","Fire-Starter.py",f"GoSpider Exception: {str(e)}")
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def gospider_deep(home_dir, thisFqdn):
+def gospider_deep(home_dir, thisFqdn, logger):
     try:
         f = open('wordlists/crawl_list.tmp', 'r')
         domain_arr = f.read().rstrip().split("\n")
@@ -360,10 +384,13 @@ def gospider_deep(home_dir, thisFqdn):
         subprocess.run(["rm -rf ./temp/gospider"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['gospider'] = gospider_link_arr
         update_fqdn_obj(args, thisFqdn)
+        subdomains_found = len(thisFqdn['recon']['subdomains']['gospider'])
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"GoSpider Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
+        logger.write_to_log("[ERROR]","Fire-Starter.py",f"GoSpider Exception: {str(e)}")
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def subdomainizer(home_dir, thisFqdn):
+def subdomainizer(home_dir, thisFqdn, logger):
     try:
         file_path = './wordlists/live_servers.txt'
         max_lines = 250
@@ -380,7 +407,10 @@ def subdomainizer(home_dir, thisFqdn):
         subprocess.run(["rm ./temp/subdomainizer.tmp"], stdout=subprocess.DEVNULL, shell=True)
         thisFqdn['recon']['subdomains']['subdomainizer'] = subdomainizer_arr
         update_fqdn_obj(args, thisFqdn)
+        subdomains_found = len(thisFqdn['recon']['subdomains']['subdomainizer'])
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Subdomainizer Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
+        logger.write_to_log("[ERROR]","Fire-Starter.py",f"Subdomainizer Exception: {str(e)}")
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
 def shuffle_dns(args, home_dir, thisFqdn, logger):
@@ -396,8 +426,10 @@ def shuffle_dns(args, home_dir, thisFqdn, logger):
         subprocess.run(["rm -rf ./temp/shuffledns.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['shuffledns'] = shuffledns_arr
         update_fqdn_obj(args, thisFqdn)
+        subdomains_found = len(thisFqdn['recon']['subdomains']['shuffledns'])
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"ShuffleDNS (Default) Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
-        logger.write_to_log("[ERROR]","Fire-Starter.py",f"ShuffleDNS (Default) Was NOT Successful! -> {args.fqdn}")
+        logger.write_to_log("[ERROR]","Fire-Starter.py",f"ShuffleDNS (Default) Exception: {str(e)}")
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
 def shuffle_dns_custom(args, home_dir, thisFqdn, logger):
@@ -414,8 +446,10 @@ def shuffle_dns_custom(args, home_dir, thisFqdn, logger):
         clean_shuffledns_custom_arr = [item for item in shuffledns_custom_arr if item != ""]
         thisFqdn['recon']['subdomains']['shufflednsCustom'] = clean_shuffledns_custom_arr
         update_fqdn_obj(args, thisFqdn)
+        subdomains_found = len(thisFqdn['recon']['subdomains']['shufflednsCustom'])
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"ShuffleDNS (Custom) Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
-        logger.write_to_log("[WARN]","Fire-Starter.py",f"ShuffleDNS (Custom) Was NOT Successful! -> {args.fqdn}")
+        logger.write_to_log("[WARN]","Fire-Starter.py",f"ShuffleDNS (Custom) Exception: {str(e)}")
         print(f"[!] ShuffleDNS w/ Custom Wordlist Failed!\n[!] Exception: {str(e)}")
 
 def consolidate(args):
@@ -724,7 +758,7 @@ def main(args):
     try:
         print(f"[-] Running Amass against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Amass -> {args.fqdn}")
-        amass(args, get_fqdn_obj(args))
+        amass(args, get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
@@ -733,7 +767,7 @@ def main(args):
     try:
         print(f"[-] Running Sublist3r against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Sublist3r -> {args.fqdn}")
-        sublist3r(args, get_home_dir(), get_fqdn_obj(args))
+        sublist3r(args, get_home_dir(), get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
@@ -741,7 +775,7 @@ def main(args):
     try:
         print(f"[-] Running Assetfinder against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Assetfinder -> {args.fqdn}")
-        assetfinder(args, get_home_dir(), get_fqdn_obj(args))
+        assetfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
@@ -749,7 +783,7 @@ def main(args):
     try:
         print(f"[-] Running Get All URLs against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GAU -> {args.fqdn}")
-        gau(args, get_home_dir(), get_fqdn_obj(args))
+        gau(args, get_home_dir(), get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
@@ -757,7 +791,7 @@ def main(args):
     try:
         print(f"[-] Running CRT against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running CRT -> {args.fqdn}")
-        crt(args, get_home_dir(), get_fqdn_obj(args))
+        crt(args, get_home_dir(), get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
@@ -765,7 +799,7 @@ def main(args):
     try:
         print(f"[-] Running Subfinder against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder -> {args.fqdn}")
-        subfinder(args, get_home_dir(), get_fqdn_obj(args))
+        subfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
@@ -773,7 +807,7 @@ def main(args):
     try:
         print(f"[-] Running Subfinder in Recursive Mode against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder (Recursive) -> {args.fqdn}")
-        subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args))
+        subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
@@ -806,7 +840,7 @@ def main(args):
         print(f"[-] Running DEEP Crawl Scan on {args.fqdn}...")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GoSpider (Deep) -> {args.fqdn}")
         try:
-            gospider_deep(get_home_dir(), get_fqdn_obj(args))
+            gospider_deep(get_home_dir(), get_fqdn_obj(args), logger)
             run_checks(args, starter_timer)
         except Exception as e:
             print(f"[!] Exception: {e}")
@@ -814,7 +848,7 @@ def main(args):
         try:
             print(f"[-] Running Gospider against {args.fqdn}")
             logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GoSpider -> {args.fqdn}")
-            gospider(args, get_home_dir(), get_fqdn_obj(args))
+            gospider(args, get_home_dir(), get_fqdn_obj(args), logger)
             run_checks(args, starter_timer)
         except Exception as e:
             print(f"[!] Exception: {e}")
@@ -823,7 +857,7 @@ def main(args):
         print(f"[-] Running Subdomainizer against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subdomainizer -> {args.fqdn}")
         print(f"[-] Current Time: {datetime.now()}")
-        subdomainizer(get_home_dir(), get_fqdn_obj(args))
+        subdomainizer(get_home_dir(), get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")

@@ -232,6 +232,7 @@ def arg_parse():
     parser.add_argument('--start', help='Run Fire-Starter Modules', required=False, action='store_true')
     parser.add_argument('--spread', help='Run Fire-Spreader Modules (Expect a LONG scan time)', required=False, action='store_true')
     parser.add_argument('--scan', help='Run Vuln Scan Modules', required=False, action='store_true')
+    parser.add_argument('--enum', help='Run Enumeration Modules', required=False, action='store_true')
     parser.add_argument('--cloud', help='Run Cloud Enumeration Modules', required=False, action='store_true')
     parser.add_argument('--deep', help='Crawl all live servers for subdomains', required=False, action='store_true')
     parser.add_argument('--bridge', help='Bridge-the-Gap Mode -- Only performs the Firestarter Module on a target FQDN if that module has not yet been run against that target', required=False, action='store_true')
