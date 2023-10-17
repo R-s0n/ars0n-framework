@@ -3,7 +3,7 @@ client/node_modules
 client/public/screenshots/http*.png
 toolkit/h1.json
 toolkit/temp/*
-toolkit/config/amass_datasources.yaml
+toolkit/config/amass_*.yaml
 toolkit/screenshots/http*.png
 toolkit/toolkit/nuclei-stacktrace-*.dump
 toolkit/nuclei-stacktrace-*.dump
