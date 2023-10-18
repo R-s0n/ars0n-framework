@@ -13,6 +13,8 @@ function App() {
   const [fireStarter, setFireStarter] = useState(true);
   const [fireCloud, setFireCloud] = useState(false);
   const [fireScanner, setFireScanner] = useState(false);
+  const [fireSpreadder, setFireSpreadder] = useState(false);
+  const [fireEnumeration, setFireEnumeration] = useState(false);
 
   useEffect(()=>{
     axios.post('http://localhost:8000/api/fqdn/all', {})
@@ -82,6 +84,22 @@ function App() {
     }
   }
 
+  const handleSpreadToggle = () => {
+    if (fireScanner) {
+      setFireSpreadder(false);
+    } else {
+      setFireSpreadder(true)
+    }
+  }
+
+  const handleEnumToggle = () => {
+    if (fireScanner) {
+      setFireEnumeration(false);
+    } else {
+      setFireEnumeration(true)
+    }
+  }
+
   Modal.setAppElement('#root');
 
   return (
@@ -125,10 +143,14 @@ function App() {
       <button  style={{width: '145px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit" onClick={runWildfire}>Wildfire.py</button>
       <label style={{padding: '15px', color: '#D9D9D9'}} for="checkbox1">Fire-Starter</label>
       <input style={{padding: '15px'}} type="checkbox" id="firestart" name="firestart" class="checkbox" onChange={handleStartToggle} checked={fireStarter}/>
-      <label style={{padding: '15px', color: '#D9D9D9'}} for="checkbox2">Fire-Cloud</label>
-      <input style={{padding: '15px'}} type="checkbox" id="firecloud" name="firecloud" class="checkbox" onChange={handleCloudToggle} checked={fireCloud}/>
+      <label style={{padding: '15px', color: '#D9D9D9', textDecoration: 'line-through'}} for="checkbox2">Fire-Cloud</label>
+      <input style={{padding: '15px'}} type="checkbox" id="firecloud" name="firecloud" class="checkbox" onChange={handleCloudToggle} checked={fireCloud} disabled/>
       <label style={{padding: '15px', color: '#D9D9D9'}} for="checkbox3">Fire-Scanner</label>
       <input style={{padding: '15px'}} type="checkbox" id="firescan" name="firescan" class="checkbox" onChange={handleScannerToggle} checked={fireScanner}/>
+      <label style={{padding: '15px', color: '#D9D9D9', textDecoration: 'line-through'}} for="checkbox2">Fire-Spreadder</label>
+      <input style={{padding: '15px'}} type="checkbox" id="firecloud" name="firecloud" class="checkbox" onChange={handleSpreadToggle} checked={fireSpreadder} disabled/>
+      <label style={{padding: '15px', color: '#D9D9D9', textDecoration: 'line-through'}} for="checkbox2">Fire-Enumeration</label>
+      <input style={{padding: '15px'}} type="checkbox" id="firecloud" name="firecloud" class="checkbox" onChange={handleEnumToggle} checked={fireEnumeration} disabled/>
     </div>
     {noFqdns === false && <Fqdn index={activeTab} thisFqdn={fqdns[activeTab]} buttonFunction={deleteFqdn} setActiveTab={setActiveTab} />}
     </div>
