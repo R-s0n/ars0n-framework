@@ -145,8 +145,8 @@ function App() {
       <input style={{padding: '15px'}} type="checkbox" id="firestart" name="firestart" class="checkbox" onChange={handleStartToggle} checked={fireStarter}/>
       <label style={{padding: '15px', color: '#D9D9D9', textDecoration: 'line-through'}} for="checkbox2">Fire-Cloud</label>
       <input style={{padding: '15px'}} type="checkbox" id="firecloud" name="firecloud" class="checkbox" onChange={handleCloudToggle} checked={fireCloud} disabled/>
-      <label style={{padding: '15px', color: '#D9D9D9'}} for="checkbox3">Fire-Scanner</label>
-      <input style={{padding: '15px'}} type="checkbox" id="firescan" name="firescan" class="checkbox" onChange={handleScannerToggle} checked={fireScanner}/>
+      <label style={{padding: '15px', color: '#D9D9D9', textDecoration: 'line-through'}} for="checkbox3">Fire-Scanner</label>
+      <input style={{padding: '15px'}} type="checkbox" id="firescan" name="firescan" class="checkbox" onChange={handleScannerToggle} checked={fireScanner} disabled/>
       <label style={{padding: '15px', color: '#D9D9D9', textDecoration: 'line-through'}} for="checkbox2">Fire-Spreadder</label>
       <input style={{padding: '15px'}} type="checkbox" id="firecloud" name="firecloud" class="checkbox" onChange={handleSpreadToggle} checked={fireSpreadder} disabled/>
       <label style={{padding: '15px', color: '#D9D9D9', textDecoration: 'line-through'}} for="checkbox2">Fire-Enumeration</label>
