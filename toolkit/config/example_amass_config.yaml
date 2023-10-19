@@ -19,18 +19,18 @@ scope:
     - example.example1.com
 options:
   resolvers: 
-    - "../examples/resolvers.txt" # array of 1 path or multiple IPs to use as a resolver
+    - "../wordlists/resolvers.txt" # array of 1 path or multiple IPs to use as a resolver
     - 76.76.19.19
-  datasources: "./datasources.yaml" # the file path that will point to the data source configuration
+  datasources: "./amass_datasources.yaml" # the file path that will point to the data source configuration
   wordlist: # global wordlist(s) to uses 
-    - "./wordlists/deepmagic.com_top50kprefixes.txt"
-    - "./wordlists/deepmagic.com_top500prefixes.txt"
+    - "../wordlists/deepmagic.com_top50kprefixes.txt"
+    - "../wordlists/deepmagic.com_top500prefixes.txt"
   database: "postgres://username:password@localhost:5432/database?testing=works" # databases URI to be used when adding entries
   bruteforce: # specific option to use when brute forcing is needed
     enabled: true
     wordlists: # wordlist(s) to use that are specific to brute forcing
-      - "./wordlists/subdomains-top1mil-5000.txt"
+      - "../wordlists/subdomains-top1mil-5000.txt"
   alterations: # specific option to use when brute forcing is needed
     enabled: true
     wordlists: # wordlist(s) to use that are specific to alterations
-      - "./wordlists/subdomains-top1mil-110000.txt"
+      - "../wordlists/subdomains-top1mil-110000.txt"
