@@ -1,6 +1,6 @@
 # Headers to include with all HTTP request
 header:
-  - 'X-BugBounty-Hunter: h1/r-s0n'
+  - 'X-BugBounty-Hunter: h1/[YOUR_USERNAME_HERE]'
 
 # Directory based template execution
 # templates:
