@@ -697,11 +697,17 @@ def wrap_up(args):
         print("[!] Burp Suite Proxy NOT Found.  Skipping Populate Burp Module...")
     cleanup()
 
+def update_nuclei():
+    home_dir = get_home_dir()
+    print("[-] Updating Nuclei and Nuclei Templates...")
+    subprocess.run([f'export PATH="$HOME/go/bin:$PATH"; {home_dir}/go/bin/nuclei -update -ut;'], shell=True)
+
 def collect_screenshots(home_dir, thisFqdn):
     subprocess.run(["rm -f screenshots/*.png"], shell=True)
     with open('./temp/urls.txt', 'w') as file:
         for url in thisFqdn['recon']['subdomains']['httprobe']:
             file.write(url + '\n')
+    update_nuclei()
     subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless/screenshot.yaml -l ./temp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -sb -hbs 10 -headc 1 -fhr -hm"], shell=True)
     subprocess.run("""for file in ./screenshots/*; do cp -f "$file" "../client/public/screenshots/$(basename "$file")"; done""", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     subprocess.run(["rm -f screenshots/*.png"], shell=True)
