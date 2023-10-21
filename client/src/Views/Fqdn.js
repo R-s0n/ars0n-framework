@@ -7,8 +7,8 @@ import Enumeration from '../Components/Enumeration';
 import Ops from '../Components/Ops';
 import Chaining from '../Components/Chaining';
 import Core from '../Components/Core';
-import Bypass from '../Components/Bypass';
-import Feature from '../Components/Feature';
+import Logging from '../Components/Logging';
+import Resources from '../Components/Resources';
 import Creative from '../Components/Creative';
 import ComingSoon from '../Components/ComingSoon';
 
@@ -108,12 +108,12 @@ const Fqdn = props => {
         }
         {
             activeTab === 9 ?
-            <ComingSoon thisFqdn={props.thisFqdn} /> :
+            <Resources thisFqdn={props.thisFqdn} /> :
             ""
         }
         {
             activeTab === 10 ?
-            <ComingSoon thisFqdn={props.thisFqdn} /> :
+            <Logging thisFqdn={props.thisFqdn} /> :
             ""
         }
         </>

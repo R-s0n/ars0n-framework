@@ -400,7 +400,7 @@ def subdomainizer(home_dir, thisFqdn, logger):
         if line_count > max_lines:
             with open(file_path, 'w') as file:
                 file.writelines(lines[:max_lines])
-        subprocess.run([f"timeout 6h python3 {home_dir}/Tools/SubDomainizer/SubDomainizer.py -l ./wordlists/live_servers.txt -o ./temp/subdomainizer.tmp -sop ./temp/secrets.tmp; cp ./temp/secrets.tmp /tmp"], shell=True)
+        subprocess.run([f"""timeout 4h python3 {home_dir}/Tools/SubDomainizer/SubDomainizer.py -l ./wordlists/live_servers.txt -o ./temp/subdomainizer.tmp -sop ./temp/secrets.tmp;if [ -f "./temp/secrets.tmp" ]; then cp ./temp/secrets.tmp /tmp; fi"""], shell=True)
         f = open("./temp/subdomainizer.tmp", "r")
         subdomainizer_arr = f.read().rstrip().split("\n")
         f.close()
