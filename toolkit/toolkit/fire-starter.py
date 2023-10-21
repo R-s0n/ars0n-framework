@@ -697,17 +697,22 @@ def wrap_up(args):
         print("[!] Burp Suite Proxy NOT Found.  Skipping Populate Burp Module...")
     cleanup()
 
-def update_nuclei():
+def update_nuclei(logger):
     home_dir = get_home_dir()
     print("[-] Updating Nuclei and Nuclei Templates...")
-    subprocess.run([f'export PATH="$HOME/go/bin:$PATH"; {home_dir}/go/bin/nuclei -update -ut;'], shell=True)
+    logger.write_to_log("[MSG]","Fire-Starter.py",f"Updating Nuclei...")
+    try:
+        subprocess.run([f'export PATH="$HOME/go/bin:$PATH"; {home_dir}/go/bin/nuclei -update -ut;'], shell=True)
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Nuclei Update Succesful!")
+    except Exception as e:
+        logger.write_to_log("[ERROR]","Fire-Starter.py",f"Nuclei Update Was NOT Successful!  Exception: {e}")
 
-def collect_screenshots(home_dir, thisFqdn):
+def collect_screenshots(home_dir, thisFqdn, logger):
     subprocess.run(["rm -f screenshots/*.png"], shell=True)
     with open('./temp/urls.txt', 'w') as file:
         for url in thisFqdn['recon']['subdomains']['httprobe']:
             file.write(url + '\n')
-    update_nuclei()
+    update_nuclei(logger)
     subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless/screenshot.yaml -l ./temp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -sb -hbs 10 -headc 1 -fhr -hm"], shell=True)
     subprocess.run("""for file in ./screenshots/*; do cp -f "$file" "../client/public/screenshots/$(basename "$file")"; done""", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     subprocess.run(["rm -f screenshots/*.png"], shell=True)
@@ -880,7 +885,7 @@ def main(args):
         search_data(args, get_fqdn_obj(args))
 
     wrap_up(args)
-    collect_screenshots(get_home_dir(), get_fqdn_obj(args))
+    collect_screenshots(get_home_dir(), get_fqdn_obj(args), logger)
     starter_timer.stop_timer()
     logger.write_to_log("[DONE]","Fire-Starter.py",f"Fire-Starter Completed Successfully -> {args.fqdn}")
     print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
@@ -890,6 +895,6 @@ if __name__ == "__main__":
     if args.consolidate:
        consolidate_flag(args)
     if args.screenshots:
-       collect_screenshots(get_home_dir(), get_fqdn_obj(args))
+       collect_screenshots(get_home_dir(), get_fqdn_obj(args), logger = Logger())
        exit()
     main(args)

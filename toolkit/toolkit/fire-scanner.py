@@ -162,10 +162,15 @@ def update_vulns(args, thisFqdn, data, template, key):
 def update_fqdn_obj(args, thisFqdn):
     requests.post(f'http://{args.server}:{args.port}/api/auto/update', json=thisFqdn)
 
-def update_nuclei():
+def update_nuclei(logger):
     home_dir = get_home_dir()
     print("[-] Updating Nuclei and Nuclei Templates...")
-    subprocess.run([f'export PATH="$HOME/go/bin:$PATH"; {home_dir}/go/bin/nuclei -update -ut;'], shell=True)
+    logger.write_to_log("[MSG]","Fire-Scanner.py",f"Updating Nuclei...")
+    try:
+        subprocess.run([f'export PATH="$HOME/go/bin:$PATH"; {home_dir}/go/bin/nuclei -update -ut;'], shell=True)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuclei Update Succesful!")
+    except Exception as e:
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Nuclei Update Was NOT Successful!  Exception: {e}")
 
 def build_url_str(thisFqdn):
     httprobe_arr = thisFqdn['recon']['subdomains']['httprobe']
@@ -217,6 +222,7 @@ def technologies_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (Technologies) Failed!  Exception: {e}")
         print(f"[!] Exception: {e}")
 
 
@@ -235,6 +241,7 @@ def misconfiguration_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (Misconfiguration) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the Misconfiguration Templates...")
 
 
@@ -253,6 +260,7 @@ def cves_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (CVEs) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the CVEs Templates...")
 
 def cnvd_nuclei_scan(args, now, logger):
@@ -270,6 +278,7 @@ def cnvd_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (CNVD) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the CNVD Templates...")
 
 def exposed_panels_nuclei_scan(args, now, logger):
@@ -287,6 +296,7 @@ def exposed_panels_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (Exposed Panels) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the Exposed Panels Templates...")
 
 def exposures_nuclei_scan(args, now, logger):
@@ -304,10 +314,11 @@ def exposures_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (Exposures) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the Exposures Templates...")
 
 def miscellaneous_nuclei_scan(args, now, logger):
-    logger.write_to_log("[MSG]","Fire-Scanner.py",f"Running Nuclei (MIscellaneous) -> {args.fqdn}")
+    logger.write_to_log("[MSG]","Fire-Scanner.py",f"Running Nuclei (Miscellaneous) -> {args.fqdn}")
     try:
         print("[-] Running a Nuclei Scan using the Miscellaneous Templates")
         protonvpn_necessary(args, "Misconfigurations")
@@ -321,6 +332,7 @@ def miscellaneous_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (Miscellaneous) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the Miscellaneous Templates...")
 
 def network_nuclei_scan(args, now, logger):
@@ -338,6 +350,7 @@ def network_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (Network) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the Network Templates...")
 
 def file_nuclei_scan(args, now, logger):
@@ -355,6 +368,7 @@ def file_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (File) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the File Templates...")
 
 def dns_nuclei_scan(args, now, logger):
@@ -372,6 +386,7 @@ def dns_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (DNS) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the DNS Templates...")
 
 def vulnerabilities_nuclei_scan(args, now, logger):
@@ -389,6 +404,7 @@ def vulnerabilities_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (Vulnerabilities) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the Vulnerabilities Templates...")
 
 
@@ -407,6 +423,7 @@ def rs0n_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (rs0n) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the Custom Templates...")
 
 def headless_nuclei_scan(args, now, logger):
@@ -424,6 +441,7 @@ def headless_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (Headless) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the Headless Templates...")
 
 def ssl_nuclei_scan(args, now, logger):
@@ -441,6 +459,7 @@ def ssl_nuclei_scan(args, now, logger):
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
+        logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Running Nuclei (SSL) Failed!  Exception: {e}")
         print("[!] Something went wrong!  Skipping the SSL Templates...")
 
 def process_results(args, now):
@@ -508,12 +527,13 @@ def arg_parse():
 
 def main(args):
     starter_timer = Timer()
-    network_validator = NetworkValidator()
+    # network_validator = NetworkValidator()
     logger = Logger()
     clean_screenshots()
     clean_stacktrace_dumps()
     clear_vulns(args)
-    update_nuclei()
+    update_nuclei(logger)
+    exit()
     thisFqdn = get_fqdn_obj(args)
     url_str = build_url_str(thisFqdn)
     write_urls_file(url_str)
