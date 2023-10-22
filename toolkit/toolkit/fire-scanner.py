@@ -227,6 +227,7 @@ def technologies_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "Technologies", "vulnsTech")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -246,6 +247,7 @@ def misconfiguration_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "Misconfigurations", "vulnsMisconfig")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -265,6 +267,7 @@ def cves_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "CVES", "vulnsCVEs")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -283,6 +286,7 @@ def cnvd_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "CNVD", "vulnsCNVD")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -301,6 +305,7 @@ def exposed_panels_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "Exposed Panels", "vulnsExposed")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -319,6 +324,7 @@ def exposures_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "Exposures", "vulnsExposure")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -337,6 +343,7 @@ def miscellaneous_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "Miscellaneous", "vulnsMisc")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -355,6 +362,7 @@ def network_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "Network", "vulnsNetwork")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -373,6 +381,7 @@ def file_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "File", "vulnsFile")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -391,6 +400,7 @@ def dns_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "DNS", "vulnsDNS")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -409,6 +419,7 @@ def vulnerabilities_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "Vulnerabilities", "vulnsVulns")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -428,6 +439,7 @@ def rs0n_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "Custom", "vulnsRs0n")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -446,6 +458,7 @@ def headless_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "Headless", "vulnsHeadless")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -464,6 +477,7 @@ def ssl_nuclei_scan(args, now, logger):
         update_vulns(args, thisFqdn, data, "SSL", "vulnsSSL")
         if args.proton:
             protonvpn_disconnect()
+        validate_network_connection(logger)
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
