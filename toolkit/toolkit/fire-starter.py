@@ -766,7 +766,7 @@ def protonvpn_killswitch():
 
 def main(args):
     starter_timer = Timer()
-    network_validator = NetworkValidator()
+    # network_validator = NetworkValidator()
     logger = Logger()
     cleanup()
     print("[-] Running Subdomain Scraping Modules...")
