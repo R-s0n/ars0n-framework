@@ -401,10 +401,15 @@ def subdomainizer(home_dir, thisFqdn, logger):
             with open(file_path, 'w') as file:
                 file.writelines(lines[:max_lines])
         subprocess.run([f"""timeout 4h python3 {home_dir}/Tools/SubDomainizer/SubDomainizer.py -l ./wordlists/live_servers.txt -o ./temp/subdomainizer.tmp -sop ./temp/secrets.tmp;if [ -f "./temp/secrets.tmp" ]; then cp ./temp/secrets.tmp /tmp; fi"""], shell=True)
-        f = open("./temp/subdomainizer.tmp", "r")
-        subdomainizer_arr = f.read().rstrip().split("\n")
-        f.close()
-        subprocess.run(["rm ./temp/subdomainizer.tmp"], stdout=subprocess.DEVNULL, shell=True)
+        try:
+            f = open("./temp/subdomainizer.tmp", "r")
+            subdomainizer_arr = f.read().rstrip().split("\n")
+            f.close()
+            subprocess.run(["rm ./temp/subdomainizer.tmp"], stdout=subprocess.DEVNULL, shell=True)
+        except Exception as e:
+            print("[!] Subdomainzier Timed Out!  Skipping...")
+            logger.write_to_log("[ERROR]","Fire-Starter.py",f"[!] Subdomainzier Timed Out!  Skipping...")
+            subdomainizer_arr = []
         thisFqdn['recon']['subdomains']['subdomainizer'] = subdomainizer_arr
         update_fqdn_obj(args, thisFqdn)
         subdomains_found = len(thisFqdn['recon']['subdomains']['subdomainizer'])
