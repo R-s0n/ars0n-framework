@@ -129,7 +129,7 @@ def get_home_dir():
 def validate_network_connection(logger):
         print("[-] Checking Network Connection...")
         try:
-            subprocess.run(["curl https://google.com"], shell=True)
+            subprocess.run(["curl https://google.com"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
         except Exception as e:
             logger.write_to_log("[ERROR]","Fire-Scanner.py",f"Network Connectivity Lost!  Exiting...")
             exit()

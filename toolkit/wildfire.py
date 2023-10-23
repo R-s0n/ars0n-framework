@@ -18,7 +18,7 @@ class Timer:
     
 class Logger:
     def __init__(self):
-        subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt; rm logs/temp_log.txt"], shell=True)
+        subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt; rm -f logs/temp_log.txt"], shell=True)
         with open("logs/log.txt", "r") as file:
             self.init_log_data = file.readlines()
             self.init_log_len = len(self.init_log_data)

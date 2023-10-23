@@ -461,6 +461,10 @@ def install_protonvpn():
     else:
         print("[!] Something went wrong!  ProtonVPN was NOT installed successfully...")    
 
+def stray_license_file():
+    home_dir = get_home_dir()
+    subprocess.run([f"rm -f {home_dir}/LICENSE"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+
 def arg_parse():
     parser = argparse.ArgumentParser()
     parser.add_argument('-v','--vpn', help='Install ProtonVPN Debian Client - https://protonvpn.com', required=False, action='store_true')
@@ -514,6 +518,7 @@ def validate_install():
         return False
     if client_check() is False:
         return False
+    stray_license_file()
     return True
 
 def main(args):
