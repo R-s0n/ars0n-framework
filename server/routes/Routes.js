@@ -27,4 +27,8 @@ module.exports = function(app){
     app.post('/api/populate-burp', Controller.populateBurp);
     app.post('/api/scan/default', Controller.runBurpScanDefault);
     app.post('/api/scan/deep', Controller.runBurpScanDeep);
+
+    app.post('/api/log/new', Controller.addLog);
+    app.post('/api/log/all', Controller.getLogs);
+    app.post('/api/log/delete', Controller.deleteLogs);
 }

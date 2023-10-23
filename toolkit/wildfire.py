@@ -18,7 +18,7 @@ class Timer:
     
 class Logger:
     def __init__(self):
-        subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt"], shell=True)
+        subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt; rm logs/temp_log.txt"], shell=True)
         with open("logs/log.txt", "r") as file:
             self.init_log_data = file.readlines()
             self.init_log_len = len(self.init_log_data)
@@ -31,9 +31,19 @@ class Logger:
 
     def write_to_log(self, flag, running_script, message):
         with open("logs/log.txt", "a") as file:
-            log_start_time = datetime.now()
+            log_start_time = str(datetime.now())
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
+        with open("logs/temp_log.txt", "a") as file:
+            log_start_time = str(datetime.now())
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
+    def create_datebase_log(self):
+        try:
+            subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt"], shell=True)
+            with open("logs/temp_log.txt", "r") as file:
+                subprocess.run(['''curl -X POST http://localhost:8000/api/log/new -d '{"scan":"Wildfire.py -- ''' + datetime.now() + '''","logFile":"''' + file + '''"}' -H "Content-Type: application/json; rm logs/temp_log.txt"'''], shell=True)
+        except Exception as e:
+            print("[!] Error Adding Logs to Datebase!  Skipping...")
 
 def get_fqdns(args):
     res = requests.post(f"http://{args.server}:{args.port}/api/fqdn/all")

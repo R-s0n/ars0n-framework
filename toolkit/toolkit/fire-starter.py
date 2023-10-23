@@ -37,6 +37,9 @@ class Logger:
         with open("logs/log.txt", "a") as file:
             log_start_time = datetime.now()
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
+        with open("logs/temp_log.txt", "a") as file:
+            log_start_time = str(datetime.now())
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
 class NetworkValidator:
     def __init__(self):

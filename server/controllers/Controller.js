@@ -1,6 +1,7 @@
 const { Fqdn } = require("../models/fqdn.model");
 const { Url } = require("../models/url.model");
 const { Cve } = require("../models/cve.model");
+const { Log } = require("../models/log.model");
 const util = require('util');
 const exec = require('child_process').exec;
 const spawn = require('child_process').spawn;
@@ -154,6 +155,29 @@ module.exports.autoDeleteUrl = (req, res) => {
     
     Url.deleteOne({ url: req.body.url })
         .then(result=>res.json({success:true}))
+        .catch(err=>res.status(400).json(err))
+}
+
+// Log Controllers
+
+module.exports.addLog = (req, res) => {
+    
+    Log.create(req.body)
+        .then(newLog=>res.json(newLog))
+        .catch(err=>res.status(400).json(err))
+}
+
+module.exports.getLogs = (req, res) => {
+    
+    Log.find()
+        .then(Logs=>res.json(Logs))
+        .catch(err=>res.status(400).json(err))
+}
+
+module.exports.deleteLogs = (req, res) => {
+    
+    Log.deleteMany({scan: { $ne: "foo" }})
+        .then(Logs=>res.json(Logs))
         .catch(err=>res.status(400).json(err))
 }
 
