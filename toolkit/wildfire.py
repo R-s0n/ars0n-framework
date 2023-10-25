@@ -41,8 +41,9 @@ class Logger:
         try:
             subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt"], shell=True)
             with open("logs/temp_log.txt", "r") as file:
-                subprocess.run(['''curl -X POST http://localhost:8000/api/log/new -d '{"scan":"Wildfire.py -- ''' + datetime.now() + '''","logFile":"''' + file + '''"}' -H "Content-Type: application/json; rm logs/temp_log.txt"'''], shell=True)
+                    subprocess.run(['''curl -X POST http://localhost:8000/api/log/new -d '{"scan":"Wildfire.py -- ''' + str(datetime.now()) + '''","logFile":"''' + file.read() + '''"}' -H "Content-Type: application/json; rm logs/temp_log.txt"'''], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
         except Exception as e:
+            self.write_to_log("[ERROR]","Wildfire.py",f"Error Updating Log Database! Exception: {str(e)}")
             print("[!] Error Adding Logs to Datebase!  Skipping...")
 
 def get_fqdns(args):
@@ -269,6 +270,7 @@ def main(args):
     if args.start is False and args.spread is False and args.scan is False and args.enum is False:
         print("[!] Please Choose a Module!\n[!] Options:\n\n   --start   [Run Fire-Starter Modules]\n   --spread  [Run Fire-Spreader Modules] (Expect a LONG scan time)\n   --scan    [Run Vuln Scan Modules]\n   --enum    [Run Enumeration Modules]\n")
     wildfire_timer.stop_timer()
+    logger.create_datebase_log()
     logger.write_to_log("[DONE]","Wildfire.py","Wildfire Completed Successfully")
     print(f"[+] Wildfire Scan Done!  Start: {wildfire_timer.get_start()}  |  Stop: {wildfire_timer.get_stop()}")
 

@@ -31,6 +31,21 @@ def install_flask_cors():
     else:
         print("[!] Something went wrong!  Flask_CORS was NOT installed successfully...")    
 
+def awscli_check():
+    flask_cors_check = subprocess.run([f"aws --version"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+    if flask_cors_check.returncode == 0:
+        print("[+] AWS CLI is already installed.")
+        return True
+    print("[!] AWS CLI is NOT installed.  Installing now...")
+    return False
+
+def install_awscli():
+    install_check = subprocess.run([f"sudo apt install -y awscli"], shell=True)
+    if install_check.returncode == 0:
+        print("[+] AWS CLI was installed successfully!")
+    else:
+        print("[!] Something went wrong!  AWS CLI was NOT installed successfully...")    
+
 def tools_dir_check():
     home_dir = get_home_dir()
     go_check = subprocess.run([f"ls {home_dir}/Tools"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -476,6 +491,8 @@ def validate_install():
         return False
     if flask_cors_check() is False:
         return False
+    if awscli_check() is False:
+        return False
     if node_check() is False:
         return False
     if npm_check is False:
@@ -532,6 +549,8 @@ def main(args):
         create_tools_dir()
     if flask_cors_check() is False:
         install_flask_cors()
+    if awscli_check() is False:
+        install_awscli()
     if node_check() is False:
         install_node()
     if npm_check() is False:

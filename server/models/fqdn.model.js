@@ -37,6 +37,58 @@ const FqdnSchema = new mongoose.Schema({
             type: String
         }]
     },
+    aws: {
+        s3: [{
+            domain: {type: String},
+            public: {
+                type: Boolean,
+                default: false
+            },
+            downloadExploit: {
+                type: Boolean,
+                default: false
+            },
+            uploadExploit: {
+                type: Boolean,
+                default: false
+            },
+            authenticated: {
+                type: Boolean,
+                default: false
+            },
+            subdomainTakeover: {
+                type: Boolean,
+                default: false
+            },
+            files: [{
+                type: String
+            }]
+        }],
+        ec2: [{
+            type: String
+        }],
+        cloudfront: [{
+            type: String
+        }],
+        elb: [{
+            type: String
+        }],
+        documentdb: [{
+            type: String
+        }],
+        api_gateway: [{
+            type: String
+        }],
+        elasticbeanstalk: [{
+            type: String
+        }]
+    },
+    azure: {
+        placeholder: {type: String}
+    },
+    gcp: {
+        placeholder: {type: String}
+    },
     ips: [{
         ip: {type: String},
         ports: [{

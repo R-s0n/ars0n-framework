@@ -439,6 +439,144 @@ const Dashboard = props => {
                     </div>
                 </div>
             </div>
+        <div className="row ml-5 pl-5">
+            <div className="col-12 mt-3">
+                <h5>Impactful Nuclei Vulns: {impactfulVulnCount}/{vulnCount}</h5>
+                <div style={{width: '1500px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll', overflowX: 'hidden'}}>
+                    {
+                        impactfulVulnArray.sort().map((vuln, i) => {
+                            return (
+                                <div key={i}>
+                                    <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                        <li key={i}>{vuln.info.name} --{'>'} <a href={"https://" + vuln.host} target="_blank" rel="noreferrer">{vuln.host}</a> ({vuln.info.severity.toUpperCase()}) --- Evidence: <a href={"https://" + vuln['matched-at']} target="_blank" rel="noreferrer">{vuln['matched-at']}</a> ({vuln.ip})</li>
+                                    </ul>
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+                </div>
+            </div>
+            <div className="row ml-5 pl-5">
+                <div className="col-12 mt-3">
+                    <h5>Cloud Services</h5>
+                    <div style={{width: '1500px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
+                        {
+                            thisFqdn.aws.s3.sort().map((bucket, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li>S3 Bucket: {bucket['domain']}</li>
+                                            {
+                                                bucket['public'] ?
+                                                <li style={{paddingLeft: "30px"}}>PUBLIC S3 BUCKET</li> :
+                                                ""
+                                            }
+                                            {
+                                                bucket['downloadExploit'] ?
+                                                <li style={{paddingLeft: "30px"}}>FILES CAN BE DOWNLOADED</li> :
+                                                ""
+                                            }
+                                            {
+                                                bucket['uploadExploit'] ?
+                                                <li style={{paddingLeft: "30px"}}>FILES CAN BE UPLOADED</li> :
+                                                ""
+                                            }
+                                            {
+                                                bucket['authenticated'] ?
+                                                <li style={{paddingLeft: "30px"}}>DEFAULT AWS AUTHENTICATED</li> :
+                                                ""
+                                            }
+                                            {
+                                                bucket['subdomainTakeover'] ?
+                                                <li style={{paddingLeft: "30px"}}>POSSIBLE SUBDOMAIN TAKEOVER</li> :
+                                                ""
+                                            }
+                                            <li style={{paddingLeft: "30px"}}>Files:</li>
+                                            <ul style={{listStyleType:"none", paddingLeft:"60px", margin:"0"}}>
+                                                {
+                                                    bucket['files'].map((file, i) => {
+                                                        return (
+                                                            <li>{file}</li>
+                                                        )
+                                                    })
+                                                }
+                                            </ul>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                        {
+                            thisFqdn.aws.ec2.sort().map((ec2, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                        <li>{ec2}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                        {
+                            thisFqdn.aws.cloudfront.sort().map((cloudfront, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                        <li>{cloudfront}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                                                {
+                            thisFqdn.aws.elb.sort().map((elb, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                        <li>{elb}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                                                {
+                            thisFqdn.aws.documentdb.sort().map((documentdb, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                        <li>{documentdb}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                        {
+                            thisFqdn.aws.api_gateway.sort().map((api_gateway, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                            <li>{api_gateway}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                        {
+                            thisFqdn.aws.elasticbeanstalk.sort().map((elasticbeanstalk, i) => {
+                                return (
+                                    <div key={i}>
+                                        <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
+                                        <li>{elasticbeanstalk}</li>
+                                        </ul>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                </div>
+            </div>
+            
             <div className="row ml-5 pl-5">
                 <div className="col-12 mt-3">
                     <h5>DNS Records</h5>
@@ -565,24 +703,6 @@ const Dashboard = props => {
                             })
                         }
                     </div>
-                </div>
-            </div>
-        <div className="row ml-5 pl-5">
-            <div className="col-12 mt-3">
-                <h5>Impactful Nuclei Vulns: {impactfulVulnCount}/{vulnCount}</h5>
-                <div style={{width: '1500px', height: '300px', padding: '5px', border: '1px solid black', overflowY: 'scroll', overflowX: 'hidden'}}>
-                    {
-                        impactfulVulnArray.sort().map((vuln, i) => {
-                            return (
-                                <div key={i}>
-                                    <ul style={{listStyleType:"none", padding:"0", margin:"0"}}>
-                                        <li key={i}>{vuln.info.name} --{'>'} <a href={"https://" + vuln.host} target="_blank" rel="noreferrer">{vuln.host}</a> ({vuln.info.severity.toUpperCase()}) --- Evidence: <a href={"https://" + vuln['matched-at']} target="_blank" rel="noreferrer">{vuln['matched-at']}</a> ({vuln.ip})</li>
-                                    </ul>
-                                </div>
-                            )
-                        })
-                    }
-                </div>
                 </div>
             </div>
             <div className="row ml-5 pl-5">
