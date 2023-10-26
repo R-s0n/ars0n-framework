@@ -143,8 +143,8 @@ function App() {
       <button  style={{width: '145px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit" onClick={runWildfire}>Wildfire.py</button>
       <label style={{padding: '15px', color: '#D9D9D9'}} for="checkbox1">Fire-Starter</label>
       <input style={{padding: '15px'}} type="checkbox" id="firestart" name="firestart" class="checkbox" onChange={handleStartToggle} checked={fireStarter}/>
-      <label style={{padding: '15px', color: '#D9D9D9', textDecoration: 'line-through'}} for="checkbox2">Fire-Cloud</label>
-      <input style={{padding: '15px'}} type="checkbox" id="firecloud" name="firecloud" class="checkbox" onChange={handleCloudToggle} checked={fireCloud} disabled/>
+      <label style={{padding: '15px', color: '#D9D9D9'}} for="checkbox2">Fire-Cloud</label>
+      <input style={{padding: '15px'}} type="checkbox" id="firecloud" name="firecloud" class="checkbox" onChange={handleCloudToggle} checked={fireCloud}/>
       <label style={{padding: '15px', color: '#D9D9D9'}} for="checkbox3">Fire-Scanner</label>
       <input style={{padding: '15px'}} type="checkbox" id="firescan" name="firescan" class="checkbox" onChange={handleScannerToggle} checked={fireScanner}/>
       <label style={{padding: '15px', color: '#D9D9D9', textDecoration: 'line-through'}} for="checkbox2">Fire-Spreadder</label>

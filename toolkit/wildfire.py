@@ -156,6 +156,31 @@ def spread(args):
             print(f"[!] {fqdn['fqdn']} has been blacklisted for this round of scanning.  Skipping...")
     return True
 
+def cloud(args, logger):
+    res = get_fqdns(args)
+    fqdn_json = json.loads(res.text)
+    sorted_fqdns = sort_fqdns(fqdn_json)
+    for fqdn in sorted_fqdns:
+        if fqdn['fqdn'] not in args.blacklist:
+            if args.targeted:
+                seed = args.targeted
+                print(f"[-] Running Fire-Cloud Modules against a single target: {seed}")
+                try:
+                    subprocess.run([f'python3 toolkit/fire-cloud.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
+                except Exception as e:
+                    print(f"[!] Exception: {e}")
+                return True
+            seed = fqdn['fqdn']
+            print(f"[-] Running Fire-Cloud Modules against {seed}")
+            logger.write_to_log("[MSG]","Wildfire.py",f"Running Fire-Cloud.py -> {seed}")
+            try:
+                subprocess.run([f'python3 toolkit/fire-cloud.py -S {args.server} -P {args.port} -d {seed}'], shell=True)
+            except Exception as e:
+                    print(f"[!] Exception: {e}")
+        else:
+            print(f"[!] {fqdn['fqdn']} has been blacklisted for this round of scanning.  Skipping...")
+    return True
+
 def scan(args, logger):
     res = get_fqdns(args)
     fqdn_json = json.loads(res.text)
@@ -266,9 +291,8 @@ def main(args):
         logger.write_to_log("[MSG]","Wildfire.py","Scan Flag Detected")
         scan(args, logger)
     if args.cloud:
-        print("Cloud Flag Detected")
-    if args.start is False and args.spread is False and args.scan is False and args.enum is False:
-        print("[!] Please Choose a Module!\n[!] Options:\n\n   --start   [Run Fire-Starter Modules]\n   --spread  [Run Fire-Spreader Modules] (Expect a LONG scan time)\n   --scan    [Run Vuln Scan Modules]\n   --enum    [Run Enumeration Modules]\n")
+        logger.write_to_log("[MSG]","Wildfire.py","Cloud Flag Detected")
+        cloud(args, logger)
     wildfire_timer.stop_timer()
     logger.create_datebase_log()
     logger.write_to_log("[DONE]","Wildfire.py","Wildfire Completed Successfully")
