@@ -299,12 +299,12 @@ def main(args):
     if args.start:
         logger.write_to_log("[MSG]","Wildfire.py","Start Flag Detected")
         start(args, logger)
-    if args.scan:
-        logger.write_to_log("[MSG]","Wildfire.py","Scan Flag Detected")
-        scan(args, logger)
     if args.cloud:
         logger.write_to_log("[MSG]","Wildfire.py","Cloud Flag Detected")
         cloud(args, logger)
+    if args.scan:
+        logger.write_to_log("[MSG]","Wildfire.py","Scan Flag Detected")
+        scan(args, logger)
     wildfire_timer.stop_timer()
     logger.create_datebase_log(args)
     logger.write_to_log("[DONE]","Wildfire.py","Wildfire Completed Successfully")

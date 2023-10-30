@@ -34,9 +34,11 @@ const Logging = props => {
                 </div>
                 <div className="bg-secondary workTableStyle col-8 pt-3 pl-3">
                     {
-                        loaded ?
-                        <p>{logs[currentStep]['logFile'].join()}</p> :
-                        ""
+                        loaded && logs[currentStep]['logFile'].map((log, i) => {
+                            return (
+                                <span style={{display: "block"}}>{log}</span>
+                            )
+                        })
                     }
                 </div>
             </div>
