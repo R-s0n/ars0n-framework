@@ -15,8 +15,19 @@ function App() {
   const [fireScanner, setFireScanner] = useState(false);
   const [fireSpreadder, setFireSpreadder] = useState(false);
   const [fireEnumeration, setFireEnumeration] = useState(false);
+  const [scanRunning, setScanRunning] = useState(false)
 
   useEffect(()=>{
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/status');
+        const result = await response.json();
+        setScanRunning(result['scan_running']);
+      } catch (error) {
+        console.error('Error fetching data: ', error);
+      }
+    };
+
     axios.post('http://localhost:8000/api/fqdn/all', {})
       .then(res=>{
         setFqdns(res.data);
@@ -26,6 +37,12 @@ function App() {
         setLoaded(true);
       })
       .catch(err=>console.log(err))
+    
+    const interval = setInterval(() => {
+          fetchData();
+        }, 5000);
+      
+    return () => clearInterval(interval);
   }, [refreshCounter]);
 
   const addNewFqdn = () => {
@@ -55,6 +72,7 @@ function App() {
     };
     axios.post('http://localhost:5000/wildfire', flags)
       .then(res=>{
+        setScanRunning(true);
         console.log("Wildfire Running...");
       })
       .catch(err=>console.log(err))
@@ -140,6 +158,11 @@ function App() {
       </div>
     </nav>
     <div className="pl-3 p-2 navbar navbar-expand-lg bg-dark" style={{overflow:'auto',whiteSpace:'nowrap'}}>
+    {
+        scanRunning ?
+        <span style={{padding: '15px', color: '#D9D9D9'}}>Scan Status: Running</span> :
+        <span style={{padding: '15px', color: '#D9D9D9'}}>Scan Status: NOT Running</span>
+      }
       <button  style={{width: '145px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit" onClick={runWildfire}>Wildfire.py</button>
       <label style={{padding: '15px', color: '#D9D9D9'}} for="checkbox1">Fire-Starter</label>
       <input style={{padding: '15px'}} type="checkbox" id="firestart" name="firestart" class="checkbox" onChange={handleStartToggle} checked={fireStarter}/>

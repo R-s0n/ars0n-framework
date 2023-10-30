@@ -37,11 +37,23 @@ class Logger:
             log_start_time = str(datetime.now())
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
-    def create_datebase_log(self):
+    def create_datebase_log(self, args):
         try:
             subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt"], shell=True)
+            logEntry = {
+                "scan":"Wildfire.py -- " + str(datetime.now()),
+                "logFile":[]
+            }
             with open("logs/temp_log.txt", "r") as file:
-                    subprocess.run(['''curl -X POST http://localhost:8000/api/log/new -d '{"scan":"Wildfire.py -- ''' + str(datetime.now()) + '''","logFile":"''' + file.read() + '''"}' -H "Content-Type: application/json; rm logs/temp_log.txt"'''], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+                    clean_log_file = []
+                    for line in file.readlines():
+                        if len(line.strip()) > 3:
+                            clean_log_file.append(line.strip())
+                    logEntry['logFile'] = clean_log_file
+            print(logEntry)
+            res = requests.post(f"http://{args.server}:{args.port}/api/log/new", json=logEntry)
+            print(res.json())
+            # subprocess.run(['''curl -X POST http://localhost:8000/api/log/new -d '{"scan":"Wildfire.py -- ''' + str(datetime.now()) + '''","logFile":''' + str(file.readlines()) + '''}' -H "Content-Type: application/json"; rm logs/temp_log.txt'''], shell=True)
         except Exception as e:
             self.write_to_log("[ERROR]","Wildfire.py",f"Error Updating Log Database! Exception: {str(e)}")
             print("[!] Error Adding Logs to Datebase!  Skipping...")
@@ -294,7 +306,7 @@ def main(args):
         logger.write_to_log("[MSG]","Wildfire.py","Cloud Flag Detected")
         cloud(args, logger)
     wildfire_timer.stop_timer()
-    logger.create_datebase_log()
+    logger.create_datebase_log(args)
     logger.write_to_log("[DONE]","Wildfire.py","Wildfire Completed Successfully")
     print(f"[+] Wildfire Scan Done!  Start: {wildfire_timer.get_start()}  |  Stop: {wildfire_timer.get_stop()}")
 

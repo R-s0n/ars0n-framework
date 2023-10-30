@@ -34,8 +34,8 @@ const Logging = props => {
                 </div>
                 <div className="bg-secondary workTableStyle col-8 pt-3 pl-3">
                     {
-                        loaded && logs[currentStep] ?
-                        <p>{logs[currentStep]['logFile']}</p> :
+                        loaded ?
+                        <p>{logs[currentStep]['logFile'].join()}</p> :
                         ""
                     }
                 </div>
