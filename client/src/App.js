@@ -28,6 +28,8 @@ function App() {
       }
     };
 
+    fetchData()
+
     axios.post('http://localhost:8000/api/fqdn/all', {})
       .then(res=>{
         setFqdns(res.data);

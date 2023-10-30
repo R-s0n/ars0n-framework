@@ -108,7 +108,7 @@ const Fqdn = props => {
         }
         {
             activeTab === 9 ?
-            <Resources thisFqdn={props.thisFqdn} /> :
+            <ComingSoon thisFqdn={props.thisFqdn} /> :
             ""
         }
         {
