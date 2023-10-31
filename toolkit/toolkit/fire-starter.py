@@ -653,7 +653,7 @@ def check_limit(args):
     unique_domain_count = 0
     for lst in thisFqdn['recon']['subdomains']:
         unique_domain_count += len(thisFqdn['recon']['subdomains'][lst])
-    if unique_domain_count > 999:
+    if unique_domain_count > 2000:
         print("[!] Unique subdomain limit reached!  Ending the scan for now, but you can always come back and run the scan again without the -l|--limit flat.")
         wrap_up(args)
         exit()
@@ -734,7 +734,7 @@ def arg_parse():
     parser.add_argument('-t','--timeout', help='Adds a timeout check after each module (in minutes)', required=False)
     parser.add_argument('--deep', help='Crawl all live servers for subdomains', required=False, action='store_true')
     parser.add_argument('-u', '--update', help='Update AWS IP Certificate Data ( Can Take 48+ Hours! )', required=False, action='store_true')
-    parser.add_argument('-l', '--limit', help='Stop the scan when the number of unique subdomains goes above 999', required=False, action='store_true')
+    parser.add_argument('-l', '--limit', help='Stop the scan when the number of unique subdomains goes above 2000', required=False, action='store_true')
     parser.add_argument('-c', '--consolidate', help='Consolidate and Run HTTProbe Against Discovered Subdomains', required=False, action='store_true')
     parser.add_argument('-s', '--screenshots', help='Collect a new round of screenshots for all live URLs', required=False, action='store_true')
     return parser.parse_args()
@@ -768,6 +768,7 @@ def protonvpn_killswitch():
     command = subprocess.run(["protonvpn-cli ks --permanent"], shell=True)
 
 def main(args):
+    args.limit = True
     starter_timer = Timer()
     # network_validator = NetworkValidator()
     logger = Logger()
