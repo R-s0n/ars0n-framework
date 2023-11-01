@@ -29,6 +29,19 @@ In addition to using this tool for Bug Bounty Hunting, aspiring engineers can al
 
 My hope is that this modular framework will act as a canvas to help share what I've learned over my career to the next generation of Security Engineers!  Trust me, we need all the help we can get!!
 
+## Quick Start
+
+Paste this code block into a clean installation of [Kali Linux 2023.3](https://www.kali.org/get-kali/#kali-installer-images) to download, install, and run the latest stable Alpha version of the framework:
+```
+sudo apt update && sudo apt-get update
+sudo apt -y upgrade && sudo apt-get -y upgrade
+wget https://github.com/R-s0n/ars0n-framework/releases/download/v0.0.1-alpha/ars0n-framework-v0.0.1-alpha.tar.gz
+tar -xzvf ars0n-framework-v0.0.1-alpha.tar.gz
+rm ars0n-framework-v0.0.1-alpha.tar.gz
+cd ars0n-framework
+python3 install.py
+```
+
 ## Download Latest Stable ALPHA Version
 
 ```
