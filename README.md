@@ -16,7 +16,7 @@
   <a href="#faq">FAQs</a> •
   <a href="https://www.youtube.com/@rs0n_live">YouTube</a> •
   <a href="https://www.twitch.tv/rs0n_live">Twitch</a> •
-  <a href="#coming-soon">Discord</a>
+  <a href="https://discord.gg/DPt6TUDGH">Discord</a>
 </p>
 
 ## About
