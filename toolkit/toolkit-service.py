@@ -37,20 +37,26 @@ def wildfire():
         fire_starter = data['fireStarter']
         fire_cloud = data['fireCloud']
         fire_scanner = data['fireScanner']
-        start_flag, cloud_flag, scan_flag = "", "", ""
+        fqdn = data.get('fqdn', '')  # Get the FQDN, default to empty string if not provided
+        scan_single_domain = data.get('scanSingleDomain', False)  # Get the scanSingleDomain flag
+
+        start_flag, cloud_flag, scan_flag, fqdn_flag, scanSingle_flag  = "", "", "", "", ""
         if fire_starter:
             start_flag = " --start"
         if fire_cloud:
             cloud_flag = " --cloud"
         if fire_scanner:
             scan_flag = " --scan"
+        if scan_single_domain:
+            fqdn_flag = f" --fqdn {fqdn}"
+            scanSingle_flag = f" --scanSingle"
+
         toggle_global()
-        subprocess.run([f"python3 wildfire.py{start_flag}{cloud_flag}{scan_flag}"], shell=True)
-        # subprocess.run([f"sleep 30"], shell=True)
+        subprocess.run([f"python3 wildfire.py{start_flag}{cloud_flag}{scan_flag}{fqdn_flag}{scanSingle_flag}"], shell=True)
         toggle_global()
-        return jsonify({"message":"Done!"})
+        return jsonify({"message": "Done!"})
     else:
-        return jsonify({"message":"ERROR: Scan Running..."})
+        return jsonify({"message": "ERROR: Scan Running..."})
 
 if __name__ == '__main__':
     app.run(debug=True)
