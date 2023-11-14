@@ -90,6 +90,33 @@ def sort_fqdns(fqdns):
         sorted_fqdns.append(last_updated)
     return sorted_fqdns
 
+def start_single_domain(args, logger, fqdn):
+    if fqdn not in args.blacklist:
+        print(f"[-] Running Fire-Starter Modules (Subdomain Recon) against targeted domain: {fqdn}")
+        logger.write_to_log("[MSG]", "Wildfire.py", f"Running Fire-Starter.py -> {fqdn}")
+        try:
+            subprocess.run([f'python3 toolkit/fire-starter.py -d {fqdn} -S {args.server} -P {args.port} -p {args.proxy}'], shell=True)
+        except Exception as e:
+            print(f"[!] Exception: {e}")
+
+def cloud_single_domain(args, logger, fqdn):
+    if fqdn not in args.blacklist:
+        print(f"[-] Running Fire-Cloud Modules against targeted domain: {fqdn}")
+        logger.write_to_log("[MSG]", "Wildfire.py", f"Running Fire-Cloud.py -> {fqdn}")
+        try:
+            subprocess.run([f'python3 toolkit/fire-cloud.py -S {args.server} -P {args.port} -d {fqdn}'], shell=True)
+        except Exception as e:
+            print(f"[!] Exception: {e}")
+
+def scan_single_domain(args, logger, fqdn):
+    if fqdn not in args.blacklist:
+        print(f"[-] Running Drifting-Embers Modules (Vuln Scanning) against targeted domain: {fqdn}")
+        logger.write_to_log("[MSG]", "Wildfire.py", f"Running Fire-Scanner.py -> {fqdn}")
+        try:
+            subprocess.run([f'python3 toolkit/fire-scanner.py -S {args.server} -P {args.port} -d {fqdn}'], shell=True)
+        except Exception as e:
+            print(f"[!] Exception: {e}")
+
 def start(args, logger):
     res = get_fqdns(args)
     fqdn_json = json.loads(res.text)
@@ -285,6 +312,8 @@ def arg_parse():
     parser.add_argument('--deep', help='Crawl all live servers for subdomains', required=False, action='store_true')
     parser.add_argument('--bridge', help='Bridge-the-Gap Mode -- Only performs the Firestarter Module on a target FQDN if that module has not yet been run against that target', required=False, action='store_true')
     parser.add_argument('-t','--timeout', help='Adds a timeout check after each module (in minutes)', required=False)
+    parser.add_argument('--fqdn', help='FQDN to target for scanning', required=False)
+    parser.add_argument('--scanSingle', help='Flag to scan a single domain', required=False, action='store_true')
     return parser.parse_args()
 
 def main(args):
@@ -296,15 +325,26 @@ def main(args):
     if not args.proxy:
         args.proxy = "127.0.0.1"
     wildfire_timer = Timer()
-    if args.start:
-        logger.write_to_log("[MSG]","Wildfire.py","Start Flag Detected")
-        start(args, logger)
-    if args.cloud:
-        logger.write_to_log("[MSG]","Wildfire.py","Cloud Flag Detected")
-        cloud(args, logger)
-    if args.scan:
-        logger.write_to_log("[MSG]","Wildfire.py","Scan Flag Detected")
-        scan(args, logger)
+    if args.scanSingle and args.fqdn:
+        if args.start:
+            logger.write_to_log("[MSG]","Single Scan Wildfire.py","Start Flag Detected")
+            start_single_domain(args, logger, args.fqdn)
+        if args.cloud:
+            logger.write_to_log("[MSG]","Single Scan Wildfire.py","Cloud Flag Detected")
+            cloud_single_domain(args, logger, args.fqdn)
+        if args.scan:
+            logger.write_to_log("[MSG]","Single Scan Wildfire.py","Scan Flag Detected")
+            scan_single_domain(args, logger, args.fqdn)
+    else:
+        if args.start:
+            logger.write_to_log("[MSG]","Wildfire.py","Start Flag Detected")
+            start(args, logger)
+        if args.cloud:
+            logger.write_to_log("[MSG]","Wildfire.py","Cloud Flag Detected")
+            cloud(args, logger)
+        if args.scan:
+            logger.write_to_log("[MSG]","Wildfire.py","Scan Flag Detected")
+            scan(args, logger)
     wildfire_timer.stop_timer()
     logger.create_datebase_log(args)
     logger.write_to_log("[DONE]","Wildfire.py","Wildfire Completed Successfully")

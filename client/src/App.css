@@ -20,3 +20,9 @@ nav {
 	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
 	background-color: #555;
 }
+
+.dropdown-select {
+    width: auto; /* Adjusts the width automatically based on content */
+    min-width: 150px; /* Minimum width, adjust as needed */
+    max-width: 300px; /* Maximum width, adjust as needed */
+}

@@ -5,6 +5,7 @@ import Fqdn from './Views/Fqdn';
 import './App.css'
 
 function App() {
+  useEffect(()=>setActiveTab(0), [App.index]);
   const [fqdns, setFqdns] = useState([]);
   const [noFqdns, setNoFqdns] = useState(true);
   const [loaded, setLoaded] = useState(false);
@@ -16,7 +17,9 @@ function App() {
   const [fireSpreadder, setFireSpreadder] = useState(false);
   const [fireEnumeration, setFireEnumeration] = useState(false);
   const [scanRunning, setScanRunning] = useState(false)
-
+  const [scanSingleDomain, setScanSingleDomain] = useState(true);
+  const [selectedFqdns, setSelectedFqdns] = useState([]);
+  
   useEffect(()=>{
     const fetchData = async () => {
       try {
@@ -47,37 +50,65 @@ function App() {
     return () => clearInterval(interval);
   }, [refreshCounter]);
 
+  // Debugging: Log the selected FQDN whenever the activeTab changes
+  useEffect(() => {
+    if (fqdns.length > 0 && activeTab < fqdns.length) {
+      console.log("Selected FQDN in App.js:", fqdns[activeTab]);
+    }
+  }, [activeTab, fqdns]);
+
   const addNewFqdn = () => {
     setNoFqdns(true);
   }
 
-  const deleteFqdn = (fqdn, index) => {
-    axios.post('http://localhost:8000/api/fqdn/delete', fqdn)
-      .then(res=>{
-        if (fqdns.length === 1){
+  const deleteFqdn = () => {
+    const fqdnToDelete = fqdns[activeTab];
+  
+    axios.post('http://localhost:8000/api/fqdn/delete', fqdnToDelete)
+      .then(res => {
+        // Remove the deleted FQDN from the state
+        const updatedFqdns = fqdns.filter((_, index) => index !== activeTab);
+        setFqdns(updatedFqdns);
+        if (updatedFqdns.length === 0) {
           setNoFqdns(true);
+        } else {
+          // Set the active tab to the first FQDN if available
+          setActiveTab(0);
         }
-        setLoaded(false);
-        console.log(refreshCounter);
-        let temp = refreshCounter + 1;
-        console.log(temp);
-        setRefreshCounter(temp);
       })
-      .catch(err=>console.log(err))
+      .catch(err => console.log(err));
   }
+  
 
   const runWildfire = () => {
-    const flags = {
+    // Extract the selected FQDN
+    const selectedFqdn = fqdns[activeTab].fqdn;
+    console.log("runWildfire: " + selectedFqdn)
+    // Prepare the request payload
+    const payload = {
       fireStarter: fireStarter,
       fireCloud: fireCloud,
-      fireScanner: fireScanner
+      fireScanner: fireScanner,
+      fqdn: selectedFqdn,
+      scanSingleDomain: scanSingleDomain,
     };
-    axios.post('http://localhost:5000/wildfire', flags)
-      .then(res=>{
+  
+    // Call the API
+    axios.post('http://localhost:5000/wildfire', payload)
+      .then(res => {
         setScanRunning(true);
         console.log("Wildfire Running...");
       })
-      .catch(err=>console.log(err))
+      .catch(err => console.log(err));
+  }  
+
+  // Dropdown change handler
+  const handleDropdownChange = (e) => {
+    setActiveTab(parseInt(e.target.value));
+  }
+
+  const handleScanSingleDomainChange = (e) => {
+    setScanSingleDomain(e.target.checked);
   }
 
   const handleStartToggle = () => {
@@ -122,6 +153,14 @@ function App() {
 
   Modal.setAppElement('#root');
 
+  const deleteMultipleFqdn = () => {
+    // Logic to delete selected FQDNs
+    // Example: axios.post('your-api-endpoint', { fqdnsToDelete: selectedFqdns });
+    console.log('Deleting FQDNs:', selectedFqdns);
+    // After deletion, clear the selected FQDNs
+    setSelectedFqdns([]);
+  };
+
   return (
     <div>
     { loaded && <Modal 
@@ -138,27 +177,44 @@ function App() {
                   }}>
       <AddFqdnModal fqdns={fqdns} setFqdns={setFqdns} setNoFqdns={setNoFqdns} />
     </Modal> }
-    <nav className="p-1 pt-2 pb-2 navbar navbar-expand-lg bg-dark" style={{overflow:'auto',whiteSpace:'nowrap'}} id="style-1">
+
+    <nav className="p-1 pt-2 pb-2 navbar navbar-expand-lg bg-dark" style={{ overflow: 'auto', whiteSpace: 'nowrap' }} id="style-1">
       <div className="container-fluid">
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            {
-            fqdns.sort(function(a,b){
-              return new Date(b.updatedAt) - new Date(a.updatedAt)
-            }).map((fqdn, i) => {return (
-              <li className="mr-3 nav-item" key={i}>
-                { i === activeTab ?
-                <button className="border border-info nav-link btn btn-primary text-secondary active" aria-current="page" href="#">{fqdn.fqdn}</button> :
-                <button className="border border-info nav-link btn btn-primary text-secondary" onClick={()=>setActiveTab(i)}aria-current="page" href="#">{fqdn.fqdn}</button>
-                }
-                </li>
-            )})
-            }
+            <li className="nav-item">
+              {/* Dropdown for selecting FQDN */}
+              <select
+                className="form-select dropdown-select mr-2"
+                value={activeTab}
+                onChange={handleDropdownChange}
+                aria-label="Select FQDN"
+              >
+                {fqdns.map((fqdn, index) => (
+                  <option key={index} value={index}>{fqdn.fqdn}</option>
+                ))}
+              </select>
+              {/* Add and Delete FQDN buttons */}
+              <button className="btn btn-success mr-2" onClick={addNewFqdn}>Add FQDN</button>
+              <button className="btn btn-danger" onClick={deleteFqdn}>Delete FQDN</button>
+              <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
+                <input 
+                  type="checkbox" 
+                  checked={scanSingleDomain} 
+                  onChange={handleScanSingleDomainChange} 
+                  style={{ width: '20px', height: '20px', marginRight: '10px' }}
+                />
+                <span style={{ color: 'white' }}>Scan only selected domain</span>
+              </div>
+            </li>
           </ul>
-          <button  style={{width: '145px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit" onClick={addNewFqdn}>Add FQDN</button>
         </div>
       </div>
     </nav>
+
+
+
+
     <div className="pl-3 p-2 navbar navbar-expand-lg bg-dark" style={{overflow:'auto',whiteSpace:'nowrap'}}>
     {
         scanRunning ?

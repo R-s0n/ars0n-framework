@@ -541,6 +541,45 @@ def clean_stacktrace_dumps():
 def move_screenshots():
     subprocess.run("""for file in ./screenshots/*; do cp -f "$file" "../client/public/screenshots/$(basename "$file")"; done""", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
+def perform_scans(args, thisFqdn, now, logger):
+    """
+    Perform various scanning routines based on the provided arguments.
+
+    :param args: Command line arguments passed to the script.
+    :param thisFqdn: FQDN object containing domain information.
+    :param now: Current datetime as a string.
+    :param logger: Logger object for logging.
+    """
+    url_str = build_url_str(thisFqdn)
+    write_urls_file(url_str)
+
+    if args.full:
+        full_nuclei_scan(args, now)
+    else:
+        # List of scan functions to run
+        scan_functions = [
+            technologies_nuclei_scan,
+            exposed_panels_nuclei_scan,
+            misconfiguration_nuclei_scan,
+            exposures_nuclei_scan,
+            rs0n_nuclei_scan,
+            headless_nuclei_scan,
+            dns_nuclei_scan,
+            ssl_nuclei_scan,
+            vulnerabilities_nuclei_scan,
+            cves_nuclei_scan,
+            # You can include or exclude other scans as needed
+            # file_nuclei_scan,
+            # network_nuclei_scan,
+            # cnvd_nuclei_scan,
+            # miscellaneous_nuclei_scan,
+        ]
+
+        # Execute each scan function
+        for scan_function in scan_functions:
+            scan_function(args, now, logger)
+
+
 def arg_parse():
     parser = argparse.ArgumentParser()
     parser.add_argument('-S','--server', help='IP Address of MongoDB API', required=True)
@@ -548,6 +587,7 @@ def arg_parse():
     parser.add_argument('-d','--fqdn', help='Name of the Root/Seed FQDN', required=True)
     parser.add_argument('-f','--full', help='Name of the Root/Seed FQDN', required=False, action='store_true')
     parser.add_argument('-p','--proton', help='Run all scans through ProtonVPN', required=False, action='store_true')
+    parser.add_argument('--single', help='Run scan for a single domain', required=True)
     return parser.parse_args()
 
 def main(args):
@@ -558,29 +598,42 @@ def main(args):
     clean_stacktrace_dumps()
     clear_vulns(args)
     update_nuclei(logger)
-    thisFqdn = get_fqdn_obj(args)
-    url_str = build_url_str(thisFqdn)
-    write_urls_file(url_str)
-    now = str(datetime.now()).split(" ")[0]
-    if args.full:
-        full_nuclei_scan(args, now)
+    if args.single:
+        logger.write_to_log("[MSG]", "Fire-Scanner.py", f"Scanning Single Domain: {args.single}")
+        # Perform scan only for the provided single domain
+        # You will need to call the scanning functions with the single domain
+        thisFqdn = {'fqdn': args.single}  # Example, modify based on how single domain should be handled
+        url_str = build_url_str(thisFqdn)
+        write_urls_file(url_str)
+        now = str(datetime.now()).split(" ")[0]
+        perform_scans(args, thisFqdn, now, logger)
     else:
-        ## Safe Templates
-        technologies_nuclei_scan(args, now, logger)
-        exposed_panels_nuclei_scan(args, now, logger)
-        misconfiguration_nuclei_scan(args, now, logger)
-        exposures_nuclei_scan(args, now, logger)
-        rs0n_nuclei_scan(args, now, logger)
-        headless_nuclei_scan(args, now, logger)
-        dns_nuclei_scan(args, now, logger)
-        ssl_nuclei_scan(args, now, logger)
-        vulnerabilities_nuclei_scan(args, now, logger)
-        cves_nuclei_scan(args, now, logger)
-        ## Unsafe Templates
-        # file_nuclei_scan(args, now, logger)
-        # network_nuclei_scan(args, now, logger)
-        # cnvd_nuclei_scan(args, now, logger)
-        # miscellaneous_nuclei_scan(args, now, logger)
+        thisFqdn = get_fqdn_obj(args)
+        url_str = build_url_str(thisFqdn)
+        write_urls_file(url_str)
+        now = str(datetime.now()).split(" ")[0]
+
+        if args.full:
+            full_nuclei_scan(args, now)
+        else:
+            ## Safe Templates
+            technologies_nuclei_scan(args, now, logger)
+            exposed_panels_nuclei_scan(args, now, logger)
+            misconfiguration_nuclei_scan(args, now, logger)
+            exposures_nuclei_scan(args, now, logger)
+            rs0n_nuclei_scan(args, now, logger)
+            headless_nuclei_scan(args, now, logger)
+            dns_nuclei_scan(args, now, logger)
+            ssl_nuclei_scan(args, now, logger)
+            vulnerabilities_nuclei_scan(args, now, logger)
+            cves_nuclei_scan(args, now, logger)
+            ## Unsafe Templates
+            # file_nuclei_scan(args, now, logger)
+            # network_nuclei_scan(args, now, logger)
+            # cnvd_nuclei_scan(args, now, logger)
+            # miscellaneous_nuclei_scan(args, now, logger)`
+
+
     move_screenshots()   
     starter_timer.stop_timer()
     # protonvpn_killswitch_off()
