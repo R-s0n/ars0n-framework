@@ -1,6 +1,7 @@
 server/node_modules
 client/node_modules
 **/node_modules
+.env
 client/public/screenshots/http*.png
 toolkit/h1.json
 toolkit/temp/*

@@ -4,6 +4,8 @@ import AddFqdnModal from './Components/Modals/AddFqdnModal';
 import Fqdn from './Views/Fqdn';
 import './App.css'
 
+const serverUrl = process.env.SERVER_URL || 'localhost:8000'
+
 function App() {
   useEffect(()=>setActiveTab(0), [App.index]);
   const [fqdns, setFqdns] = useState([]);

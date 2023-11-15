@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://127.0.0.1/wapt_db', {
+const mongoHost = process.env.MONGO_HOST || '0.0.0.0'
+const dbName = process.env.DB_NAME || 'wapt_db';
+
+mongoose.connect(`mongodb://${mongoHost}/${dbName}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })

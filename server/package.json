@@ -4,7 +4,8 @@
   "description": "A Modern Framework for Bug Bounty Hunting",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "rs0n",
@@ -13,6 +14,7 @@
     "async": "^3.2.4",
     "axios": "^1.5.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.17.1",
     "http": "^0.0.1-security",
     "http-proxy-agent": "^7.0.0",
