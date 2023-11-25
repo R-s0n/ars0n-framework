@@ -29,6 +29,13 @@ In addition to using this tool for Bug Bounty Hunting, aspiring engineers can al
 
 My hope is that this modular framework will act as a canvas to help share what I've learned over my career to the next generation of Security Engineers!  Trust me, we need all the help we can get!!
 
+<h4 align="center">
+🤠 Did you know that over 95% of scientists believe there is a direct correlation between the amount of coffee I drink and how quickly I can build new features?  Crazy, right?!  Well, now you can test their hypothesis and Buy Me a Coffee through this fancy button!!  🤯
+<br>
+<br>
+<a href="https://www.buymeacoffee.com/rs0n.evolv3" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+</h4>
+
 ## Quick Start
 
 Paste this code block into a clean installation of [Kali Linux 2023.3](https://www.kali.org/get-kali/#kali-installer-images) to download, install, and run the latest stable Alpha version of the framework:
@@ -52,55 +59,108 @@ rm ars0n-framework-v0.0.1-alpha.tar.gz
 
 ## Install
 
+The Ars0n Framework includes a script that installs all the necessary tools, packages, etc. that are needed to run the framework on a clean installation of [Kali Linux 2023.3](https://www.kali.org/get-kali/#kali-installer-images).
+
+***Please note that the only supported installation of this framework is on a clean installation of Kali Linux 2023.3.  If you choose to try and run the framework outside of a clean Kali install, I will not be able to help troubleshoot if you have any issues.***
+
 ```
 python3 install.py
 ```
 
-[Install Video](https://www.youtube.com/watch?v=cF4xtVS7Rnc)
+This [video](https://www.youtube.com/watch?v=cF4xtVS7Rnc) shows exactly what to expect from a successful installation.
 
-#### Run the Web Application (Client and Server)
+You will be prompted to enter various API keys and tokens when the installation begins.  **Entering these is not required to run the core functionality of the framework.  If you do not enter these API keys and tokens at the time of installation, simply hit enter at each of the prompts.  The keys can be added later to the `~/.keys` directory.  More information about how to add these keys manually can be found in the [Frequently Asked Questions](#faq) section of this README.** 
+
+## Run the Web Application (Client and Server)
+
+Once the installation is complete, you will be given the option to run the application by entering `Y`.  If you choose not the run the application immediately, or if you need to run the application after a reboot, simply navigate to the root directly and run the `run.sh` bash script.
 
 ```
 ./run.sh
 ```
 
-If you run into any bugs or issues getting this framework to work, please include the output of `debug.sh` in any Issue raised.
+## Core Modules
 
-## Scripts
+The Ars0n Framework's Core Modules are used to determine the basic scanning logic.  Each script is designed to support a specific recon methodology based on what the user is trying to accomplish.  
 
-#### Wildfire Script
+### Wildfire
+
+At this time, the Wildfire script is the most widely used Core Module in the Ars0n Framework.  The purpose of this module is to allow the user to scan multiple targets that allow for testing on any subdomain discovered by the researcher.
+
+How it works:
+
+1. The user adds root domains through the Graphical User Interface (GUI) that they wish to scan for hidden subdomains
+2. Wildfire sorts each of these domains based on the last time they were scanned to ensure the domain with the oldest data is scanned first
+3. Wildfire scans each of the domains using the Sub-Modules based on the flags provided by the user.  
+
+***Most Wildfire scans take between 8 and 48 hours to complete against a single domain if all Sub-Modules are being run.  Variations in this timing can be caused by a number of factors, including the target application and the machine running the framework.***  
+
+***Also, please note that most data will not show in the GUI until the scan has completed.  It's best to try and run the scan overnight or over a weekend, depending on the number of domains being scanned, and return once the scan has complete to move from Recon to Enumeration.***
+
+Running Wildfire:
+
+#### Grahpical User Interface (GUI)
+
+Wildfire can be run from the GUI using the Wildfire button on the dashboard. Once clicked, the front-end will use the checkboxes on the screen to determine what flags should be passed to the scanner.
+
+*Please note that running scans from the GUI still has a few bugs and edge cases that haven't been sorted out.  If you have any issues, you can simply run the scan form the CLI.*
+
+#### Command Line Interface (CLI)
+
+All Core Modules for The Ars0n Framework are stored in the `/toolkit` directory.  Simply navigate to the directory and run `wildfire.py` with the necessary flags.  At least one Sub-Module flag must be provided.
 
 ```
 python3 wildfire.py --start --cloud --scan
 ```
 
-#### Slowburn Script
+#### Slowburn
+
+Unlike the Wildfire module, which requires the user to identify target domains to scan, the Slowburn module does that work for you.  By communicating with APIs for various bug bounty hunting platforms, this script will identify all domains that allow for testing on any discovered subdomain.  Once the data has been populated, Slowburn will randomly choose one domain at a time to scan in the same way Wildfire does.  
+
+***Please note that the Slowburn module is still in development and is not considered part of the stable alpha release.  There will likely be bugs and edge cases encountered by the user.***
+
+In order for Slowburn to identify targets to scan, it must first be initialized.  This initialization step collects the necessary data from various API's and deposits them into a JSON file stored locally.  Once this initialization step is complete, Slowburn will automatically begin selecting and scanning one target at a time.
+
+To initalize Slowburn, simply run the following command:
+
+```
+python3 slowburn.py --initialize
+```
+
+Once the data has been collected, it is up to the user whether they want to re-initialize the tool upon the next scan.  
+
+***Remember that the scope and targets on public bug bounty programs can change frequently.  If you choose to run Slowburn without initializing the data, you may be scanning domains that are no longer in scope for the program.  It is strongly recommended that Slowburn be re-initialized each time before running.***
+
+If you choose not to re-initialize the target data, you can run Slowburn using the previously collected data with the following command:
 
 ```
 python3 slowburn.py
 ```
 
-#### Troubleshooting
+## Sub-Modules
 
-## Modules
+The Ars0n Framework's Sub-Modules are designed to be leveraged by the Core Modules to divide the Recon & Enumeration phases into specific tasks.  The data collected in each Sub-Module is used by the others to expand your picture of the target's attack surface.  
 
-#### Fire-Starter
+### Fire-Starter
 
-#### Fire-Scanner
+**Most Sub-Modules in The Ars0n Framework requre the data collected from the Fire-Starter module to work.  With this in mind, Fire-Starter must be included in the first scan against a target for any usable data to be collected.**
 
-#### Fire-Spreader
+### Fire-Cloud
 
-#### Fire-Enumerator (Gotta think of a better name...)
+### Fire-Scanner
+
+### Fire-Spreader
+
+### Fire-Enumerator (Gotta think of a better name...)
+
+## Troubleshooting
+
+The **vast majority** of issues installing and/or running the Ars0n Framework are caused by not installing the tool on a clean installation of Kali Linux.  
+
+***It is important to remember that, at its core, the Ars0n Framework is a collection of automation scripts designed to run existing open-source tools.  Each of these tools have their own ways of operating and can experience unexpected behavior if conflicts emerge with any existing service/tool running on the user's system.  This complexity is the reason why running The Ars0n Framework should only be run on a clean installation of Kali Linux.***
+
+Another very common issue users experience is caused by MongoDB not successfully installing and/or running on their machine.  *The most common manifestation of this issue is the user is unable to add an initial FQDN and simply sees a broken GUI.*  If this occurs, please ensure that your machine has the necessary system requirements to run MongoDB.  Unfortunately, there is no current solution if you run into this issue.
+
+## Frequently Asked Questions
 
 ## For Developers
-
-## FAQ
-
-Most install/run issues are caused by the MongoDB service not running.  I'm working on building a fix for this but unvortunately the issues are out of my control.  In most cases, running `service mongodb start` will solve the problem.  If you are still unable to get MongoDB running, you can [download the MongoDB binary](https://www.mongodb.com/try/download/community) and run it manually as a work-around.
-
-<h4 align="center">
-🤠 Did you know that over 95% of scientists believe there is a direct correlation between the amount of coffee I drink and how quickly I can build a working Alpha version of this framework?  Crazy, right?!  Well, now you can test their hypothesis and Buy Me a Coffee through this fancy button!!  🤯
-<br>
-<br>
-<a href="https://www.buymeacoffee.com/rs0n.evolv3" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
-</h4>
