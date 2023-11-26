@@ -11,7 +11,7 @@
   <a href="#about">About</a> •
   <a href="#install">Install</a> •
   <a href="#core-modules">Core Modules</a> •
-  <a href="#sub-modules">Sub-Modules</a> •
+  <a href="#troubleshooting">Troubleshooting</a> •
   <a href="#frequently-asked-questions">FAQs</a> •
   <a href="https://ars0nsecurity.com">Ars0n Security</a> •
   <a href="https://www.youtube.com/@rs0n_live">YouTube</a> •
@@ -143,15 +143,27 @@ The Ars0n Framework's Sub-Modules are designed to be leveraged by the Core Modul
 
 ### Fire-Starter
 
+Fire-Starter is the first step to performing recon against a target domain.  The goal of this script is to collect a wealth of information about the attack surface of your target.  Once collected, this data will be used by all other Sub-Modules to help the user identify a specific URL that is potentially vulnerable.
+
+Fire-Starter works by running a series of open-source tools to enumerate hidden subdomains, DNS records, and the ASN's to identify where those external entries are hosted.  Currently, Fire-Starter works by chaining together the following widely used open-source tools:
+
+- Amass
+- Sublist3r
+- 
+
+***Once the scan is complete, the Dashboard will be updated and available to the user.***
+
 **Most Sub-Modules in The Ars0n Framework requre the data collected from the Fire-Starter module to work.  With this in mind, Fire-Starter must be included in the first scan against a target for any usable data to be collected.**
 
 ### Fire-Cloud
 
+Coming soon...
+
 ### Fire-Scanner
 
-### Fire-Spreader
+Fire-Scanner uses the results of Fire-Starter and Fire-Cloud to perform [Wide-Band Scanning](https://www.linkedin.com/feed/update/urn:li:activity:6849314055283466240/) against all subdomains and cloud services that have been discovered from previous scans.
 
-### Fire-Enumerator (Gotta think of a better name...)
+At this stage of development, this script leverages [Nuclei](https://github.com/projectdiscovery/nuclei) almost exclusively for all scanning.  Instead of simply running the tool, Fire-Scanner breaks the scan down into specific collections of [Nuclei Templates](https://github.com/projectdiscovery/nuclei-templates) and scans them one by one.  This strategy helps ensure the scans are stable and produce consistent results, removes any unnecessary or unsafe scan checks, and produces actionable results.
 
 ## Troubleshooting
 
@@ -163,4 +175,3 @@ Another very common issue users experience is caused by MongoDB not successfully
 
 ## Frequently Asked Questions
 
-## For Developers
