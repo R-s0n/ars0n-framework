@@ -149,7 +149,15 @@ Fire-Starter works by running a series of open-source tools to enumerate hidden 
 
 - Amass
 - Sublist3r
-- 
+- Assetfinder
+- Get All URL's (GAU)
+- Certificate Transparency Logs (CRT)
+- Subfinder
+- ShuffleDNS
+- GoSpider
+- Subdomainizer
+
+These tools cover a wide range of techniques to identify hidden subdomains, including web scraping, brute force, and crawling to identify links and JavaScript URLs.
 
 ***Once the scan is complete, the Dashboard will be updated and available to the user.***
 
@@ -175,3 +183,4 @@ Another very common issue users experience is caused by MongoDB not successfully
 
 ## Frequently Asked Questions
 
+Coming soon...
