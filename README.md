@@ -10,10 +10,10 @@
 <p align="center">
   <a href="#about">About</a> •
   <a href="#install">Install</a> •
-  <a href="#scripts">Scripts</a> •
-  <a href="#modules">Modules</a> •
-  <a href="#for-developers">For Developers</a> •
-  <a href="#faq">FAQs</a> •
+  <a href="#core-modules">Core Modules</a> •
+  <a href="#sub-modules">Sub-Modules</a> •
+  <a href="#frequently-asked-questions">FAQs</a> •
+  <a href="https://ars0nsecurity.com">Ars0n Security</a> •
   <a href="https://www.youtube.com/@rs0n_live">YouTube</a> •
   <a href="https://www.twitch.tv/rs0n_live">Twitch</a> •
   <a href="https://discord.gg/DPt6TUDGH">Discord</a>
