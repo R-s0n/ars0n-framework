@@ -10,13 +10,13 @@
 <p align="center">
   <a href="#about">About</a> •
   <a href="#install">Install</a> •
-  <a href="#core-modules">Core Modules</a> •
+  <a href="#core-modules">Modules</a> •
   <a href="#troubleshooting">Troubleshooting</a> •
   <a href="#frequently-asked-questions">FAQs</a> •
-  <a href="https://ars0nsecurity.com">Ars0n Security</a> •
-  <a href="https://www.youtube.com/@rs0n_live">YouTube</a> •
-  <a href="https://www.twitch.tv/rs0n_live">Twitch</a> •
-  <a href="https://discord.gg/DPt6TUDGH">Discord</a>
+  <a href="https://ars0nsecurity.com" target=”_blank”>Ars0n Security</a> •
+  <a href="https://www.youtube.com/@rs0n_live" target=”_blank”>YouTube</a> •
+  <a href="https://www.twitch.tv/rs0n_live" target=”_blank”>Twitch</a> •
+  <a href="https://discord.gg/DPt6TUDGH" target=”_blank”>Discord</a>
 </p>
 
 ## About
