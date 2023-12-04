@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';import '../Component.css';
+import { useApi } from '..';
 
 const Chaining = props => {
+    const { nodeHost } = useApi();
     const [urls, setUrls] = useState(props.thisFqdn.targetUrls)
     const [activeEndpointTab, setActiveEndpointTab] = useState(0);
     const [urlData, setUrlData] = useState({});
@@ -9,7 +11,7 @@ const Chaining = props => {
 
     useEffect(()=>{
         setLoaded(false);
-        axios.post('http://localhost:8000/api/url/auto', {url:props.thisFqdn.targetUrls[activeEndpointTab]})
+        axios.post(`${nodeHost}/api/url/auto`, {url:props.thisFqdn.targetUrls[activeEndpointTab]})
         .then(res=>{
             if (res.data){
                 setUrlData(res.data);

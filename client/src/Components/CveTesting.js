@@ -16,10 +16,13 @@ import NucleiScansMisc from './SubComponents/NucleiScansMisc';
 import NucleiScansNetwork from './SubComponents/NucleiScansNetwork';
 import NucleiScansRs0n from './SubComponents/NucleiScansRs0n';
 import NucleiScansHeadless from './SubComponents/NucleiScansHeadless';
+import { useApi } from '..';
 
 
 
 const CveTesting = props => {
+    const { flaskHost, nodeHost } = useApi();
+
     const [currentStep, setCurrentStep] = useState(0);
     const [impactfulVulnCount, setImpactfulVulnCount] = useState(0)
     const [impactfulVulnCountSSL, setImpactfulVulnCountSSL] = useState(0)
@@ -53,7 +56,7 @@ const CveTesting = props => {
     const [impactfulVulnFoundHeadless, setImpactfulVulnFoundHeadless] = useState(false)
 
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${nodeHost}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     let counter = 0;

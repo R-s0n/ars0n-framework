@@ -3,9 +3,11 @@ import axios from 'axios';import React, {useState, useEffect} from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import SubDomainForm from '../HelperComponents/SubDomainForm';
 import SubDomainResults from '../HelperComponents/SubDomainResults';
+import { useApi } from '../..';
 
 
 const GoSpider = props => {
+    const { flaskHost, nodeHost } = useApi();
     const [formCompleted, setFormCompleted] = useState(false);
     const [subdomainList, setSubdomainList] = useState([])
     const [loaded, setLoaded] = useState(false);
@@ -19,7 +21,7 @@ const GoSpider = props => {
 
     useEffect(()=>{
         setFormCompleted(false);
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${nodeHost}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     const tempArr = res.data.recon.subdomains.gospider;
@@ -37,7 +39,7 @@ const GoSpider = props => {
     const addGoSpiderData = (list) => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.gospider = list.split("\n");
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${nodeHost}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.gospider)
                 setFormCompleted(true);
@@ -48,7 +50,7 @@ const GoSpider = props => {
     const deleteGoSpiderData = () => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.gospider = [];
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${nodeHost}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.gospider)
                 setFormCompleted(false);

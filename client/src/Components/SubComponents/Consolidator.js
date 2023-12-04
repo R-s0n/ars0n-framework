@@ -2,14 +2,16 @@ import React, {useState, useEffect} from 'react';
 
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
+import { useApi } from '../..';
 const Consolidator = props => {
+    const { flaskHost, nodeHost } = useApi();
     const [consolidatedList, setConsolidatedList] = useState([]);
     const [consolidatedNewList, setConsolidatedNewList] = useState([]);
     const [loaded, setLoaded] = useState(false);
     const [refresh, setRefresh] = useState(0);
 
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${nodeHost}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 setConsolidatedList(res.data.recon.subdomains.consolidated);
                 setConsolidatedNewList(res.data.recon.subdomains.consolidatedNew);
@@ -46,13 +48,13 @@ const Consolidator = props => {
         let tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.consolidated = consolidatedNewList;
         tempFqdn.recon.subdomains.consolidatedNew = consolidated;
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${nodeHost}/api/fqdn/update`, tempFqdn)
             .then(res=>{let temp = refresh + 1; setRefresh(temp); console.log(res);})
             .catch(err=>console.log(err))
     }
     
     const consolidate = () => {
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${nodeHost}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 buildConsolidatedList(res.data.recon.subdomains.sublist3r, res.data.recon.subdomains.amass, res.data.recon.subdomains.assetfinder, res.data.recon.subdomains.gau);
             })

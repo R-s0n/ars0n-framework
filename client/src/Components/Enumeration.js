@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import '../Component.css';
+import { useApi } from '..';
 
 const Enumeration = props => {
+    const { flaskHost, nodeHost } = useApi();
     const [loaded, setLoaded] = useState(false)
     const [urls, setUrls] = useState(props.thisFqdn.recon.subdomains.httprobe)
     const [selectedUrl, setSelectedUrl] = useState(props.thisFqdn.recon.subdomains.httprobe[0]  || "https://" + props.thisFqdn.fqdn)
@@ -20,7 +22,7 @@ const Enumeration = props => {
     }, [props.index]);
 
     const populateBurp = () => {
-        axios.post('http://localhost:8000/api/populate-burp', urls)
+        axios.post(`${nodeHost}/api/populate-burp`, urls)
           .then(res=>{
             console.log(res);
           })
@@ -31,7 +33,7 @@ const Enumeration = props => {
     const data = {
         targetUrl: targetUrl
     }
-    axios.post('http://localhost:8000/api/scan/default', data)
+    axios.post(`${nodeHost}/api/scan/default`, data)
         .then(res=>{
         console.log(res);
         })
@@ -42,7 +44,7 @@ const Enumeration = props => {
         const data = {
             targetUrl: targetUrl
         }
-        axios.post('http://localhost:8000/api/scan/deep', data)
+        axios.post(`${nodeHost}/api/scan/deep`, data)
             .then(res=>{
             console.log(res);
             })

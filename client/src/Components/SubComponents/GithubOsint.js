@@ -1,12 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';import UrlForm from '../HelperComponents/UrlForm';
+import { useApi } from '../..';
 
 const GithubOsint = props => {
+    const { flaskHost, nodeHost } = useApi();
     const [urls, setUrls] = useState([]);
     const [loaded, setLoaded] = useState(false);
 
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/urllist', {fqdnId: props.thisFqdn._id})
+        axios.post(`${nodeHost}/api/urllist`, {fqdnId: props.thisFqdn._id})
             .then(res=>{
                 const urlArray = [];
                 urlArray.push(props.thisFqdn.fqdn);

@@ -3,8 +3,10 @@ import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import SubDomainResults from '../HelperComponents/SubDomainResults';
 import SubDomainForm from '../HelperComponents/SubDomainForm';
+import { useApi } from '../..';
 
 const Ctl = props => {
+    const { flaskHost, nodeHost } = useApi();
     const [formCompleted, setFormCompleted] = useState(false);
     const [subdomainList, setSubdomainList] = useState([])
     const [loaded, setLoaded] = useState(false);
@@ -17,7 +19,7 @@ const Ctl = props => {
     }
 
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${nodeHost}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     const tempArr = res.data.recon.subdomains.ctl;
@@ -35,7 +37,7 @@ const Ctl = props => {
     const addCtlData = (list) => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.ctl = list.split("\n");
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${nodeHost}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.ctl)
                 setFormCompleted(true);
@@ -46,7 +48,7 @@ const Ctl = props => {
     const deleteCtlData = () => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.ctl = [];
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${nodeHost}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.ctl)
                 setFormCompleted(false);

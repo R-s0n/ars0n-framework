@@ -1,7 +1,9 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import { useApi } from '../..';
 
 const AddFqdnModal = props => {
+    const { flaskHost, nodeHost } = useApi
     const [file, setFile] = useState(null);
     const [manualFqdn, setManualFqdn] = useState("");
 
@@ -37,7 +39,7 @@ const AddFqdnModal = props => {
                         // Filter out duplicates
                         domains = [...new Set(domains)];
     
-                        axios.all(domains.map(domain => axios.post('http://localhost:8000/api/fqdn/new', { fqdn: domain })))
+                        axios.all(domains.map(domain => axios.post(`${nodeHost}/api/fqdn/new`, { fqdn: domain })))
                         .then(axios.spread((...responses) => {
                             const newFqdns = responses.map(res => res.data);
                             props.setFqdns(prevFqdns => [...prevFqdns, ...newFqdns]);
@@ -60,7 +62,7 @@ const AddFqdnModal = props => {
             props.setNoFqdns(false); 
             // Handle manual domain addition
             const domain = manualFqdn.replace(/(https?:\/\/)?(www\.)?/g, '');
-            axios.post('http://localhost:8000/api/fqdn/new', { fqdn: domain })
+            axios.post(`${nodeHost}/api/fqdn/new`, { fqdn: domain })
                 .then(res => {
                     const newFqdn = res.data;
                     props.setFqdns(prevFqdns => [...prevFqdns, newFqdn]);

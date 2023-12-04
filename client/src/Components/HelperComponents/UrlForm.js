@@ -1,12 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
+import { useApi } from '../..';
 const UrlForm = props => {
+    const { flaskHost, nodeHost } = useApi();
     const [url, setUrl] = useState("");
     const [urlList, setUrlList] = useState([]);
     const [loaded, setLoaded] = useState(false);
 
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${nodeHost}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 console.log(res.data)
                 setUrlList(res.data.targetUrls);
@@ -27,9 +29,9 @@ const UrlForm = props => {
         data["_id"] = props.thisFqdn._id;
         data["targetUrls"] = currentUrls;
         console.log(data);
-        axios.post('http://localhost:8000/api/fqdn/update', data)
+        axios.post(`${nodeHost}/api/fqdn/update`, data)
             .then(res=>{
-                axios.post('http://localhost:8000/api/url/new', {url:newUrl, fqdn:props.thisFqdn.fqdn})
+                axios.post(`${nodeHost}/api/url/new`, {url:newUrl, fqdn:props.thisFqdn.fqdn})
                     .then(res=>{
                         console.log(res.data);
                         setLoaded(false);
@@ -54,9 +56,9 @@ const UrlForm = props => {
         data["_id"] = props.thisFqdn._id;
         data["targetUrls"] = currentUrls;
         console.log(data);
-        axios.post('http://localhost:8000/api/fqdn/update', data)
+        axios.post(`${nodeHost}/api/fqdn/update`, data)
             .then(res=>{
-                axios.post('http://localhost:8000/api/url/auto/delete', {url: urlToDelete})
+                axios.post(`${nodeHost}/api/url/auto/delete`, {url: urlToDelete})
                     .then(res=>{
                         setUrlList(currentUrls)
                         console.log(res);

@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import axios from 'axios';
+import { useApi } from '../..';
 const GithubSearchForm = props => {
+    const { flaskHost, nodeHost } = useApi();
     const [formData, setformData] = useState([]);
 
     const handleSubmit = (e) => {
@@ -14,7 +16,7 @@ const GithubSearchForm = props => {
         }
         let tempFqdn = props.thisFqdn;
         tempFqdn.recon.osint.GithubSearch = finalArr;
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${nodeHost}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 props.thisFormCompleted(true);
             })

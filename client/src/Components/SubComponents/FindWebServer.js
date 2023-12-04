@@ -3,9 +3,11 @@ import axios from 'axios';import React, {useState, useEffect} from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import SubDomainForm from '../HelperComponents/SubDomainForm';
 import SubDomainResults from '../HelperComponents/SubDomainResults';
+import { useApi } from '../..';
 
 
 const FindWebServer = props => {
+    const { flaskHost, nodeHost } = useApi();
     const [formCompleted, setFormCompleted] = useState(false);
     const [subdomainList, setSubdomainList] = useState([])
     const [loaded, setLoaded] = useState(false);
@@ -19,7 +21,7 @@ const FindWebServer = props => {
 
     useEffect(()=>{
         setFormCompleted(false);
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${nodeHost}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     const tempArr = res.data.recon.subdomains.masscanLive;
@@ -37,7 +39,7 @@ const FindWebServer = props => {
     const addFindWebServerData = (list) => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.masscanLive = list.split("\n");
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${nodeHost}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.masscanLive)
                 setFormCompleted(true);
@@ -48,7 +50,7 @@ const FindWebServer = props => {
     const deleteFindWebServerData = () => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.masscanLive = [];
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${nodeHost}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.masscanLive)
                 setFormCompleted(false);

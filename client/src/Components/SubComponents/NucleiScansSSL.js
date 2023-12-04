@@ -1,8 +1,10 @@
 import axios from 'axios';import React, {useState, useEffect} from 'react';
 
 import toast, { Toaster } from 'react-hot-toast';
+import { useApi } from '../..';
 
 const NucleiScans = props => {
+    const { flaskHost, nodeHost } = useApi();
     const [formCompleted, setFormCompleted] = useState(false);
     const [vulnList, setVulnList] = useState([]);
     const [loaded, setLoaded] = useState(false);
@@ -17,7 +19,7 @@ const NucleiScans = props => {
 
     useEffect(()=>{
         setFormCompleted(false);
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${nodeHost}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     console.log(res.data.vulnsSSL)
@@ -34,7 +36,7 @@ const NucleiScans = props => {
     const deleteVuln = () => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.sublist3r = [];
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${nodeHost}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setVulnList(res.data.recon.subdomains.sublist3r)
                 setFormCompleted(false);

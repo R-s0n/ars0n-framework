@@ -3,8 +3,10 @@ import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import SubDomainResults from '../HelperComponents/SubDomainResults';
 import SubDomainForm from '../HelperComponents/SubDomainForm';
+import { useApi } from '../..';
 
 const Assetfinder = props => {
+    const { flaskHost, nodeHost } = useApi();
     const [formCompleted, setFormCompleted] = useState(false);
     const [subdomainList, setSubdomainList] = useState([])
     const [loaded, setLoaded] = useState(false);
@@ -17,7 +19,7 @@ const Assetfinder = props => {
     }
 
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${nodeHost}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     const tempArr = res.data.recon.subdomains.assetfinder;
@@ -35,7 +37,7 @@ const Assetfinder = props => {
     const addAssetfinderData = (list) => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.assetfinder = list.split("\n");
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${nodeHost}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.assetfinder)
                 setFormCompleted(true);
@@ -46,7 +48,7 @@ const Assetfinder = props => {
     const deleteAssetfinderData = () => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.assetfinder = [];
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${nodeHost}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.assetfinder)
                 setFormCompleted(false);

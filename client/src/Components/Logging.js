@@ -1,16 +1,18 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import '../Component.css';
+import { useApi } from '..';
 
 
 
 const Logging = props => {
+    const { flaskHost, nodeHost } = useApi();
     const [currentStep, setCurrentStep] = useState(0);
     const [logs, setLogs] = useState([]);
     const [loaded, setLoaded] = useState(false);
 
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/log/all')
+        axios.post(`${nodeHost}/api/log/all`)
         .then((res) => {
             setLogs(res.data);
             setLoaded(true);

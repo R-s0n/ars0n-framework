@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import '../Component.css';
+import { useApi } from '..';
 
 const Dashboard = props => {
+    const { flaskHost, nodeHost } = useApi();
     const thisFqdn = props?.thisFqdn;
     const [vulnCount, setVulnCount] = useState(0)
     const [impactfulVulnCount, setImpactfulVulnCount] = useState(0)
@@ -40,7 +42,7 @@ const Dashboard = props => {
     const [impactfulVulnFoundHeadless, setImpactfulVulnFoundHeadless] = useState(false)
     
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${nodeHost}/api/fqdn`, {_id:props.thisFqdn._id})
         .then((res) => {
             if (res.data !== null) {
                 setImpactfulVulnFoundMisconfig(false)

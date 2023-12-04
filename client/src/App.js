@@ -3,8 +3,10 @@ import axios from 'axios';import Modal from 'react-modal';
 import AddFqdnModal from './Components/Modals/AddFqdnModal';
 import Fqdn from './Views/Fqdn';
 import './App.css'
+import { useApi } from '.';
 
 function App() {
+  const { flaskHost, nodeHost } = useApi();
   useEffect(()=>setActiveTab(0), [App.index]);
   const [fqdns, setFqdns] = useState([]);
   const [noFqdns, setNoFqdns] = useState(true);
@@ -23,7 +25,7 @@ function App() {
   useEffect(()=>{
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/status');
+        const response = await fetch(`${flaskHost}/status`);
         const result = await response.json();
         setScanRunning(result['scan_running']);
       } catch (error) {
@@ -33,7 +35,7 @@ function App() {
 
     fetchData()
 
-    axios.post('http://localhost:8000/api/fqdn/all', {})
+    axios.post(`${nodeHost}/api/fqdn/all`, {})
       .then(res=>{
         setFqdns(res.data);
         if (res.data.length > 0) {
@@ -64,7 +66,7 @@ function App() {
   const deleteFqdn = () => {
     const fqdnToDelete = fqdns[activeTab];
   
-    axios.post('http://localhost:8000/api/fqdn/delete', fqdnToDelete)
+    axios.post(`${nodeHost}/api/fqdn/delete`, fqdnToDelete)
       .then(res => {
         // Remove the deleted FQDN from the state
         const updatedFqdns = fqdns.filter((_, index) => index !== activeTab);
@@ -94,7 +96,7 @@ function App() {
     };
   
     // Call the API
-    axios.post('http://localhost:5000/wildfire', payload)
+    axios.post(`${flaskHost}/wildfire`, payload)
       .then(res => {
         setScanRunning(true);
         console.log("Wildfire Running...");

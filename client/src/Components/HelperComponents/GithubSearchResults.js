@@ -1,11 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
+import { useApi } from '../..';
 const GithubSearchResults = props => {
+    const { flaskHost, nodeHost } = useApi();
     const [searchResults, setSearchResults] = useState([]);
     const [loaded, setLoaded] = useState(false);
 
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${nodeHost}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 setSearchResults(res.data.recon.osint.GithubSearch);
                 setLoaded(true);
@@ -16,7 +18,7 @@ const GithubSearchResults = props => {
     const deleteSubdomains = (e) => {
         let tempFqdn = props.thisFqdn;
         tempFqdn.recon.osint.GithubSearch = [];
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${nodeHost}/api/fqdn/update`, tempFqdn)
             .then(res=>props.thisFormCompleted(false))
             .catch(err=>console.log(err))
     }
