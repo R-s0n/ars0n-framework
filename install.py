@@ -423,11 +423,11 @@ def keystore():
         keystore_check = subprocess.run([f"ls {home_dir}/.keys"], shell=True)
         if keystore_check.returncode == 0:
             print("[+] Keys directory created successfully!")
-            slack_key = input("[*] Please enter your Slack Token (ENTER to leave black and add later):\n")
-            github_key = input("[*] Please enter your GitHub PAT (ENTER to leave black and add later):\n")
-            shodan_key = input("[*] Please enter your Shodan API Key (ENTER to leave black and add later):\n")
-            hackerone_user = input("[*] Please enter your HackerOne Username (ENTER to leave black and add later):\n")
-            hackerone_key = input("[*] Please enter your HackerOne API Key (ENTER to leave black and add later):\n")
+            slack_key = "" #input("[*] Please enter your Slack Token (ENTER to leave black and add later):\n")
+            github_key = "" #input("[*] Please enter your GitHub PAT (ENTER to leave black and add later):\n")
+            shodan_key = "" #input("[*] Please enter your Shodan API Key (ENTER to leave black and add later):\n")
+            hackerone_user = "" #input("[*] Please enter your HackerOne Username (ENTER to leave black and add later):\n")
+            hackerone_key = "" #input("[*] Please enter your HackerOne API Key (ENTER to leave black and add later):\n")
             subprocess.run([f"""echo "{hackerone_user}:{hackerone_key}" > {home_dir}/.keys/.hackerone && echo "{slack_key}" > {home_dir}/.keys/slack_web_hook && echo "github:{github_key}" > {home_dir}/.keys/.keystore && echo "shodan:{shodan_key}" >> {home_dir}/.keys/.keystore"""], shell=True)
 
 def server_check():
