@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
-mongoose.connect('mongodb://127.0.0.1/wapt_db', {
+dotenv.config();
+
+mongoose.connect(`mongodb://${process.env.HOST || '127.0.0.1'}/wapt_db`, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })

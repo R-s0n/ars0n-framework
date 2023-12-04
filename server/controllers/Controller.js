@@ -9,6 +9,11 @@ const execFile = require('child_process').execFile;
 const execSync = util.promisify(require('child_process').execSync);
 const axios = require('axios');
 const https = require('https');
+const dotenv = require('dotenv');
+
+dotenv.config()
+
+const HOST = process.env.HOST || '127.0.0.1';
 
 module.exports.ping = (req, res) => {
     res.json({ message: "pong" });
@@ -185,7 +190,7 @@ module.exports.deleteLogs = (req, res) => {
 
 const proxyConfig = {
     protocol: 'http',
-    host: '127.0.0.1',
+    host: HOST,
     port: 8080,
   };
 
@@ -225,7 +230,7 @@ module.exports.populateBurp = (req, res) => {
                 name: "Crawl and Audit - Fast"
             }]
     }
-    axios.post("http://127.0.0.1:1337/v0.1/scan", burpScan)
+    axios.post(`http://${HOST}:1337/v0.1/scan`, burpScan)
         .then((response) => {
             console.log('Response:', response.data);
         })
@@ -239,7 +244,7 @@ module.exports.runBurpScanDefault = (req, res) => {
     const burpScan = {
             urls: [req.body.targetUrl]
     }
-    axios.post("http://127.0.0.1:1337/v0.1/scan", burpScan)
+    axios.post(`http://${HOST}:1337/v0.1/scan`, burpScan)
         .then((response) => {
             console.log('Response:', response.data);
         })
@@ -258,7 +263,7 @@ module.exports.runBurpScanDeep = (req, res) => {
     }]
     }
     console.log(burpScan)
-    axios.post("http://127.0.0.1:1337/v0.1/scan", burpScan)
+    axios.post(`http://${HOST}:1337/v0.1/scan`, burpScan)
         .then((response) => {
             console.log('Response:', response.data);
         })
