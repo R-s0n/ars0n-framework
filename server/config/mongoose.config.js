@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-mongoose.connect(`mongodb://${process.env.HOST || '127.0.0.1'}/wapt_db`, {
+mongoose.connect(`mongodb://0.0.0.0/wapt_db`, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
