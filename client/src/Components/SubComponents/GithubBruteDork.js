@@ -3,8 +3,10 @@ import React, {useState, useEffect} from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';import GithubSearchForm from '../HelperComponents/GithubSearchForm';
 import GithubSearchResults from '../HelperComponents/GithubSearchResults';
+import { useApi } from '../..';
 
 const GithubSearch = props => {
+    const { flaskHost, nodeHost } = useApi();
 
 
     const notify = e => {
