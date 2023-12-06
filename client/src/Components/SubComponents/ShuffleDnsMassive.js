@@ -62,7 +62,7 @@ const ShuffleDnsMassive = props => {
                     <Toaster />
                     <p><b>DETAILS: </b>ShuffleDNS is a wrapper around massdns written in go that allows you to enumerate valid subdomains using active bruteforce as well as resolve subdomains with wildcard handling and easy input-output support.</p>
                     <p><b>GOAL: </b>Bruteforce subdomains based on given wordlist.</p>
-                    <p><b>DOWNLOAD / INSTALL: </b><span onClick={notify}>GO111MODULE=on go get -v github.com/projectdiscovery/shuffledns/cmd/shuffledns</span></p>
+                    <p><b>DOWNLOAD / INSTALL: </b><span onClick={notify}>go install -v github.com/projectdiscovery/shuffledns/cmd/shuffledns@latest</span><div>NOTE: Remember to add go to your path</div></p>
                     <p><b>Run: </b><span onClick={notify}>~/go/bin/shuffledns -d {props.thisFqdn.fqdn} -w ~/Wordlists/all.txt -r ~/Wordlists/resolvers.txt | xclip -i -selection clipboard</span></p>
                 </div>
             </div>

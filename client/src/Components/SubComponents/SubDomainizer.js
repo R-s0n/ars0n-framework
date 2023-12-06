@@ -63,7 +63,7 @@ const SubDomainizer = props => {
                     <p><b>DETAILS: </b>SubDomainizer is a tool designed to find hidden subdomains and secrets present is either webpage, Github, and external javascripts present in the given URL. This tool also finds S3 buckets, cloudfront URL's and more from those JS files which could be interesting like S3 bucket is open to read/write, or subdomain takeover and similar case for cloudfront. It also scans inside given folder which contains your files.</p>
                     <p><b>GOAL: </b>Identify valid sub-domains of the current FQDN to help build a complete picture of the application.</p>
                     <p><b>DOWNLOAD: </b><span onClick={notify}>git clone https://github.com/nsonaniya2010/SubDomainizer.git</span></p>
-                    <p><b>INSTALL: </b><span onClick={notify}>pip3 install -r requirements.txt</span></p>
+                    <p><b>INSTALL: </b><span onClick={notify}>pip install -r requirements.txt</span></p>
                     <p><b>RUN: </b><span onClick={notify}>python3 SubDomainizer.py -u {props.thisFqdn.fqdn} -o subdomainizer.{props.thisFqdn.fqdn}.txt; cat subdomainizer.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>                </div>
             </div>
             <div className="row">

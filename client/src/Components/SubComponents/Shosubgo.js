@@ -62,9 +62,8 @@ const Shosubgo = props => {
                     <Toaster />
                     <p><b>DETAILS: </b>Small tool to Grab subdomains using Shodan api.</p>
                     <p><b>GOAL: </b>Identify valid sub-domains of the current FQDN to help build a complete picture of the application.</p>
-                    <p><b>DOWNLOAD: </b><span onClick={notify}>git clone https://github.com/pownx/shosubgo.git</span></p>
-                    <p><b>INSTALL: </b><span onClick={notify}>apt-get install golang</span></p>
-                    <p><b>RUN: </b><span onClick={notify}>go run main.go -d {props.thisFqdn.fqdn} -s $shodan_key &gt; shosubgo.{props.thisFqdn.fqdn}.txt;  cat shosubgo.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
+                    <p><b>DOWNLOAD: </b><span onClick={notify}>go install github.com/incogbyte/shosubgo@latest</span><div>NOTE: Remember to add go to your path</div></p>
+                    <p><b>RUN: </b><span onClick={notify}>shosubgo -d {props.thisFqdn.fqdn} -s $shodan_key &gt; shosubgo.{props.thisFqdn.fqdn}.txt;  cat shosubgo.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
                 </div>
             </div>
             <div className="row">

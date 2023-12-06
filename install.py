@@ -73,6 +73,27 @@ def go_check():
     print("[!] Go is NOT already installed.  Installing now...")
     return False
 
+def is_go_in_path():
+    # Check if 'go' is in the PATH
+    return any(os.access(os.path.join(path, 'go'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep))
+
+def add_go_to_path():
+    # Assuming 'go' is located in '$HOME/go/bin'
+    go_path = '$HOME/go/bin'
+
+    # Add 'go' to the PATH if not already present
+    if go_path not in os.environ["PATH"]:
+        os.environ["PATH"] += os.pathsep + go_path
+
+        # Update the PATH for the current session
+        os.system(f'export PATH=$PATH:{go_path}')
+
+if not is_go_in_path():
+    add_go_to_path()
+    print("Go has been added to the PATH.")
+else:
+    print("Go is already in the PATH.")
+
 def sublist3r_check():
     home_dir = get_home_dir()
     sublist3r_check = subprocess.run([f"python3 {home_dir}/Tools/Sublist3r/sublist3r.py --help"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
