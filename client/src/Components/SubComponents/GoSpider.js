@@ -62,7 +62,7 @@ const GoSpider = props => {
                     <Toaster />
                     <p><b>DETAILS: </b>GoSpider - Fast web spider written in Go</p>
                     <p><b>GOAL: </b>Identify valid sub-domains of the current FQDN to help build a complete picture of the application.</p>
-                    <p><b>DOWNLOAD: </b><span onClick={notify}>go get -u github.com/jaeles-project/gospider</span></p>
+                    <p><b>DOWNLOAD: </b><span onClick={notify}>go install github.com/jaeles-project/gospider@latest</span></p>
                     <p><b>INSTALL: </b><span onClick={notify}>apt-get install golang</span></p>
                     <p><b>RUN: </b><span onClick={notify}>gospider -s "https://{props.thisFqdn.fqdn}/" -o gospider.{props.thisFqdn.fqdn}.txt -c 10 -d 1; cat gospider.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
                 </div>

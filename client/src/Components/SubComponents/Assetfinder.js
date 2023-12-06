@@ -60,7 +60,7 @@ const Assetfinder = props => {
                     <Toaster />
                     <p><b>DETAILS: </b>Find domains and subdomains potentially related to a given domain. (straight to the point as usual, Tomnomnom!)</p>
                     <p><b>GOAL: </b>Identify valid sub-domains of the current FQDN to help build a complete picture of the application.</p>
-                    <p><b>DOWNLOAD / INSTALL: </b><span onClick={notify}>go get -u github.com/tomnomnom/assetfinder</span></p>
+                    <p><b>DOWNLOAD / INSTALL: </b><span onClick={notify}>go install github.com/tomnomnom/assetfinder@latest</span></p>
                     <p><b>RUN: </b><span onClick={notify}>sudo assetfinder --subs-only {props.thisFqdn.fqdn} &gt; assetfinder.{props.thisFqdn.fqdn}.txt; cat assetfinder.{props.thisFqdn.fqdn}.txt | xclip -i -selection clipboard</span></p>
                 </div>
             </div>
