@@ -1,4 +1,4 @@
-import subprocess, argparse
+import subprocess, argparse, os
 from time import sleep
 from datetime import datetime
 
@@ -171,6 +171,15 @@ def subfinder_check():
         return True
     print("[!] Subfinder is NOT already installed.  Installing now...")
     return False
+
+def check_go_dir():
+    go_dir = "$HOME/go/bin"
+    isExist = os.path.exists(go_dir)
+    print(isExist + "Exists")
+    if not isExist:
+        # Create a new directory because it does not exist
+        os.makedirs(go_dir)
+        print("The" + go_dir + "is created!")
 
 def install_subfinder():
     home_dir = get_home_dir()
