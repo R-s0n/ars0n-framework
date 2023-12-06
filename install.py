@@ -120,7 +120,7 @@ def gau_check():
 
 def install_gau():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/lc/gau/releases/download/v2.1.2/gau_2.1.2_linux_amd64.tar.gz;tar xvf gau_2.1.2_linux_amd64.tar.gz;mv gau {home_dir}/go/bin/gau;rm gau_2.1.2_linux_amd64.tar.gz README.md LICENSE"], shell=True)
+    subprocess.run([f"cd {home_dir};$ go install github.com/lc/gau/v2/cmd/gau@latest"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/gau --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Gau installed successfully!")
@@ -138,8 +138,8 @@ def shosubgo_check():
 
 def install_shosubgo():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir}/Tools;git clone https://github.com/incogbyte/shosubgo.git"], shell=True)
-    install_check = subprocess.run([f"ls {home_dir}/Tools/shosubgo/"], shell=True)
+    subprocess.run([f"cd {home_dir};go install github.com/incogbyte/shosubgo@latest"], shell=True)
+    install_check = subprocess.run([f"shosubsgo --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Shosubgo installed successfully!  Don't forget to add your API key in the .keystore file.")
     else:
@@ -172,18 +172,18 @@ def subfinder_check():
     print("[!] Subfinder is NOT already installed.  Installing now...")
     return False
 
-def check_go_dir():
-    go_dir = "$HOME/go/bin"
-    isExist = os.path.exists(go_dir)
-    print(isExist + "Exists")
-    if not isExist:
-        # Create a new directory because it does not exist
-        os.makedirs(go_dir)
-        print("The" + go_dir + "is created!")
+# def check_go_dir():
+#     go_dir = "$HOME/go/bin"
+#     isExist = os.path.exists(go_dir)
+#     print(isExist + "Exists")
+#     if not isExist:
+#         # Create a new directory because it does not exist
+#         os.makedirs(go_dir)
+#         print("The" + go_dir + "is created!")
 
 def install_subfinder():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/projectdiscovery/subfinder/releases/download/v2.5.6/subfinder_2.5.6_linux_amd64.zip;unzip subfinder_2.5.6_linux_amd64.zip;mv subfinder {home_dir}/go/bin/subfinder;rm subfinder_*.zip README.md LICENSE"], shell=True)
+    subprocess.run([f"cd {home_dir};go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/subfinder --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Subfinder installed successfully!")
@@ -219,7 +219,7 @@ def gospider_check():
 
 def install_gospider():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/jaeles-project/gospider/releases/download/v1.1.6/gospider_v1.1.6_linux_x86_64.zip;unzip -j gospider_v1.1.6_linux_x86_64.zip;mv gospider {home_dir}/go/bin/gospider;rm gospider_v1.1.6_linux_x86_64.zip README.md LICENSE.md"], shell=True)
+    subprocess.run([f"cd {home_dir};GO111MODULE=on go install github.com/jaeles-project/gospider@latest"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/gospider --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] GoSpider installed successfully!")
@@ -256,7 +256,7 @@ def shuffledns_check():
 
 def install_shuffledns():
     home_dir = get_home_dir()
-    subprocess.run([f"sudo apt-get install -y massdns;cd {home_dir};wget https://github.com/projectdiscovery/shuffledns/releases/download/v1.0.8/shuffledns_1.0.8_linux_amd64.zip;unzip shuffledns_1.0.8_linux_amd64.zip;mv shuffledns {home_dir}/go/bin/shuffledns;rm shuffledns_1.0.8_linux_amd64.zip README.md LICENSE.md"], shell=True)
+    subprocess.run([f"sudo apt-get install -y massdns;cd {home_dir};go install -v github.com/projectdiscovery/shuffledns/cmd/shuffledns@latest"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/shuffledns --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] ShuffleDNS installed successfully!")
@@ -344,7 +344,7 @@ def nuclei_check():
 
 def install_nuclei():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};git clone https://github.com/projectdiscovery/nuclei-templates.git;wget https://github.com/projectdiscovery/nuclei/releases/download/v2.7.8/nuclei_2.7.8_linux_amd64.zip;unzip nuclei_2.7.8_linux_amd64.zip;mv nuclei {home_dir}/go/bin/nuclei;rm nuclei_2.7.8_linux_amd64.zip"], shell=True)
+    subprocess.run([f"cd {home_dir};go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest;nuclei -ut -v"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/nuclei --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Nuclei installed successfully!")
