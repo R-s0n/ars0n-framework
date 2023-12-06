@@ -19,6 +19,10 @@
   <a href="https://discord.gg/DPt6TUDGH" target=”_blank”>Discord</a>
 </p>
 
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=G89LTJRQC0M"><img src="static/thumbnail.png" width="600px" alt="Youtube Thumbnail"></a>
+</div>
+
 ## About
 
 Howdy!  My name is Harrison Richardson, or `rs0n` (arson) when I want to feel cooler than I really am.  The code in this repository started as a small collection of scripts to help automate many of the common Bug Bounty hunting processes I found myself repeating.  Over time, I built a simple web application with a MongoDB connection to manage my findings and identify valuable data points.  After 5 years of Bug Bounty hunting, both part-time and full-time, I'm finally ready to package this collection of tools into a proper framework.
