@@ -17,7 +17,7 @@ class Timer:
         return self.stop.strftime("%H:%M:%S")
     
 def flask_cors_check():
-    flask_cors_check = subprocess.run([f"pip install Flask-Cors"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+    flask_cors_check = subprocess.run([f"sudo apt install python3-pip;pip install Flask-Cors"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     if flask_cors_check.returncode == 0:
         print("[+] Flask_CORS is already installed.")
         return True
