@@ -20,6 +20,20 @@ function App() {
   const [scanSingleDomain, setScanSingleDomain] = useState(true);
   const [selectedFqdns, setSelectedFqdns] = useState([]);
   
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    return `${year}_${month}_${day}_${hours}-${minutes}-${seconds}`;
+  };
+
+  const [fileName, setFileName] = useState(getCurrentDateTime());
+  
   useEffect(()=>{
     const fetchData = async () => {
       try {
@@ -61,6 +75,47 @@ function App() {
     setNoFqdns(true);
   }
 
+  const exportData = () => {
+    const jsonData = JSON.stringify(fqdns, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.download = `${fileName}.json`;
+    a.href = window.URL.createObjectURL(blob);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleFileUpload = (file) => {
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          importedData.forEach((importedFqdn) => {
+            const existingIndex = fqdns.findIndex(
+              (existingFqdn) => existingFqdn.fqdn === importedFqdn.fqdn
+            );
+            if (existingIndex === -1) {
+              setFqdns((prevData) => [...prevData, importedFqdn]);
+              axios.post("http://localhost:8000/api/fqdn/new",importedFqdn)
+            } else {
+              setFqdns((prevData) => {
+                const newData = [...prevData];
+                newData[existingIndex] = importedFqdn;
+                return newData;
+              });
+              axios.post("http://localhost:8000/api/fqdn/update",importedFqdn)
+            }
+          });
+        } catch (error) {
+          console.error('Error parsing JSON file:', error);
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
   const deleteFqdn = () => {
     const fqdnToDelete = fqdns[activeTab];
   
@@ -79,6 +134,9 @@ function App() {
       .catch(err => console.log(err));
   }
   
+  const handleUnloadButtonClick = () => {
+    document.getElementById('fileInput').value = '';
+  };
 
   const runWildfire = () => {
     // Extract the selected FQDN
@@ -161,6 +219,15 @@ function App() {
     setSelectedFqdns([]);
   };
 
+  const handleButtonClick = () => {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (file) {
+      handleFileUpload(file);
+      document.getElementById('fileInput').value = '';
+    }
+  };
+
   return (
     <div>
     { loaded && <Modal 
@@ -206,6 +273,31 @@ function App() {
                 />
                 <span style={{ color: 'white' }}>Scan only selected domain</span>
               </div>
+            </li>
+            <li className="nav-item ml-5">
+            <h3 style={{ color: 'white' }}>Data Export</h3>
+            <div class="form-group">
+            <label style={{ color: 'white' }}>
+              File Name:
+              <input
+                className="ml-2" 
+                type="text"
+                value={fileName}
+                onChange={(e) => setFileName(e.target.value)}
+              />
+            </label>
+            <button className="btn btn-primary text-secondary ml-2" onClick={exportData}>Export Data</button>
+            </div>
+            </li>
+            <li className="nav-item ml-5">
+            <div>
+              <label style={{ color: 'white' }}>
+                <h3 style={{ color: 'white' }}>Data Import</h3>
+                <input type="file" accept=".json" id="fileInput" />
+              </label>
+              <button className="btn btn-primary text-secondary ml-2" onClick={handleButtonClick}>Process</button>
+              <button className="btn btn-primary text-secondary ml-2" onClick={handleUnloadButtonClick}>Unload</button>
+            </div>
             </li>
           </ul>
         </div>
