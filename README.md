@@ -40,8 +40,7 @@ My hope is that this modular framework will act as a canvas to help share what I
 
 Paste this code block into a clean installation of [Kali Linux 2023.3](https://www.kali.org/get-kali/#kali-installer-images) to download, install, and run the latest stable Alpha version of the framework:
 ```
-sudo apt update && sudo apt-get update
-sudo apt -y upgrade && sudo apt-get -y upgrade
+sudo apt update && sudo apt-get -y upgrade
 wget https://github.com/R-s0n/ars0n-framework/releases/download/v0.0.1-alpha/ars0n-framework-v0.0.1-alpha.tar.gz
 tar -xzvf ars0n-framework-v0.0.1-alpha.tar.gz
 rm ars0n-framework-v0.0.1-alpha.tar.gz

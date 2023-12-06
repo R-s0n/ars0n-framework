@@ -13,3 +13,4 @@ toolkit/http*
 toolkit/logs/*
 toolkit/wordlists/live_servers.txt
 toolkit/__pycache__
+node_modules
