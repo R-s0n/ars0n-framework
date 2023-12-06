@@ -344,7 +344,11 @@ def nuclei_check():
 
 def install_nuclei():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest;nuclei -ut -v"], shell=True)
+    spruce_type = "linux_amd64"
+    github_api_url = "https://api.github.com/repos/projectdiscovery/nuclei/releases/latest"
+    command = f'curl -s {github_api_url} | jq -r ".assets[] | select(.name | test(\\"{spruce_type}\\")) | .browser_download_url" | xargs wget'
+
+    subprocess.run([f"" + command+ ";unzip nuclei_*.zip;mv nuclei $HOME/go/bin;nuclei -ut -v; rm nuclei*.zip README*.md LICENSE.md"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/nuclei --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Nuclei installed successfully!")
