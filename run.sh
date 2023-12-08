@@ -50,6 +50,6 @@ nohup node server/server.js > logs/server.log 2>&1 &
   nohup python3 toolkit-service.py > ../logs/toolkit.log 2>&1 &
 )
 
-tail -f toolkit.log &
+tail -f ../logs/toolkit.log &
 
 wait
