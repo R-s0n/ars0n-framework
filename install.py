@@ -487,54 +487,38 @@ def arg_parse():
 
 def validate_install():
     print("[-] Validating installation...")
-    if tools_dir_check() is False:
-        return False
-    if flask_cors_check() is False:
-        return False
-    if awscli_check() is False:
-        return False
-    if node_check() is False:
-        return False
-    if npm_check is False:
-        return False
-    if mongodb_check() is False:
-        return False
-    if go_check() is False:
-        return False
-    if sublist3r_check() is False:
-        return False
-    if assetfinder_check() is False:
-        return False
-    if gau_check() is False:
-        return False
-    if crt_check() is False:
-        return False
-    if shosubgo_check() is False:
-        return False
-    if subfinder_check() is False:
-        return False
-    if github_search_check() is False:
-        return False
-    if gospider_check() is False:
-        return False
-    if subdomainizer_check() is False:
-        return False
-    if shuffledns_check() is False:
-        return False
-    if httprobe_check() is False:
-        return False
-    if tlsscan_check() is False:
-        return False
-    if jq_check() is False:
-        return False
-    if dnmasscan_check() is False:
-        return False
-    if nuclei_check() is False:
-        return False
-    if server_check() is False:
-        return False
-    if client_check() is False:
-        return False
+    checks = [
+        tools_dir_check,
+        flask_cors_check,
+        awscli_check,
+        node_check,
+        npm_check,
+        mongodb_check,
+        go_check,
+        sublist3r_check,
+        assetfinder_check,
+        gau_check,
+        crt_check,
+        shosubgo_check,
+        subfinder_check,
+        github_search_check,
+        gospider_check,
+        subdomainizer_check,
+        shuffledns_check,
+        httprobe_check,
+        tlsscan_check,
+        jq_check,
+        dnmasscan_check,
+        nuclei_check,
+        server_check,
+        client_check
+    ]
+    # Intentionally not using all because we want to fail as soon
+    # as an install is not installed. Below is the alternative one liner.
+    # Otherwise: return all([check() for check in checks])
+    for check in checks:
+        if not check():
+            return False
     stray_license_file()
     return True
 
