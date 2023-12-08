@@ -13,6 +13,20 @@ import Creative from '../Components/Creative';
 import ComingSoon from '../Components/ComingSoon';
 
 
+const ACTIVE_TAB = {
+    0: Dashboard,
+    1: Recon,
+    2: Enumeration,
+    3: CveTesting,
+    4: Ops,
+    5: Core,
+    6: Creative,
+    7: ComingSoon,
+    8: ComingSoon,
+    9: ComingSoon,
+    10: ComingSoon,
+}
+
 const Fqdn = props => {
     const [activeTab, setActiveTab] = useState(0);
     useEffect(()=>setActiveTab(0), [props.index]);
@@ -33,6 +47,11 @@ const Fqdn = props => {
     ]
 
     Modal.setAppElement('#root');
+
+    const getActiveTab = () => {
+        const Component = ACTIVE_TAB[activeTab]
+        return <Component thisFqdn={props.thisFqdn} />
+    }
 
     return (
         <>
@@ -56,62 +75,8 @@ const Fqdn = props => {
                 </div>
             </div>
         </nav>
-        {
-            activeTab === 0 ?
-            <Dashboard thisFqdn={props.thisFqdn} /> :
-            ""
-        }
-        {
-            activeTab === 1 ?
-            <Recon thisFqdn={props.thisFqdn} /> :
-            ""
-        }
-        {
-            activeTab === 2 ?
-            <Enumeration thisFqdn={props.thisFqdn} /> :
-            ""
-        }
-        {
-            activeTab === 3 ?
-            <CveTesting thisFqdn={props.thisFqdn} /> :
-            ""
-        }
-        {
-            activeTab === 4 ?
-            <Ops thisFqdn={props.thisFqdn} /> :
-            ""
-        }
-        
-        {
-            activeTab === 5 ?
-            <Core thisFqdn={props.thisFqdn} /> :
-            ""
-        }
-        {
-            activeTab === 6 ?
-            <Creative thisFqdn={props.thisFqdn} /> :
-            ""
-        }
-        {
-            activeTab === 7 ?
-            <ComingSoon thisFqdn={props.thisFqdn} /> :
-            ""
-        }
-        {
-            activeTab === 8 ?
-            <ComingSoon thisFqdn={props.thisFqdn} /> :
-            ""
-        }
-        {
-            activeTab === 9 ?
-            <ComingSoon thisFqdn={props.thisFqdn} /> :
-            ""
-        }
-        {
-            activeTab === 10 ?
-            <Logging thisFqdn={props.thisFqdn} /> :
-            ""
-        }
+        {getActiveTab()}
+   
         </>
     );
 }
