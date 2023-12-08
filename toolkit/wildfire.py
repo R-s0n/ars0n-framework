@@ -19,22 +19,26 @@ class Timer:
 class Logger:
     def __init__(self):
         subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt; rm -f logs/temp_log.txt"], shell=True)
+        log_start_time = datetime.now()
         with open("logs/log.txt", "r") as file:
             self.init_log_data = file.readlines()
             self.init_log_len = len(self.init_log_data)
         with open("logs/log.txt", "a") as file:
-            log_start_time = datetime.now()
+            flag = "[INIT]"
+            running_script = "Wildfire.py"
+            message = "Logger Initialized"
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
+        with open("logs/temp_log.txt", "a") as file:
             flag = "[INIT]"
             running_script = "Wildfire.py"
             message = "Logger Initialized"
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
     def write_to_log(self, flag, running_script, message):
+        log_start_time = str(datetime.now())
         with open("logs/log.txt", "a") as file:
-            log_start_time = str(datetime.now())
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
         with open("logs/temp_log.txt", "a") as file:
-            log_start_time = str(datetime.now())
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
     def create_datebase_log(self, args):
