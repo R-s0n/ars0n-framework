@@ -17,6 +17,8 @@ function App() {
   const [fireSpreadder, setFireSpreadder] = useState(false);
   const [fireEnumeration, setFireEnumeration] = useState(false);
   const [scanRunning, setScanRunning] = useState(false)
+  const [scanPercent, setScanPercent] = useState(false)
+  const [scanStepName, setScanStepName] = useState(false)
   const [scanSingleDomain, setScanSingleDomain] = useState(true);
   const [selectedFqdns, setSelectedFqdns] = useState([]);
   
@@ -40,6 +42,8 @@ function App() {
         const response = await fetch('http://localhost:5000/status');
         const result = await response.json();
         setScanRunning(result['scan_running']);
+        setScanPercent(result['scan_percent']);
+        setScanStepName(result['scan_step_name']);
       } catch (error) {
         console.error('Error fetching data: ', error);
       }
@@ -286,7 +290,7 @@ function App() {
                 onChange={(e) => setFileName(e.target.value)}
               />
             </label>
-            <button className="btn btn-primary text-secondary ml-2" onClick={exportData}>Export Data</button>
+            <button className="border border-info btn btn-primary text-secondary ml-2" onClick={exportData}>Export Data</button>
             </div>
             </li>
             <li className="nav-item ml-5">
@@ -295,8 +299,8 @@ function App() {
                 <h3 style={{ color: 'white' }}>Data Import</h3>
                 <input type="file" accept=".json" id="fileInput" />
               </label>
-              <button className="btn btn-primary text-secondary ml-2" onClick={handleButtonClick}>Process</button>
-              <button className="btn btn-primary text-secondary ml-2" onClick={handleUnloadButtonClick}>Unload</button>
+              <button className="border border-info btn btn-primary text-secondary ml-2" onClick={handleButtonClick}>Process</button>
+              <button className="border border-info btn btn-primary text-secondary ml-2" onClick={handleUnloadButtonClick}>Unload</button>
             </div>
             </li>
           </ul>
@@ -308,12 +312,18 @@ function App() {
 
 
     <div className="pl-3 p-2 navbar navbar-expand-lg bg-dark" style={{overflow:'auto',whiteSpace:'nowrap'}}>
-    {
-        scanRunning ?
-        <span style={{padding: '15px', color: '#D9D9D9'}}>Scan Status: Running</span> :
-        <span style={{padding: '15px', color: '#D9D9D9'}}>Scan Status: NOT Running</span>
-      }
-      <button  style={{width: '145px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit" onClick={runWildfire}>Wildfire.py</button>
+      <span style={{padding: '15px', color: '#D9D9D9'}}>Scan Progress: {scanPercent}</span>
+      <span style={{padding: '15px', color: '#D9D9D9', width: '350px'}}>Current Step: {scanStepName}</span>
+      <select
+                className="form-select dropdown-select mr-2"
+                value="wildfire"
+                onChange={handleDropdownChange}
+                aria-label="Select Scan"
+              >
+                <option value="wildfire">Wildfire.py</option>
+                <option value="slowburn" disabled>Slowburn.py</option>
+                <option value="scorched-earth" disabled>ScorchedEarth.py</option>
+      </select>
       <label style={{padding: '15px', color: '#D9D9D9'}} for="checkbox1">Fire-Starter</label>
       <input style={{padding: '15px'}} type="checkbox" id="firestart" name="firestart" class="checkbox" onChange={handleStartToggle} checked={fireStarter}/>
       <label style={{padding: '15px', color: '#D9D9D9'}} for="checkbox2">Fire-Cloud</label>
@@ -324,6 +334,12 @@ function App() {
       <input style={{padding: '15px'}} type="checkbox" id="firecloud" name="firecloud" class="checkbox" onChange={handleSpreadToggle} checked={fireSpreadder} disabled/>
       <label style={{padding: '15px', color: '#D9D9D9', textDecoration: 'line-through'}} for="checkbox2">Fire-Enumeration</label>
       <input style={{padding: '15px'}} type="checkbox" id="firecloud" name="firecloud" class="checkbox" onChange={handleEnumToggle} checked={fireEnumeration} disabled/>
+      {
+        scanRunning ?
+        <button  style={{width: '100px', marginLeft: '15px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit">Cancel</button> :
+        <button  style={{width: '75px', marginLeft: '15px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit" onClick={runWildfire}>Scan</button>
+      }
+      <button  style={{width: '75px', marginLeft: '15px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit">Pause</button>
     </div>
     {noFqdns === false && <Fqdn index={activeTab} thisFqdn={fqdns[activeTab]} buttonFunction={deleteFqdn} setActiveTab={setActiveTab} />}
     </div>

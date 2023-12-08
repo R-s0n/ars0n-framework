@@ -24,7 +24,7 @@ const ACTIVE_TAB = {
     7: ComingSoon,
     8: ComingSoon,
     9: ComingSoon,
-    10: ComingSoon,
+    10: Logging,
 }
 
 const Fqdn = props => {
