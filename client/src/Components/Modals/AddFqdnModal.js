@@ -100,25 +100,29 @@ const AddFqdnModal = props => {
     
 
     return (
-        <>
-            <h1>Add FQDN</h1>
-            <p>Select a Burp Suite config file or enter a FQDN manually</p>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Config File:</label>
-                    <input type="file" onChange={handleFileChange} />
+        <div class="container-fluid">
+            <div class="container mt-5">
+                <div class="text-center">
+                    <h1 class="display-4">Add FQDN</h1>
+                    <p class="lead">Select a Burp Suite config file or enter a FQDN manually</p>
                 </div>
-                <div>
-                    <label>Ars0n Framework Scan File:</label>
-                    <input type="file" onChange={handleScanFileChange} />
-                </div>
-                <div>
-                    <label>Manual FQDN:</label>
-                    <input type="text" value={manualFqdn} onChange={handleManualChange} />
-                </div>
-                <input type="submit" value="Add" />
-            </form>
-        </>
+                <form onSubmit={handleSubmit}>
+                    <div class="form-group">
+                        <label for="configFile">Config File:</label>
+                        <input type="file" class="form-control" id="configFile" onChange={handleFileChange} />
+                    </div>
+                    <div class="form-group">
+                        <label for="scanFile">Scan File:</label>
+                        <input type="file" class="form-control" id="scanFile" onChange={handleScanFileChange} />
+                    </div>
+                    <div class="form-group">
+                        <label for="manualFqdn">Manual FQDN:</label>
+                        <input type="text" class="form-control" id="manualFqdn" value={manualFqdn} onChange={handleManualChange} />
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block mt-5">Add</button>
+                </form>
+            </div>
+        </div>
     );
 }
 
