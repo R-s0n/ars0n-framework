@@ -53,6 +53,7 @@ function App() {
 
     axios.post('http://localhost:8000/api/fqdn/all', {})
       .then(res=>{
+        console.log(res.data);
         setFqdns(res.data);
         if (res.data.length > 0) {
           setNoFqdns(false);
@@ -67,6 +68,20 @@ function App() {
       
     return () => clearInterval(interval);
   }, [refreshCounter]);
+
+  useEffect(() => {
+    setLoaded(false)
+    axios.post('http://localhost:8000/api/fqdn/all', {})
+      .then(res=>{
+        console.log(res.data);
+        setFqdns(res.data);
+        if (res.data.length > 0) {
+          setNoFqdns(false);
+        }
+        setLoaded(true);
+      })
+      .catch(err=>console.log(err))
+  }, [noFqdns])
 
   // Debugging: Log the selected FQDN whenever the activeTab changes
   useEffect(() => {
@@ -341,7 +356,7 @@ function App() {
       }
       <button  style={{width: '75px', marginLeft: '15px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit">Pause</button>
     </div>
-    {noFqdns === false && <Fqdn index={activeTab} thisFqdn={fqdns[activeTab]} buttonFunction={deleteFqdn} setActiveTab={setActiveTab} />}
+    {fqdns.length > 0 && loaded && <Fqdn index={activeTab} thisFqdn={fqdns[activeTab]} buttonFunction={deleteFqdn} setActiveTab={setActiveTab} />}
     </div>
   );
 }

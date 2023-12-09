@@ -64,9 +64,6 @@ const AddFqdnModal = props => {
                 .then(res => {
                     const newFqdn = res.data;
                     props.setFqdns(prevFqdns => [...prevFqdns, newFqdn]);
-        
-                    // Set the added FQDN as the current FQDN
-                    props.setCurrentFqdn(newFqdn);
                     props.setNoFqdns(false); // Call this function to close the modal
                 })
                 .catch(err => console.log(err));
