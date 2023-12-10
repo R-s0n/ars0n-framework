@@ -251,17 +251,26 @@ def get_cnames(fqdn):
         cname_list.append(cname[0])
     return cname_list
 
+def update_scan_progress(scan_step_name):
+    requests.post("http://localhost:5000/update-scan", json={"stepName":scan_step_name})
+
 def main(args):
     thisFqdn = get_fqdn_obj(args)
     if args.fqdn:
         thisFqdn = get_fqdn_obj(args)
     cname_list = get_cnames(thisFqdn)
     aws_access_key_check()
+    update_scan_progress("Fire-Cloud | Service Detection")
     thisFqdn = service_detection(cname_list, thisFqdn)
+    update_scan_progress("Fire-Cloud | S3 Bucket Detection")
     thisFqdn = s3_bucket_public(thisFqdn)
+    update_scan_progress("Fire-Cloud | S3 Bucket Download")
     s3_bucket_download_exploit(thisFqdn)
+    update_scan_progress("Fire-Cloud | S3 Bucket Default Creds")
     s3_bucket_authenticated(thisFqdn)
+    update_scan_progress("Fire-Cloud | S3 Bucket Upload")
     s3_bucket_upload_exploit(thisFqdn)
+    update_scan_progress("Fire-Cloud | S3 Bucket Takeover")
     s3_takover_exploit(thisFqdn, cloudfront_list)
     update_fqdn_obj(args, thisFqdn)
     exit()

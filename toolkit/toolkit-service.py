@@ -14,21 +14,30 @@ CORS(app)
 class Scan:
     def __init__(self):
         self.scan_running = False
-        self.scan_percent = 0
+        self.scan_step = 0
+        self.scan_complete = 0
         self.scan_step_name = "Not Running"
 
 scan_obj = Scan()
 
-def start_scan():
+def start_scan(fire_starter, fire_cloud, fire_scanner):
     global scan_obj
     scan_obj.scan_running = True
-    scan_obj.scan_percent = 1
+    scan_obj.scan_step = 1
+    scan_obj.scan_complete = 1
+    if fire_starter:
+        scan_obj.scan_complete = scan_obj.scan_complete + 11
+    if fire_cloud:
+        scan_obj.scan_complete = scan_obj.scan_complete + 6
+    if fire_scanner:
+        scan_obj.scan_complete = scan_obj.scan_complete + 10
     scan_obj.scan_step_name = "Starting..."
 
 def stop_scan():
     global scan_obj
     scan_obj.scan_running = False
-    scan_obj.scan_percent = 0
+    scan_obj.scan_step = 0
+    scan_obj.scan_complete = 0
     scan_obj.scan_step_name = "Not Running"
 
 def cancel_subprocesses():
@@ -63,13 +72,15 @@ def status():
     if scan_obj.scan_running:
         return jsonify({
             "scan_running":True,
-            "scan_percent":scan_obj.scan_percent,
+            "scan_step":scan_obj.scan_step,
+            "scan_complete":scan_obj.scan_complete,
             "scan_step_name":scan_obj.scan_step_name
             })
     else:
         return jsonify({
             "scan_running":False,
-            "scan_percent":scan_obj.scan_percent,
+            "scan_step":scan_obj.scan_step,
+            "scan_complete":scan_obj.scan_complete,
             "scan_step_name":scan_obj.scan_step_name
             })
     
@@ -78,11 +89,11 @@ def update_scan():
     global scan_obj
     if scan_obj.scan_running:
         data = request.get_json()
-        scan_obj.scan_percent = data['percent']
+        scan_obj.scan_step += 1
         scan_obj.scan_step_name = data['stepName']
         return jsonify({
                 "scan_running":scan_obj.scan_running,
-                "scan_percent":scan_obj.scan_percent,
+                "scan_step":scan_obj.scan_step,
                 "scan_step_name":scan_obj.scan_step_name
                 })
     else:
@@ -110,7 +121,7 @@ def wildfire():
             fqdn_flag = f" --fqdn {fqdn}"
             scanSingle_flag = f" --scanSingle"
 
-        start_scan()
+        start_scan(fire_starter, fire_cloud, fire_scanner)
         subprocess.run([f"python3 wildfire.py{start_flag}{cloud_flag}{scan_flag}{fqdn_flag}{scanSingle_flag}"], shell=True)
         stop_scan()
         return jsonify({"message": "Done!"})

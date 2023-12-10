@@ -17,7 +17,8 @@ function App() {
   const [fireSpreadder, setFireSpreadder] = useState(false);
   const [fireEnumeration, setFireEnumeration] = useState(false);
   const [scanRunning, setScanRunning] = useState(false)
-  const [scanPercent, setScanPercent] = useState(false)
+  const [scanStep, setScanStep] = useState(false)
+  const [scanComplete, setScanComplete] = useState(false)
   const [scanStepName, setScanStepName] = useState(false)
   const [scanSingleDomain, setScanSingleDomain] = useState(true);
   const [selectedFqdns, setSelectedFqdns] = useState([]);
@@ -42,8 +43,9 @@ function App() {
         const response = await fetch('http://localhost:5000/status');
         const result = await response.json();
         setScanRunning(result['scan_running']);
-        setScanPercent(result['scan_percent']);
+        setScanStep(result['scan_step']);
         setScanStepName(result['scan_step_name']);
+        setScanComplete(result['scan_complete']);
       } catch (error) {
         console.error('Error fetching data: ', error);
       }
@@ -63,7 +65,7 @@ function App() {
     
     const interval = setInterval(() => {
           fetchData();
-        }, 5000);
+        }, 500);
       
     return () => clearInterval(interval);
   }, [refreshCounter]);
@@ -312,7 +314,7 @@ function App() {
 
 
     <div className="pl-3 p-2 navbar navbar-expand-lg bg-dark" style={{overflow:'auto',whiteSpace:'nowrap'}}>
-      <span style={{padding: '15px', color: '#D9D9D9'}}>Scan Progress: {scanPercent}</span>
+      <span style={{padding: '15px', color: '#D9D9D9'}}>Scan Step: {scanStep} / {scanComplete}</span>
       <span style={{padding: '15px', color: '#D9D9D9', width: '350px'}}>Current Step: {scanStepName}</span>
       <select
                 className="form-select dropdown-select mr-2"
