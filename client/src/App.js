@@ -55,6 +55,7 @@ function App() {
 
     axios.post('http://localhost:8000/api/fqdn/all', {})
       .then(res=>{
+        console.log(res.data);
         setFqdns(res.data);
         if (res.data.length > 0) {
           setNoFqdns(false);
@@ -245,7 +246,8 @@ function App() {
                     content: {
                       height: '700px',
                       width: '450px',
-                      margin: 'auto'
+                      margin: 'auto',
+                      backgroundColor: '#ECF0F1'
                     }
                   }}>
       <AddFqdnModal fqdns={fqdns} setFqdns={setFqdns} setNoFqdns={setNoFqdns} />
@@ -343,7 +345,7 @@ function App() {
       }
       <button  style={{width: '75px', marginLeft: '15px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit">Pause</button>
     </div>
-    {noFqdns === false && <Fqdn index={activeTab} thisFqdn={fqdns[activeTab]} buttonFunction={deleteFqdn} setActiveTab={setActiveTab} />}
+    {noFqdns === false && fqdns.length > 0 && loaded && <Fqdn index={activeTab} thisFqdn={fqdns[activeTab]} buttonFunction={deleteFqdn} setActiveTab={setActiveTab} />}
     </div>
   );
 }
