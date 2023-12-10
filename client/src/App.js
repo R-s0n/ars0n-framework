@@ -235,6 +235,10 @@ function App() {
     }
   };
 
+  const handleCollectScreenshotsButton = () => {
+    console.log("Button Clicked!")
+  }
+
   return (
     <div>
     { loaded && <Modal 
@@ -301,11 +305,14 @@ function App() {
             <div>
               <label style={{ color: 'white' }}>
                 <h3 style={{ color: 'white' }}>Data Import</h3>
-                <input type="file" accept=".json" id="fileInput" />
+                <input class="form-control" type="file" accept=".json" id="fileInput" />
               </label>
               <button className="border border-info btn btn-primary text-secondary ml-2" onClick={handleButtonClick}>Process</button>
               <button className="border border-info btn btn-primary text-secondary ml-2" onClick={handleUnloadButtonClick}>Unload</button>
             </div>
+            </li>
+            <li>
+              <button className="border border-info btn btn-primary text-secondary m-4 p-3" onClick={handleCollectScreenshotsButton}>Collect Screenshots</button>
             </li>
           </ul>
         </div>
