@@ -22,6 +22,8 @@ function App() {
   const [scanStepName, setScanStepName] = useState(false)
   const [scanSingleDomain, setScanSingleDomain] = useState(true);
   const [selectedFqdns, setSelectedFqdns] = useState([]);
+  const [coreModule, setCoreModule] = useState("N/a")
+  const [scanDomain, setScanDomain] = useState("N/a")
   
   const getCurrentDateTime = () => {
     const now = new Date();
@@ -46,6 +48,8 @@ function App() {
         setScanStep(result['scan_step']);
         setScanStepName(result['scan_step_name']);
         setScanComplete(result['scan_complete']);
+        setCoreModule(result['core_module']);
+        setScanDomain(result['scan_target']);
       } catch (error) {
         console.error('Error fetching data: ', error);
       }
@@ -146,25 +150,40 @@ function App() {
   };
 
   const runWildfire = () => {
-    // Extract the selected FQDN
     const selectedFqdn = fqdns[activeTab].fqdn;
     console.log("runWildfire: " + selectedFqdn)
-    // Prepare the request payload
-    const payload = {
-      fireStarter: fireStarter,
-      fireCloud: fireCloud,
-      fireScanner: fireScanner,
-      fqdn: selectedFqdn,
-      scanSingleDomain: scanSingleDomain,
-    };
-  
-    // Call the API
-    axios.post('http://localhost:5000/wildfire', payload)
+
+    if (!scanSingleDomain){
+      const payload = {
+        fireStarter: fireStarter,
+        fireCloud: fireCloud,
+        fireScanner: fireScanner,
+        fqdn: selectedFqdn,
+        scanSingleDomain: scanSingleDomain,
+        domainCount: fqdns.length
+      };
+      axios.post('http://localhost:5000/wildfire', payload)
       .then(res => {
         setScanRunning(true);
-        console.log("Wildfire Running...");
+        console.log("Wildfire Running Against All Domains...");
       })
       .catch(err => console.log(err));
+    } else {
+      const payload = {
+        fireStarter: fireStarter,
+        fireCloud: fireCloud,
+        fireScanner: fireScanner,
+        fqdn: selectedFqdn,
+        scanSingleDomain: scanSingleDomain,
+        domainCount: 1
+      };
+      axios.post('http://localhost:5000/wildfire', payload)
+      .then(res => {
+        setScanRunning(true);
+        console.log("Wildfire Running Against Single Domain...");
+      })
+      .catch(err => console.log(err));
+    }
   }  
 
   // Dropdown change handler
@@ -312,7 +331,7 @@ function App() {
             </div>
             </li>
             <li>
-              <button className="border border-info btn btn-primary text-secondary m-4 p-3" onClick={handleCollectScreenshotsButton}>Collect Screenshots</button>
+              <button className="border border-info btn btn-primary text-secondary m-4 p-3 ml-5" onClick={handleCollectScreenshotsButton}>Collect Screenshots</button>
             </li>
           </ul>
         </div>
@@ -322,9 +341,15 @@ function App() {
 
 
 
-    <div className="pl-3 p-2 navbar navbar-expand-lg bg-dark" style={{overflow:'auto',whiteSpace:'nowrap'}}>
-      <span style={{padding: '15px', color: '#D9D9D9'}}>Scan Step: {scanStep} / {scanComplete}</span>
-      <span style={{padding: '15px', color: '#D9D9D9', width: '350px'}}>Current Step: {scanStepName}</span>
+    <div className="pl-3 p-2 navbar navbar-expand-lg bg-dark" style={{ overflow: 'auto', whiteSpace: 'nowrap' }}>
+      <span style={{ display: 'block', padding: '15px', color: '#D9D9D9', width: '250px'}}>
+          Core Module: {coreModule}<br></br>
+          Target Domain: {scanDomain}
+      </span>
+      <span style={{ display: 'block', padding: '15px', color: '#D9D9D9', width: '350px'}}>
+          Scan Step: {scanStep} / {scanComplete}<br></br>
+          Current Step: {scanStepName}
+      </span>
       <select
                 className="form-select dropdown-select mr-2"
                 value="wildfire"

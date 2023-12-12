@@ -23,7 +23,7 @@ const Dashboard = props => {
     const [impactfulVulnCountNetwork, setImpactfulVulnCountNetwork] = useState(0)
     const [impactfulVulnCountRs0n, setImpactfulVulnCountRs0n] = useState(0)
     const [impactfulVulnCountHeadless, setImpactfulVulnCountHeadless] = useState(0)
-    const [impactfulVulnFoundCount, setImpactfulVulnFoundCount] = useState(false)
+    const [impactfulVulnCountFull, setImpactfulVulnCountFull] = useState(0)
     const [impactfulVulnFoundSSL, setImpactfulVulnFoundSSL] = useState(false)
     const [impactfulVulnFoundFile, setImpactfulVulnFoundFile] = useState(false)
     const [impactfulVulnFoundDNS, setImpactfulVulnFoundDNS] = useState(false)
@@ -321,9 +321,8 @@ const Dashboard = props => {
                 </div>
                 <div className="col-3 ml-3">
                     <h5>Impactful Nuclei Vulns: {impactfulVulnCount}/{vulnCount}</h5>
-                    <br></br>
                     <ul style={{listStyleType:"none"}}> 
-                        <li classNme="mt-5" onClick={(e)=>setCurrentStep(0)}>Full (Vuln Count: {impactfulVulnCount})</li>
+                        <li className="mt-4" onClick={(e)=>setCurrentStep(0)}>Full (Vuln Count: {impactfulVulnCountFull})</li>
                         {
                             impactfulVulnFoundSSL ?
                             <li className="mt-2" style={{color:"red"}} onClick={(e)=>setCurrentStep(1)}>SSL (Vuln Count: {impactfulVulnCountSSL})</li> :

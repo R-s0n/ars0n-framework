@@ -16,22 +16,27 @@ class Scan:
         self.scan_running = False
         self.scan_step = 0
         self.scan_complete = 0
-        self.scan_step_name = "Not Running"
+        self.scan_step_name = "N/a"
+        self.scan_target = "N/a"
+        self.core_module = "N/a"
 
 scan_obj = Scan()
 
-def start_scan(fire_starter, fire_cloud, fire_scanner):
+def start_scan(fire_starter, fire_cloud, fire_scanner, domain_count, core_module):
     global scan_obj
     scan_obj.scan_running = True
     scan_obj.scan_step = 1
     scan_obj.scan_complete = 1
     if fire_starter:
-        scan_obj.scan_complete = scan_obj.scan_complete + 11
+        counter = scan_obj.scan_complete + 11
     if fire_cloud:
-        scan_obj.scan_complete = scan_obj.scan_complete + 6
+        counter = scan_obj.scan_complete + 6
     if fire_scanner:
-        scan_obj.scan_complete = scan_obj.scan_complete + 10
+        counter = scan_obj.scan_complete + 10
+    scan_obj.scan_complete = counter * domain_count
+    scan_obj.core_module = core_module
     scan_obj.scan_step_name = "Starting..."
+    scan_obj.scan_target = "Sorting..."
 
 def stop_scan():
     global scan_obj
@@ -39,6 +44,8 @@ def stop_scan():
     scan_obj.scan_step = 0
     scan_obj.scan_complete = 0
     scan_obj.scan_step_name = "Not Running"
+    scan_obj.core_module = "N/a"
+    scan_obj.scan_target = "N/a"
 
 def cancel_subprocesses():
     current_pid = os.getpid()
@@ -74,14 +81,17 @@ def status():
             "scan_running":True,
             "scan_step":scan_obj.scan_step,
             "scan_complete":scan_obj.scan_complete,
-            "scan_step_name":scan_obj.scan_step_name
+            "scan_step_name":scan_obj.scan_step_name,
+            "scan_target":scan_obj.scan_target,
+            "core_module":scan_obj.core_module
             })
     else:
         return jsonify({
             "scan_running":False,
             "scan_step":scan_obj.scan_step,
             "scan_complete":scan_obj.scan_complete,
-            "scan_step_name":scan_obj.scan_step_name
+            "scan_step_name":scan_obj.scan_step_name,
+            "scan_target":scan_obj.scan_target
             })
     
 @app.route('/update-scan', methods=['POST'])
@@ -91,10 +101,12 @@ def update_scan():
         data = request.get_json()
         scan_obj.scan_step += 1
         scan_obj.scan_step_name = data['stepName']
+        scan_obj.scan_target = data['target_domain']
         return jsonify({
                 "scan_running":scan_obj.scan_running,
                 "scan_step":scan_obj.scan_step,
-                "scan_step_name":scan_obj.scan_step_name
+                "scan_step_name":scan_obj.scan_step_name,
+                "target_domain":scan_obj.scan_target
                 })
     else:
         return jsonify({"message": "ERROR: Scan Not Currently Running..."})
@@ -107,9 +119,9 @@ def wildfire():
         fire_starter = data['fireStarter']
         fire_cloud = data['fireCloud']
         fire_scanner = data['fireScanner']
-        fqdn = data.get('fqdn', '')  # Get the FQDN, default to empty string if not provided
-        scan_single_domain = data.get('scanSingleDomain', False)  # Get the scanSingleDomain flag
-
+        fqdn = data.get('fqdn', '')
+        scan_single_domain = data.get('scanSingleDomain', False)
+        domain_count = data.get('domainCount', 1)
         start_flag, cloud_flag, scan_flag, fqdn_flag, scanSingle_flag  = "", "", "", "", ""
         if fire_starter:
             start_flag = " --start"
@@ -120,8 +132,8 @@ def wildfire():
         if scan_single_domain:
             fqdn_flag = f" --fqdn {fqdn}"
             scanSingle_flag = f" --scanSingle"
-
-        start_scan(fire_starter, fire_cloud, fire_scanner)
+        scan_obj.core_module = "Wildfire.py"
+        start_scan(fire_starter, fire_cloud, fire_scanner, domain_count, scan_obj.core_module)
         subprocess.run([f"python3 wildfire.py{start_flag}{cloud_flag}{scan_flag}{fqdn_flag}{scanSingle_flag}"], shell=True)
         stop_scan()
         return jsonify({"message": "Done!"})

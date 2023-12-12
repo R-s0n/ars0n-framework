@@ -579,8 +579,8 @@ def perform_scans(args, thisFqdn, now, logger):
         for scan_function in scan_functions:
             scan_function(args, now, logger)
 
-def update_scan_progress(scan_step_name):
-    requests.post("http://localhost:5000/update-scan", json={"stepName":scan_step_name})
+def update_scan_progress(scan_step_name, target_domain):
+    requests.post("http://localhost:5000/update-scan", json={"stepName":scan_step_name,"target_domain":target_domain})
 
 def arg_parse():
     parser = argparse.ArgumentParser()
@@ -618,25 +618,25 @@ def main(args):
         full_nuclei_scan(args, now)
     else:
         ## Safe Templates
-        update_scan_progress("Fire-Scanner | Technologies")
+        update_scan_progress("Fire-Scanner | Technologies", args.fqdn)
         technologies_nuclei_scan(args, now, logger)
-        update_scan_progress("Fire-Scanner | Exposed Panels")
+        update_scan_progress("Fire-Scanner | Exposed Panels", args.fqdn)
         exposed_panels_nuclei_scan(args, now, logger)
-        update_scan_progress("Fire-Scanner | Misconfiguration")
+        update_scan_progress("Fire-Scanner | Misconfiguration", args.fqdn)
         misconfiguration_nuclei_scan(args, now, logger)
-        update_scan_progress("Fire-Scanner | Exposures")
+        update_scan_progress("Fire-Scanner | Exposures", args.fqdn)
         exposures_nuclei_scan(args, now, logger)
-        update_scan_progress("Fire-Scanner | rs0n")
+        update_scan_progress("Fire-Scanner | rs0n", args.fqdn)
         rs0n_nuclei_scan(args, now, logger)
-        update_scan_progress("Fire-Scanner | Headless")
+        update_scan_progress("Fire-Scanner | Headless", args.fqdn)
         headless_nuclei_scan(args, now, logger)
-        update_scan_progress("Fire-Scanner | DNS")
+        update_scan_progress("Fire-Scanner | DNS", args.fqdn)
         dns_nuclei_scan(args, now, logger)
-        update_scan_progress("Fire-Scanner | SSL")
+        update_scan_progress("Fire-Scanner | SSL", args.fqdn)
         ssl_nuclei_scan(args, now, logger)
-        update_scan_progress("Fire-Scanner | Vulnerabilities")
+        update_scan_progress("Fire-Scanner | Vulnerabilities", args.fqdn)
         vulnerabilities_nuclei_scan(args, now, logger)
-        update_scan_progress("Fire-Scanner | CVE's")
+        update_scan_progress("Fire-Scanner | CVE's", args.fqdn)
         cves_nuclei_scan(args, now, logger)
         ## Unsafe Templates
         # file_nuclei_scan(args, now, logger)

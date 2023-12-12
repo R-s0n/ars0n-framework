@@ -107,8 +107,8 @@ class NetworkValidator:
             print("[+] ProtonVPN connection not found.  Continuing without VPN...")
             self.vpn_connected = False
 
-def update_scan_progress(scan_step_name):
-    requests.post("http://localhost:5000/update-scan", json={"stepName":scan_step_name})
+def update_scan_progress(scan_step_name, target_domain):
+    requests.post("http://localhost:5000/update-scan", json={"stepName":scan_step_name,"target_domain":target_domain})
 
 def sublist3r(args, home_dir, thisFqdn, logger):
     try:
@@ -778,7 +778,7 @@ def main(args):
     print("[-] Running Subdomain Scraping Modules...")
     # Amass
     try:
-        update_scan_progress("Fire-Starter | Amass")
+        update_scan_progress("Fire-Starter | Amass", args.fqdn)
         print(f"[-] Running Amass against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Amass -> {args.fqdn}")
         amass(args, get_fqdn_obj(args), logger)
@@ -788,7 +788,7 @@ def main(args):
 
     # Subdomain Scraping
     try:
-        update_scan_progress("Fire-Starter | Sublist3r")
+        update_scan_progress("Fire-Starter | Sublist3r", args.fqdn)
         print(f"[-] Running Sublist3r against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Sublist3r -> {args.fqdn}")
         sublist3r(args, get_home_dir(), get_fqdn_obj(args), logger)
@@ -797,7 +797,7 @@ def main(args):
         print(f"[!] Exception: {e}")
 
     try:
-        update_scan_progress("Fire-Starter | Assetfinder")
+        update_scan_progress("Fire-Starter | Assetfinder", args.fqdn)
         print(f"[-] Running Assetfinder against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Assetfinder -> {args.fqdn}")
         assetfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
@@ -806,7 +806,7 @@ def main(args):
         print(f"[!] Exception: {e}")
 
     try:
-        update_scan_progress("Fire-Starter | GAU")
+        update_scan_progress("Fire-Starter | GAU", args.fqdn)
         print(f"[-] Running Get All URLs against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GAU -> {args.fqdn}")
         gau(args, get_home_dir(), get_fqdn_obj(args), logger)
@@ -815,7 +815,7 @@ def main(args):
         print(f"[!] Exception: {e}")
 
     try:
-        update_scan_progress("Fire-Starter | CRT")
+        update_scan_progress("Fire-Starter | CRT", args.fqdn)
         print(f"[-] Running CRT against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running CRT -> {args.fqdn}")
         crt(args, get_home_dir(), get_fqdn_obj(args), logger)
@@ -824,7 +824,7 @@ def main(args):
         print(f"[!] Exception: {e}")
 
     try:
-        update_scan_progress("Fire-Starter | Subfinder")
+        update_scan_progress("Fire-Starter | Subfinder", args.fqdn)
         print(f"[-] Running Subfinder against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder -> {args.fqdn}")
         subfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
@@ -833,7 +833,7 @@ def main(args):
         print(f"[!] Exception: {e}")
 
     try:
-        update_scan_progress("Fire-Starter | Subfinder (Recursive)")
+        update_scan_progress("Fire-Starter | Subfinder (Recursive)", args.fqdn)
         print(f"[-] Running Subfinder in Recursive Mode against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder (Recursive) -> {args.fqdn}")
         subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args), logger)
@@ -843,7 +843,7 @@ def main(args):
 
     # Subdomain Brute Force
     try:
-        update_scan_progress("Fire-Starter | ShuffleDNS")
+        update_scan_progress("Fire-Starter | ShuffleDNS", args.fqdn)
         print(f"[-] Running ShuffleDNS w/ a Default Wordlist against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running ShuffleDNS (Default) -> {args.fqdn}")
         shuffle_dns(args, get_home_dir(), get_fqdn_obj(args), logger)
@@ -852,7 +852,7 @@ def main(args):
         print(f"[!] Exception: {e}")
 
     try:
-        update_scan_progress("Fire-Starter | ShuffleDNS (Custom)")
+        update_scan_progress("Fire-Starter | ShuffleDNS (Custom)", args.fqdn)
         print(f"[-] Running CEWL against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Building CeWL Wordlist -> {args.fqdn}")
         build_cewl_wordlist(args, logger)
@@ -868,7 +868,7 @@ def main(args):
 
     # Subdomain Link/JS Discovery
     if args.deep:
-        update_scan_progress("Fire-Starter | Gospider")
+        update_scan_progress("Fire-Starter | Gospider", args.fqdn)
         print(f"[-] Running DEEP Crawl Scan on {args.fqdn}...")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GoSpider (Deep) -> {args.fqdn}")
         try:
@@ -878,7 +878,7 @@ def main(args):
             print(f"[!] Exception: {e}")
     else:
         try:
-            update_scan_progress("Fire-Starter | Gospider")
+            update_scan_progress("Fire-Starter | Gospider", args.fqdn)
             print(f"[-] Running Gospider against {args.fqdn}")
             logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GoSpider -> {args.fqdn}")
             gospider(args, get_home_dir(), get_fqdn_obj(args), logger)
@@ -887,7 +887,7 @@ def main(args):
             print(f"[!] Exception: {e}")
 
     try:
-        update_scan_progress("Fire-Starter | Subdomainizer")
+        update_scan_progress("Fire-Starter | Subdomainizer", args.fqdn)
         print(f"[-] Running Subdomainizer against {args.fqdn}")
         logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subdomainizer -> {args.fqdn}")
         print(f"[-] Current Time: {datetime.now()}")
