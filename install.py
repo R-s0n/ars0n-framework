@@ -335,8 +335,8 @@ def nuclei_check():
 
 def install_nuclei():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};git clone https://github.com/projectdiscovery/nuclei-templates.git;wget https://github.com/projectdiscovery/nuclei/releases/download/v2.7.8/nuclei_2.7.8_linux_amd64.zip;unzip nuclei_2.7.8_linux_amd64.zip;mv nuclei {home_dir}/go/bin/nuclei;rm nuclei_2.7.8_linux_amd64.zip"], shell=True)
-    install_check = subprocess.run([f"{home_dir}/go/bin/nuclei --help"], shell=True)
+    subprocess.run([f"cd {home_dir};git clone https://github.com/projectdiscovery/nuclei-templates.git;wget https://github.com/projectdiscovery/nuclei/releases/download/v3.1.2/nuclei_3.1.2_linux_amd64.zip;unzip nuclei_3.1.2_linux_amd64.zip;mv nuclei {home_dir}/go/bin/nuclei;rm nuclei_3.1.2_linux_amd64.zip"], shell=True)
+    install_check = subprocess.run([f"{home_dir}/go/bin/nuclei -update"], shell=True)
     if install_check.returncode == 0:
         print("[+] Nuclei installed successfully!")
     else:
