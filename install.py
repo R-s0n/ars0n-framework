@@ -120,7 +120,7 @@ def gau_check():
 
 def install_gau():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/lc/gau/releases/download/v2.1.2/gau_2.1.2_linux_amd64.tar.gz;tar xvf gau_2.1.2_linux_amd64.tar.gz;mv gau {home_dir}/go/bin/gau;rm gau_2.1.2_linux_amd64.tar.gz README.md LICENSE"], shell=True)
+    subprocess.run([f"cd {home_dir};wget https://github.com/lc/gau/releases/download/v2.2.1/gau_2.2.1_linux_amd64.tar.gz;tar xvf gau_2.2.1_linux_amd64.tar.gz;mv gau {home_dir}/go/bin/gau;rm gau_2.2.1_linux_amd64.tar.gz README.md LICENSE"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/gau --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Gau installed successfully!")
@@ -174,30 +174,12 @@ def subfinder_check():
 
 def install_subfinder():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/projectdiscovery/subfinder/releases/download/v2.5.6/subfinder_2.5.6_linux_amd64.zip;unzip subfinder_2.5.6_linux_amd64.zip;mv subfinder {home_dir}/go/bin/subfinder;rm subfinder_*.zip README.md LICENSE"], shell=True)
+    subprocess.run([f"cd {home_dir};wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.3/subfinder_2.6.3_linux_amd64.zip;unzip subfinder_2.6.3_linux_amd64.zip;mv subfinder {home_dir}/go/bin/subfinder;rm subfinder_*.zip README.md LICENSE"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/subfinder --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Subfinder installed successfully!")
     else:
         print("[!] Something went wrong!  Subfinder was NOT installed successfully...")
-
-def github_search_check():
-    home_dir = get_home_dir()
-    github_search_check = subprocess.run([f"ls {home_dir}/Tools/github-search/"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
-    if github_search_check.returncode == 0:
-        print("[+] GitHub-Search is already installed.")
-        return True
-    print("[!] GitHub-Search is NOT already installed.  Installing now...")
-    return False
-
-def install_github_search():
-    home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir}/Tools;git clone https://github.com/gwen001/github-search.git"], shell=True)
-    install_check = subprocess.run([f"ls {home_dir}/Tools/github-search/"], shell=True)
-    if install_check.returncode == 0:
-        print("[+] GitHub-Search installed successfully!")
-    else:
-        print("[!] Something went wrong!  GitHub-Search was NOT installed successfully...")
 
 def gospider_check():
     home_dir = get_home_dir()
@@ -247,7 +229,7 @@ def shuffledns_check():
 
 def install_shuffledns():
     home_dir = get_home_dir()
-    subprocess.run([f"sudo apt-get install -y massdns;cd {home_dir};wget https://github.com/projectdiscovery/shuffledns/releases/download/v1.0.8/shuffledns_1.0.8_linux_amd64.zip;unzip shuffledns_1.0.8_linux_amd64.zip;mv shuffledns {home_dir}/go/bin/shuffledns;rm shuffledns_1.0.8_linux_amd64.zip README.md LICENSE.md"], shell=True)
+    subprocess.run([f"sudo apt-get install -y massdns;cd {home_dir};wget https://github.com/projectdiscovery/shuffledns/releases/download/v1.0.9/shuffledns_1.0.9_linux_amd64.zip;unzip shuffledns_1.0.9_linux_amd64.zip;mv shuffledns {home_dir}/go/bin/shuffledns;rm shuffledns_1.0.9_linux_amd64.zip README.md LICENSE.md"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/shuffledns --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] ShuffleDNS installed successfully!")
@@ -283,7 +265,7 @@ def tlsscan_check():
 
 def install_tlsscan():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/prbinu/tls-scan/releases/download/1.5.0.1/tls-scan-1.5.0-linux-amd64.tar.gz;tar xvf tls-scan-1.5.0-linux-amd64.tar.gz;mv tls-scan {home_dir}/Tools/tls-scan;rm tls-scan-1.5.0-linux-amd64.tar.gz"], shell=True)
+    subprocess.run([f"cd {home_dir};wget https://github.com/prbinu/tls-scan/releases/download/1.6.0/tls-scan-1.6.0-linux-amd64.tar.gz;tar xvf tls-scan-1.6.0-linux-amd64.tar.gz;mv tls-scan {home_dir}/Tools/tls-scan;rm tls-scan-1.6.0-linux-amd64.tar.gz"], shell=True)
     install_check = subprocess.run([f"ls {home_dir}/Tools/tls-scan/tls-scan"], shell=True)
     if install_check.returncode == 0:
         print("[+] TLS-Scan installed successfully!")
@@ -501,7 +483,6 @@ def validate_install():
         crt_check,
         shosubgo_check,
         subfinder_check,
-        github_search_check,
         gospider_check,
         subdomainizer_check,
         shuffledns_check,
@@ -555,8 +536,6 @@ def main(args):
         install_shosubgo()
     if subfinder_check() is False:
         install_subfinder()
-    if github_search_check() is False:
-        install_github_search()
     if gospider_check() is False:
         install_gospider()
     if subdomainizer_check() is False:

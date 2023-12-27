@@ -291,6 +291,18 @@ def enum(args):
             print(f"[!] {fqdn['fqdn']} has been blacklisted for this round of scanning.  Skipping...")
     return True
 
+def collect_screenshots(args):
+    res = get_fqdns(args)
+    fqdn_json = json.loads(res.text)
+    sorted_fqdns = sort_fqdns(fqdn_json)
+    for fqdn in sorted_fqdns:
+        try:
+            seed = fqdn['fqdn']
+            subprocess.run([f'python3 toolkit/fire-starter.py -d {seed} -S {args.server} -P {args.port} --screenshots'], shell=True)
+        except Exception as e:
+            print(f"[!] Exception: {e}")
+        
+
 def build_blacklist(args):
     if "," in args.blacklist:
         blacklist_arr = args.blacklist.split(",")
@@ -318,10 +330,14 @@ def arg_parse():
     parser.add_argument('-t','--timeout', help='Adds a timeout check after each module (in minutes)', required=False)
     parser.add_argument('--fqdn', help='FQDN to target for scanning', required=False)
     parser.add_argument('--scanSingle', help='Flag to scan a single domain', required=False, action='store_true')
+    parser.add_argument('-s', '--screenshots', help='Collect a new round of screenshots for all live URLs', required=False, action='store_true')
     return parser.parse_args()
 
 def main(args):
     logger = Logger()
+    if args.screenshots:
+       collect_screenshots(args)
+       exit()
     if (args.blacklist):
         args = build_blacklist(args)
     else:

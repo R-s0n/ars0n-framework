@@ -40,6 +40,14 @@ done
 
 sudo systemctl enable mongod 2>/dev/null
 sudo systemctl start mongod 2>/dev/null
+
+if sudo systemctl is-active --quiet mongod; then
+    echo "MongoDB is running. Continuing..."
+else
+    echo "Error: MongoDB is not running!  Please turn on your local MongoDB instance to use the Ars0n Framework. Exiting..."
+    exit 1
+fi
+
 nohup node server/server.js > logs/server.log 2>&1 &
 (
   cd client || { echo "Error: 'client' directory not found."; exit 1; }

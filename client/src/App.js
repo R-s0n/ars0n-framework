@@ -255,7 +255,10 @@ function App() {
   };
 
   const handleCollectScreenshotsButton = () => {
-    console.log("Button Clicked!")
+    axios.post('http://localhost:5000/collect_sceenshots',{})
+      .then(res => {
+        console.log("Collecting Screenshots...");
+      })
   }
 
   return (

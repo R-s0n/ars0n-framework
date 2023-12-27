@@ -140,5 +140,10 @@ def wildfire():
     else:
         return jsonify({"message": "ERROR: Scan Running..."})
 
+@app.route('/collect_sceenshots', methods=['POST'])
+def collect_sceenshots():
+    subprocess.run([f"python3 wildfire.py --screenshots"], shell=True)
+    return "Done!"
+
 if __name__ == '__main__':
     app.run(debug=True)
