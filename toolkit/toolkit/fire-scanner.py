@@ -201,7 +201,7 @@ def full_nuclei_scan(args, now):
     try:
         print("[-] Running a Full Nuclei Scan using All Templates")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates -l /tmp/urls.txt -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "All Templates", "vulns")
@@ -224,13 +224,15 @@ def technologies_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the Technologies Templates")
         protonvpn_unnecessary(args, "Technologies")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/technologies -l /tmp/urls.txt -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/technologies -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Technologies", "vulnsTech")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (Technologies) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -244,13 +246,15 @@ def misconfiguration_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the Misconfiguration Templates")
         protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/misconfiguration -l /tmp/urls.txt -timeout 7 -vv -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/misconfiguration -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -timeout 7 -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Misconfigurations", "vulnsMisconfig")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (Misconfiguration) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -264,13 +268,15 @@ def cves_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the CVEs Templates")
         protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/cves -l /tmp/urls.txt -stats -timeout 7 -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/cves -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats -timeout 7 -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "CVES", "vulnsCVEs")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (CVEs) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -283,13 +289,15 @@ def cnvd_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the CNVD Templates")
         protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/cnvd -l /tmp/urls.txt -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/cnvd -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "CNVD", "vulnsCNVD")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (CNVD) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -302,13 +310,15 @@ def exposed_panels_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the Exposed Panels Templates")
         protonvpn_necessary(args, "Exposed Panels")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/exposed-panels -l /tmp/urls.txt -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/exposed-panels -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Exposed Panels", "vulnsExposed")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (Exposed Panels) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -321,13 +331,15 @@ def exposures_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the Exposures Templates")
         protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/exposures -l /tmp/urls.txt -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/exposures -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Exposures", "vulnsExposure")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (Exposures) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -340,13 +352,15 @@ def miscellaneous_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the Miscellaneous Templates")
         protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/miscellaneous -l /tmp/urls.txt -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/miscellaneous -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Miscellaneous", "vulnsMisc")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (Miscellaneous) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -359,13 +373,15 @@ def network_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the OSINT Templates")
         protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/osint -l /tmp/urls.txt -stats -vv -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/osint -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Network", "vulnsNetwork")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (Network) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -378,13 +394,15 @@ def file_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the File Templates")
         protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/default-logins -l /tmp/urls.txt -vv -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/default-logins -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "File", "vulnsFile")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (File) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -397,13 +415,15 @@ def dns_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the DNS Templates")
         protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/dns -l /tmp/urls.txt -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/dns -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "DNS", "vulnsDNS")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (DNS) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -416,13 +436,15 @@ def vulnerabilities_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the Vulnerabilities Templates")
         protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/vulnerabilities -l /tmp/urls.txt -stats -timeout 7 -vv -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/http/vulnerabilities -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats -timeout 7 -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Vulnerabilities", "vulnsVulns")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (Vulnerabilities) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -436,13 +458,15 @@ def rs0n_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the Custom Templates")
         protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t ./custom -l /tmp/urls.txt -stats -vv --headless -sb -hbs 10 -headc 1 -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t ./custom -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats --headless -sb -hbs 10 -headc 1 -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Custom", "vulnsRs0n")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (rs0n) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -455,13 +479,15 @@ def headless_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the Headless Templates")
         protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless -l /tmp/urls.txt -stats -vv --headless -sb -hbs 10 -headc 1 -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats --headless -sb -hbs 10 -headc 1 -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "Headless", "vulnsHeadless")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (Headless) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -474,13 +500,15 @@ def ssl_nuclei_scan(args, now, logger):
         print("[-] Running a Nuclei Scan using the SSL Templates")
         protonvpn_necessary(args, "Misconfigurations")
         home_dir = get_home_dir()
-        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/ssl -l /tmp/urls.txt -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
+        subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/ssl -l /tmp/urls.txt -timeout 3 -irt 1m30s -mhe 15 -ldp -stats -fr -hm -o /tmp/{args.fqdn}-{now}.json -jsonl"], shell=True)
         data = process_results(args, now)
         thisFqdn = get_fqdn_obj(args)
         update_vulns(args, thisFqdn, data, "SSL", "vulnsSSL")
         if args.proton:
             protonvpn_disconnect()
         validate_network_connection(logger)
+        results_count = len(data)
+        logger.write_to_log("[MSG]","Fire-Scanner.py",f"Nuceli Scan (SSL) Completed Successfully w/ {results_count} Results Against {thisFqdn['fqdn']}")
     except Exception as e:
         if args.proton:
             protonvpn_disconnect()
@@ -638,11 +666,14 @@ def main(args):
         vulnerabilities_nuclei_scan(args, now, logger)
         update_scan_progress("Fire-Scanner | CVE's", args.fqdn)
         cves_nuclei_scan(args, now, logger)
+        file_nuclei_scan(args, now, logger)
+        update_scan_progress("Fire-Scanner | File", args.fqdn)
+        cnvd_nuclei_scan(args, now, logger)
+        update_scan_progress("Fire-Scanner | CNVD", args.fqdn)
+        miscellaneous_nuclei_scan(args, now, logger)
+        update_scan_progress("Fire-Scanner | Misc", args.fqdn)
         ## Unsafe Templates
-        # file_nuclei_scan(args, now, logger)
         # network_nuclei_scan(args, now, logger)
-        # cnvd_nuclei_scan(args, now, logger)
-        # miscellaneous_nuclei_scan(args, now, logger)`
     move_screenshots()   
     starter_timer.stop_timer()
     # protonvpn_killswitch_off()
