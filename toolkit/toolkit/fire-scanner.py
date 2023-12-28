@@ -628,16 +628,6 @@ def main(args):
     clean_stacktrace_dumps()
     clear_vulns(args)
     update_nuclei(logger)
-    # if args.single:
-    #     logger.write_to_log("[MSG]", "Fire-Scanner.py", f"Scanning Single Domain: {args.single}")
-    #     # Perform scan only for the provided single domain
-    #     # You will need to call the scanning functions with the single domain
-    #     thisFqdn = {'fqdn': args.single}  # Example, modify based on how single domain should be handled
-    #     url_str = build_url_str(thisFqdn)
-    #     write_urls_file(url_str)
-    #     now = str(datetime.now()).split(" ")[0]
-    #     perform_scans(args, thisFqdn, now, logger)
-    # else:
     thisFqdn = get_fqdn_obj(args)
     url_str = build_url_str(thisFqdn)
     write_urls_file(url_str)
@@ -666,12 +656,12 @@ def main(args):
         vulnerabilities_nuclei_scan(args, now, logger)
         update_scan_progress("Fire-Scanner | CVE's", args.fqdn)
         cves_nuclei_scan(args, now, logger)
-        file_nuclei_scan(args, now, logger)
         update_scan_progress("Fire-Scanner | File", args.fqdn)
-        cnvd_nuclei_scan(args, now, logger)
+        file_nuclei_scan(args, now, logger)
         update_scan_progress("Fire-Scanner | CNVD", args.fqdn)
-        miscellaneous_nuclei_scan(args, now, logger)
+        cnvd_nuclei_scan(args, now, logger)
         update_scan_progress("Fire-Scanner | Misc", args.fqdn)
+        miscellaneous_nuclei_scan(args, now, logger)
         ## Unsafe Templates
         # network_nuclei_scan(args, now, logger)
     move_screenshots()   

@@ -4,6 +4,28 @@ import re
 import xml.etree.ElementTree as ET
 import subprocess
 import json
+from datetime import datetime
+
+class Logger:
+    def __init__(self):
+        subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt"], shell=True)
+        with open("logs/log.txt", "r") as file:
+            self.init_log_data = file.readlines()
+            self.init_log_len = len(self.init_log_data)
+        with open("logs/log.txt", "a") as file:
+            log_start_time = datetime.now()
+            flag = "[INIT]"
+            running_script = "Fire-Cloud.py"
+            message = "Logger Initialized"
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
+
+    def write_to_log(self, flag, running_script, message):
+        with open("logs/log.txt", "a") as file:
+            log_start_time = datetime.now()
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
+        with open("logs/temp_log.txt", "a") as file:
+            log_start_time = str(datetime.now())
+            file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
 # Lists of services identified by their CNAMEs and their respective patterns
 s3_list = []
@@ -22,22 +44,24 @@ def get_home_dir():
 def update_fqdn_obj(args, thisFqdn):
     res = requests.post(f'http://{args.server}:{args.port}/api/auto/update', json=thisFqdn)
 
-def aws_access_key_check():
+def aws_access_key_check(logger):
     home_dir = get_home_dir()
     print(f"[+] Checking for AWS Credentials in {home_dir}/.aws/credentials")
     try:
         cred_check = subprocess.run(["ls", f"{home_dir}/.aws/credentials"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
         if cred_check.returncode == 0:
             print("[+] AWS Credentials found!")
+            logger.write_to_log("[MSG]","Fire-Cloud.py",f"AWS Credentials Provided.  Continuing Scan...")
             return True
         else:
             print("[-] AWS Credentials not found, add them by running aws configure for maximum effectiveness.")
             print("\n")
+            logger.write_to_log("[WARN]","Fire-Cloud.py",f"AWS Credentials NOT Provided!  Results of Scan May Not Be Accurate...")
             return False
     except Exception as e:
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
-def service_detection(cnames, thisFqdn):
+def service_detection(cnames, thisFqdn, logger):
     empty_data = {
         "s3": [],
         "ec2": [],
@@ -57,6 +81,7 @@ def service_detection(cnames, thisFqdn):
     documentdb_pattern = r'\b\w+\.docdb\.amazonaws\.com\b'
     api_gateway_pattern = r'.*(execute-api\.[A-Za-z0-9.-]+\.amazonaws\.com).*'
     elasticbeanstalk_pattern = r'.*(elasticbeanstalk\.com).*'
+    counter = 0
     for cname in cnames:
         s3 = re.findall(s3_pattern, cname)
         ec2 = re.findall(ec2_pattern, cname)   
@@ -78,38 +103,46 @@ def service_detection(cnames, thisFqdn):
             }
             thisFqdn['aws']['s3'].append(new_s3)
             print(f"[+] AWS S3 Bucket Found: {cname}")
+            counter += 1
         elif ec2:
             ec2_list.append(cname)
             thisFqdn['aws']['ec2'].append(cname)
             print(f"[+] AWS EC2 Instance Found: {cname}")
+            counter += 1
             # ec2_checks(cname)
         elif cloudfront:
             cloudfront_list.append(cname)
             thisFqdn['aws']['cloudfront'].append(cname)
             print(f"[+] AWS Cloudfront Distribution Found: {cname}")
+            counter += 1
             # cloudfront_checks(cname)
         elif elb:
             elb_list.append(cname)
             thisFqdn['aws']['elb'].append(cname)
             print(f"[+] AWS ELB Found: {cname}")
+            counter += 1
             # elb_checks(cname)
         elif documentdb:
             documentdb_list.append(cname)
             thisFqdn['aws']['documentdb'].append(cname)
             print(f"[+] AWS DocumentDB Found: {cname}")
+            counter += 1
         elif api_gateway:
             api_gateway_list.append(cname)
             thisFqdn['aws']['api_gateway'].append(cname)
             print(f"[+] AWS API Gateway Found: {cname}")
+            counter += 1
         elif elasticbeanstalk:
             print(f"[+] AWS Elastic Beanstalk Found: {cname}")
             thisFqdn['aws']['elasticbeanstalk'].append(cname)
-            print("[!] Check for subdomain takeover - https://github.com/EdOverflow/can-i-take-over-xyz/issues/194")            
-    print(f"[-] Service Detection Complete")
+            print("[!] Check for subdomain takeover - https://github.com/EdOverflow/can-i-take-over-xyz/issues/194")
+            counter += 1
+    print(f"[-] Service Detection Complete!  {counter} Services Detected.")
     print("\n")
+    logger.write_to_log("[MSG]","Fire-Cloud.py",f"Service Detection Completed Successfully!  {counter} Services Detected.")
     return thisFqdn
 
-def s3_bucket_public(thisFqdn):
+def s3_bucket_public(thisFqdn, logger):
     print("[+] Starting S3 Bucket Checks")
     print("------------------------------------")
     for bucket in thisFqdn['aws']['s3']:
@@ -120,6 +153,7 @@ def s3_bucket_public(thisFqdn):
                 print(f"[!] Public access is open! Adding {bucket['domain']} to list of open buckets.\n")
                 bucket['public'] = True
                 open_s3_buckets.append(bucket)
+                logger.write_to_log("[MSG]","Fire-Cloud.py",f"Public S3 Bucket Discovered!  URL: {bucket['domain']}")
             else:
                 print("[!] Public access does not appear to be open.")
                 print("\n")
@@ -129,9 +163,10 @@ def s3_bucket_public(thisFqdn):
         except requests.exceptions.RequestException as e:
             print(f"[!] An error occurred -- Bucket may be behind Cloudfront\n")
             print(f"[!] Exception: {e}")
+    logger.write_to_log("[MSG]","Fire-Cloud.py",f"Public S3 Bucket Checks Completed Successfully!")
     return thisFqdn
 
-def s3_bucket_authenticated(thisFqdn):
+def s3_bucket_authenticated(thisFqdn, logger):
     for bucket in thisFqdn['aws']['s3']:
         if bucket['public']:
             print(f"[-] Checking S3 bucket: {bucket['public']} for authenticated access using default aws profile")
@@ -139,12 +174,14 @@ def s3_bucket_authenticated(thisFqdn):
             if bucket_ls.returncode == 0:
                 print(f"[!] Authenticated access is open! Dumping file names!")
                 bucket['authenticated'] = True
+                logger.write_to_log("[MSG]","Fire-Cloud.py",f"Public S3 Bucket Allowing Arbitrary Credentials Found!  URL: {bucket['public']}")
             else:
                 print("[!] Authenticated access does not return any files.")
                 print("\n")
+    logger.write_to_log("[MSG]","Fire-Cloud.py",f"Authenticated S3 Bucket Checks Completed Successfully!")
     return thisFqdn
 
-def s3_bucket_upload_exploit(thisFqdn):
+def s3_bucket_upload_exploit(thisFqdn, logger):
     for bucket in thisFqdn['aws']['s3']:
         print(f"[-] Attempting to exploit {bucket['public']} by uploading file")
         try:
@@ -152,15 +189,17 @@ def s3_bucket_upload_exploit(thisFqdn):
             if response.status_code == 200:
                 bucket['uploadExploit'] = True
                 print("[!] Exploit successful! File uploaded to bucket.")
+                logger.write_to_log("[MSG]","Fire-Cloud.py",f"S3 File Upload Exploit Successful!  URL: {bucket['public']}")
             else:
                 print("[-] Upload Exploit unsuccessful.")
         except requests.exceptions.Timeout:
             print("[-] Request timed out.")  
         except requests.exceptions.RequestException as e:
             print(f"[-] An error occurred -- check {bucket['public']} manually")
+    logger.write_to_log("[MSG]","Fire-Cloud.py",f"File Upload Check on Public S3 Bucket Completed Successfully!")
     return thisFqdn
 
-def s3_bucket_download_exploit(thisFqdn):
+def s3_bucket_download_exploit(thisFqdn, logger):
     for bucket in thisFqdn['aws']['s3']:
         if bucket['public']:
             bucket_files = []
@@ -176,6 +215,7 @@ def s3_bucket_download_exploit(thisFqdn):
                         bucket_files.append(file_name)
                         print(f"[!] File found: {file_name}")
                     bucket['downloadExploit'] = True
+                    logger.write_to_log("[MSG]","Fire-Cloud.py",f"S3 File Download Exploit Successful!  URL: {bucket['public']}")
                 else:
                     print(f"[-] Unable to view files, check {bucket['domain']} manually.")
                 print("\n")
@@ -183,9 +223,10 @@ def s3_bucket_download_exploit(thisFqdn):
                 print("[-] Request timed out.")  
             except requests.exceptions.RequestException as e:
                 print(f"[-] An error occurred -- check {bucket['domain']} manually")
+    logger.write_to_log("[MSG]","Fire-Cloud.py",f"File Download Check on Public S3 Bucket Completed Successfully!")
     return thisFqdn
 
-def s3_takover_exploit(thisFqdn, cloudfronts):
+def s3_takover_exploit(thisFqdn, cloudfronts, logger):
     print("[+] Checking S3 buckets and Cloudfront instances for S3 takeover")
     # https://hackingthe.cloud/aws/exploitation/orphaned_%20cloudfront_or_dns_takeover_via_s3/
     # This will check for the response "Bucket does not exist, which could lead to a subdomain takeover"
@@ -195,6 +236,7 @@ def s3_takover_exploit(thisFqdn, cloudfronts):
             response = requests.get(f"http://{bucket['domain']}", timeout=5)
             if response.text == "Bucket does not exist":
                 print(f"[!] Bucket deleted improperly, subdomain takeover may be possible on {bucket['domain']}")
+                logger.write_to_log("[MSG]","Fire-Cloud.py",f"S3 Bucket May Be Vulnerable to Subdomain Takeover!  URL: {bucket['domain']}")
                 bucket['subdomainTakeover'] = True
             else:
                 print(f"[-] Bucket: {bucket['domain']} exists, not vulnerable")
@@ -213,6 +255,7 @@ def s3_takover_exploit(thisFqdn, cloudfronts):
             print("[-] Request timed out.")
         except requests.exceptions.RequestException as e:
             print(f"[-] An error occurred -- check {cloudfront} manually")
+    logger.write_to_log("[MSG]","Fire-Cloud.py",f"AWS Service Subdomain Takeover Check Completed Successfully!")
 
 def ec2_checks(cname):
     print(f"[-] Checking EC2 instance: {cname}")
@@ -255,23 +298,24 @@ def update_scan_progress(scan_step_name, target_domain):
     requests.post("http://localhost:5000/update-scan", json={"stepName":scan_step_name,"target_domain":target_domain})
 
 def main(args):
+    logger = Logger()
     thisFqdn = get_fqdn_obj(args)
     if args.fqdn:
         thisFqdn = get_fqdn_obj(args)
     cname_list = get_cnames(thisFqdn)
-    aws_access_key_check()
+    aws_access_key_check(logger)
     update_scan_progress("Fire-Cloud | Service Detection", args.fqdn)
-    thisFqdn = service_detection(cname_list, thisFqdn)
+    thisFqdn = service_detection(cname_list, thisFqdn, logger)
     update_scan_progress("Fire-Cloud | S3 Bucket Detection", args.fqdn)
-    thisFqdn = s3_bucket_public(thisFqdn)
+    thisFqdn = s3_bucket_public(thisFqdn, logger)
     update_scan_progress("Fire-Cloud | S3 Bucket Download", args.fqdn)
-    s3_bucket_download_exploit(thisFqdn)
+    s3_bucket_download_exploit(thisFqdn, logger)
     update_scan_progress("Fire-Cloud | S3 Bucket Default Creds", args.fqdn)
-    s3_bucket_authenticated(thisFqdn)
+    s3_bucket_authenticated(thisFqdn, logger)
     update_scan_progress("Fire-Cloud | S3 Bucket Upload", args.fqdn)
-    s3_bucket_upload_exploit(thisFqdn)
+    s3_bucket_upload_exploit(thisFqdn, logger)
     update_scan_progress("Fire-Cloud | S3 Bucket Takeover", args.fqdn)
-    s3_takover_exploit(thisFqdn, cloudfront_list)
+    s3_takover_exploit(thisFqdn, cloudfront_list, logger)
     update_fqdn_obj(args, thisFqdn)
     exit()
 
