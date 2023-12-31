@@ -460,7 +460,7 @@ def install_protonvpn():
 
 def stray_license_file():
     home_dir = get_home_dir()
-    subprocess.run([f"rm -f {home_dir}/LICENSE"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    subprocess.run([f"rm -f {home_dir}/LICENSE* {home_dir}/README*"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
 def arg_parse():
     parser = argparse.ArgumentParser()
