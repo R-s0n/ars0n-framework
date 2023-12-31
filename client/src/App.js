@@ -375,10 +375,10 @@ function App() {
       <input style={{padding: '15px'}} type="checkbox" id="firecloud" name="firecloud" class="checkbox" onChange={handleEnumToggle} checked={fireEnumeration} disabled/>
       {
         scanRunning ?
-        <button  style={{width: '100px', marginLeft: '15px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit">Cancel</button> :
+        <button  style={{width: '100px', marginLeft: '15px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit" disabled>Cancel</button> :
         <button  style={{width: '75px', marginLeft: '15px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit" onClick={runWildfire}>Scan</button>
       }
-      <button  style={{width: '75px', marginLeft: '15px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit">Pause</button>
+      <button  style={{width: '75px', marginLeft: '15px'}} className="border border-info nav-link btn btn-primary text-secondary" type="submit" disabled>Pause</button>
     </div>
     {noFqdns === false && fqdns.length > 0 && loaded && <Fqdn index={activeTab} thisFqdn={fqdns[activeTab]} buttonFunction={deleteFqdn} setActiveTab={setActiveTab} />}
     </div>

@@ -26,13 +26,13 @@ def start_scan(fire_starter, fire_cloud, fire_scanner, domain_count, core_module
     global scan_obj
     scan_obj.scan_running = True
     scan_obj.scan_step = 1
-    scan_obj.scan_complete = 1
+    counter = 0
     if fire_starter:
-        counter = scan_obj.scan_complete + 11
+        counter += 14
     if fire_cloud:
-        counter = scan_obj.scan_complete + 6
+        counter += 8
     if fire_scanner:
-        counter = scan_obj.scan_complete + 10
+        counter += 12
     scan_obj.scan_complete = counter * domain_count
     scan_obj.core_module = core_module
     scan_obj.scan_step_name = "Starting..."

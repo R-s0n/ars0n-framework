@@ -292,7 +292,11 @@ const Dashboard = props => {
                     </ul>
                 </div>
                 <div className="col-3">
-                    <h5>Subdomains (New: {thisFqdn.recon.subdomains.consolidatedNew.length}/{thisFqdn.recon.subdomains.consolidated.length})</h5>
+                    {
+                    thisFqdn.recon.subdomains.consolidatedNew.length < thisFqdn.recon.subdomains.consolidated.length ?
+                    <h5>Subdomains (New: {thisFqdn.recon.subdomains.consolidatedNew.length}/{thisFqdn.recon.subdomains.consolidated.length})</h5> :
+                    <h5>Subdomains (New: {thisFqdn.recon.subdomains.consolidated.length}/{thisFqdn.recon.subdomains.consolidated.length})</h5>
+                    }
                     <div style={{width: '400px', height: '500px', padding: '5px', border: '1px solid black', overflowY: 'scroll'}}>
                         {
                             thisFqdn.recon.subdomains.consolidated.sort().map((subdomain, i) => {
