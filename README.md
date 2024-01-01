@@ -16,7 +16,7 @@
   <a href="https://ars0nsecurity.com" target=”_blank”>Ars0n Security</a> •
   <a href="https://www.youtube.com/@rs0n_live" target=”_blank”>YouTube</a> •
   <a href="https://www.twitch.tv/rs0n_live" target=”_blank”>Twitch</a> •
-  <a href="https://discord.gg/DPt6TUDGH" target=”_blank”>Discord</a>
+  <a href="https://discord.gg/yeZ8d5xbvc" target=”_blank”>Discord</a>
 </p>
 
 <div align="center">
@@ -42,33 +42,33 @@ My hope is that this modular framework will act as a canvas to help share what I
 
 ## Quick Start
 
-Paste this code block into a clean installation of [Kali Linux 2023.3](https://www.kali.org/get-kali/#kali-installer-images) to download, install, and run the latest stable Alpha version of the framework:
+Paste this code block into a clean installation of [Kali Linux 2023.4](https://www.kali.org/get-kali/#kali-installer-images) to download, install, and run the latest stable Alpha version of the framework:
 ```
 sudo apt update && sudo apt-get update
 sudo apt -y upgrade && sudo apt-get -y upgrade
-wget https://github.com/R-s0n/ars0n-framework/releases/download/v0.0.1-alpha/ars0n-framework-v0.0.1-alpha.tar.gz
-tar -xzvf ars0n-framework-v0.0.1-alpha.tar.gz
-rm ars0n-framework-v0.0.1-alpha.tar.gz
+wget https://github.com/R-s0n/ars0n-framework/releases/download/v0.0.2-alpha/ars0n-framework-v0.0.2-alpha.tar.gz
+tar -xzvf ars0n-framework-v0.0.2-alpha.tar.gz
+rm ars0n-framework-v0.0.2-alpha.tar.gz
 cd ars0n-framework
-python3 install.py
+./install.sh
 ```
 
 ## Download Latest Stable ALPHA Version
 
 ```
-wget https://github.com/R-s0n/ars0n-framework/releases/download/v0.0.1-alpha/ars0n-framework-v0.0.1-alpha.tar.gz
-tar -xzvf ars0n-framework-v0.0.1-alpha.tar.gz
-rm ars0n-framework-v0.0.1-alpha.tar.gz
+wget https://github.com/R-s0n/ars0n-framework/releases/download/v0.0.2-alpha/ars0n-framework-v0.0.2-alpha.tar.gz
+tar -xzvf ars0n-framework-v0.0.2-alpha.tar.gz
+rm ars0n-framework-v0.0.2-alpha.tar.gz
 ```
 
 ## Install
 
-The Ars0n Framework includes a script that installs all the necessary tools, packages, etc. that are needed to run the framework on a clean installation of [Kali Linux 2023.3](https://www.kali.org/get-kali/#kali-installer-images).
+The Ars0n Framework includes a script that installs all the necessary tools, packages, etc. that are needed to run the framework on a clean installation of [Kali Linux 2023.4](https://www.kali.org/get-kali/#kali-installer-images).
 
 ***Please note that the only supported installation of this framework is on a clean installation of Kali Linux 2023.3.  If you choose to try and run the framework outside of a clean Kali install, I will not be able to help troubleshoot if you have any issues.***
 
 ```
-python3 install.py
+./install.sh
 ```
 
 This [video](https://www.youtube.com/watch?v=cF4xtVS7Rnc) shows exactly what to expect from a successful installation.
