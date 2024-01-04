@@ -3,7 +3,6 @@ import argparse
 import re
 import xml.etree.ElementTree as ET
 import subprocess
-import json
 from datetime import datetime
 
 class Logger:
