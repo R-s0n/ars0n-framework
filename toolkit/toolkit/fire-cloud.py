@@ -7,11 +7,11 @@ from datetime import datetime
 
 class Logger:
     def __init__(self):
-        subprocess.run(["[ -f logs/log.txt ] || touch logs/log.txt"], shell=True)
-        with open("logs/log.txt", "r") as file:
+        subprocess.run(["[ -f ../logs/log.txt ] || touch logs/log.txt"], shell=True)
+        with open("../logs/log.txt", "r") as file:
             self.init_log_data = file.readlines()
             self.init_log_len = len(self.init_log_data)
-        with open("logs/log.txt", "a") as file:
+        with open("../logs/log.txt", "a") as file:
             log_start_time = datetime.now()
             flag = "[INIT]"
             running_script = "Fire-Cloud.py"
@@ -19,10 +19,10 @@ class Logger:
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
     def write_to_log(self, flag, running_script, message):
-        with open("logs/log.txt", "a") as file:
+        with open("../logs/log.txt", "a") as file:
             log_start_time = datetime.now()
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
-        with open("logs/temp_log.txt", "a") as file:
+        with open("../logs/temp_log.txt", "a") as file:
             log_start_time = str(datetime.now())
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
@@ -35,6 +35,7 @@ elb_list = []
 documentdb_list = []
 api_gateway_list = []
 elasticbeanstalk_list = []
+gcp_bucket_list = []
 
 def get_home_dir():
     get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
@@ -68,7 +69,8 @@ def service_detection(cnames, thisFqdn, logger):
         "elb": [],
         "documentdb": [],
         "api_gateway": [],
-        "elasticbeanstalk": []
+        "elasticbeanstalk": [],
+        "gcp_bucket": []
     }
     thisFqdn['aws'] = empty_data
     print("[+] Starting Service Detection")
@@ -80,6 +82,7 @@ def service_detection(cnames, thisFqdn, logger):
     documentdb_pattern = r'\b\w+\.docdb\.amazonaws\.com\b'
     api_gateway_pattern = r'.*(execute-api\.[A-Za-z0-9.-]+\.amazonaws\.com).*'
     elasticbeanstalk_pattern = r'.*(elasticbeanstalk\.com).*'
+    gcp_bucket_pattern = r'.*(storage\.googleapis\.com).*'
     counter = 0
     for cname in cnames:
         s3 = re.findall(s3_pattern, cname)
@@ -89,6 +92,7 @@ def service_detection(cnames, thisFqdn, logger):
         documentdb = re.findall(documentdb_pattern, cname)
         api_gateway = re.findall(api_gateway_pattern, cname)
         elasticbeanstalk = re.findall(elasticbeanstalk_pattern, cname)
+        gcp_bucket = re.findall(gcp_bucket_pattern, cname)
 
         if s3:
             s3_list.append(cname)
@@ -135,6 +139,10 @@ def service_detection(cnames, thisFqdn, logger):
             print(f"[+] AWS Elastic Beanstalk Found: {cname}")
             thisFqdn['aws']['elasticbeanstalk'].append(cname)
             print("[!] Check for subdomain takeover - https://github.com/EdOverflow/can-i-take-over-xyz/issues/194")
+            counter += 1
+        elif gcp_bucket:
+            print(f"[+] GCP Bucket Found: {cname}")
+            thisFqdn['gcp']['gcp_bucket'].append(cname)
             counter += 1
     print(f"[-] Service Detection Complete!  {counter} Services Detected.")
     print("\n")
@@ -273,6 +281,37 @@ def ec2_checks(cname):
         print(f"[!] TCP Full Port Scan completed on {cname}")
     else:
         print(f"[-] TCP Full Port Scan failed on {cname}")
+
+def beanstalk_takeover(thisFqdn, logger):
+    print("[+] Checking Elastic Beanstalk instances for subdomain takeover")
+    for beanstalk in thisFqdn['aws']['elasticbeanstalk']:
+        try:
+            response = requests.get(f"http://{beanstalk['domain']}", timeout=5)
+            if response.text == "NXDOMAIN":
+                print(f"[!] Beanstalk appears to have been deleted improperly, subdomain takeover may be possible on {beanstalk}")
+                logger.write_to_log("[MSG]","Fire-Cloud.py",f"Beanstalk instance May Be Vulnerable to Subdomain Takeover!  URL: {beanstalk['domain']}")
+                beanstalk['subdomainTakeover'] = True
+            else:
+                print(f"[-] Instance: {beanstalk['domain']} not vulnerable")
+        except requests.exceptions.Timeout:
+            print("[-] Request timed out.")
+        except requests.exceptions.RequestException as e:
+            print(f"[-] An error occurred -- check {beanstalk['domain']} manually")
+
+def gcp_bucket_sniping(thisFqdn, logger):
+    print("[+] Checking GCP buckets for takeover")
+    for bucket in thisFqdn['gcp']['gcp_bucket']:
+        try:
+            response = requests.get(f"http://{bucket['domain']}", timeout=5)
+            if response.text == "NoSuchBucket":
+                print(f"[!] GCP bucket is accessible at {bucket['domain']}")
+                logger.write_to_log("[MSG]","Fire-Cloud.py",f"GCP Bucket May Be Vulnerable to Subdomain Takeover!  URL: {bucket['domain']}")
+            else:
+                print(f"[-] GCP bucket is not vulberable to takeover at {bucket['domain']}")
+        except requests.exceptions.Timeout:
+            print("[-] Request timed out.")  
+        except requests.exceptions.RequestException as e:
+            print(f"[-] An error occurred -- check {bucket['domain']} manually")
 
 def get_fqdn_obj(args):
     r = requests.post(f'http://{args.server}:{args.port}/api/auto', data={'fqdn':args.fqdn})

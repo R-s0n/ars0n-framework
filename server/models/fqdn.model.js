@@ -80,14 +80,23 @@ const FqdnSchema = new mongoose.Schema({
             type: String
         }],
         elasticbeanstalk: [{
-            type: String
+            domain: {type: String},
+            subdomainTakeover: {
+                type: Boolean,
+                default: false
+            }
         }]
     },
     azure: {
         placeholder: {type: String}
     },
     gcp: {
-        placeholder: {type: String}
+        bucket: [{
+            domain: {type: String},
+            bucketSniping: {
+                type: Boolean,
+                default: false
+        }]
     },
     ips: [{
         ip: {type: String},
