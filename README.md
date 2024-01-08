@@ -103,7 +103,7 @@ How it works:
 
 Running Wildfire:
 
-#### Grahpical User Interface (GUI)
+#### Graphical User Interface (GUI)
 
 Wildfire can be run from the GUI using the Wildfire button on the dashboard. Once clicked, the front-end will use the checkboxes on the screen to determine what flags should be passed to the scanner.
 
