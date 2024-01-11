@@ -35,7 +35,7 @@ elb_list = []
 documentdb_list = []
 api_gateway_list = []
 elasticbeanstalk_list = []
-gcp_bucket_list = []
+gcp_bucket_list = ['https://pendo-eu-static-5739703306813440.storage.googleapis.com']
 
 def get_home_dir():
     get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
@@ -354,6 +354,10 @@ def main(args):
     s3_bucket_upload_exploit(thisFqdn, logger)
     update_scan_progress("Fire-Cloud | S3 Bucket Takeover", args.fqdn)
     s3_takover_exploit(thisFqdn, cloudfront_list, logger)
+    beanstalk_takeover(thisFqdn, logger)
+    update_scan_progress("Fire-Cloud | Beanstalk Takeover", args.fqdn)
+    gcp_bucket_sniping(thisFqdn, logger)
+    update_scan_progress("Fire-Cloud | GCP Bucket Sniping", args.fqdn)
     update_fqdn_obj(args, thisFqdn)
     exit()
 
