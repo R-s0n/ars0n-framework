@@ -35,7 +35,7 @@ elb_list = []
 documentdb_list = []
 api_gateway_list = []
 elasticbeanstalk_list = []
-gcp_bucket_list = ['https://pendo-eu-static-5739703306813440.storage.googleapis.com']
+gcp_bucket_list = ['pendo-eu-static-5739703306813440.storage.googleapis.com']
 
 def get_home_dir():
     get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
@@ -136,11 +136,12 @@ def service_detection(cnames, thisFqdn, logger):
             print(f"[+] AWS API Gateway Found: {cname}")
             counter += 1
         elif elasticbeanstalk:
+            elasticbeanstalk_list.append(cname)
             print(f"[+] AWS Elastic Beanstalk Found: {cname}")
             thisFqdn['aws']['elasticbeanstalk'].append(cname)
-            print("[!] Check for subdomain takeover - https://github.com/EdOverflow/can-i-take-over-xyz/issues/194")
             counter += 1
         elif gcp_bucket:
+            gcp_bucket_list.append(cname)
             print(f"[+] GCP Bucket Found: {cname}")
             thisFqdn['gcp']['gcp_bucket'].append(cname)
             counter += 1
@@ -233,7 +234,7 @@ def s3_bucket_download_exploit(thisFqdn, logger):
     logger.write_to_log("[MSG]","Fire-Cloud.py",f"File Download Check on Public S3 Bucket Completed Successfully!")
     return thisFqdn
 
-def s3_takover_exploit(thisFqdn, cloudfronts, logger):
+def s3_takover_exploit(thisFqdn, logger):
     print("[+] Checking S3 buckets and Cloudfront instances for S3 takeover")
     # https://hackingthe.cloud/aws/exploitation/orphaned_%20cloudfront_or_dns_takeover_via_s3/
     # This will check for the response "Bucket does not exist, which could lead to a subdomain takeover"
@@ -241,7 +242,7 @@ def s3_takover_exploit(thisFqdn, cloudfronts, logger):
     for bucket in thisFqdn['aws']['s3']:
         try: 
             response = requests.get(f"http://{bucket['domain']}", timeout=5)
-            if response.text == "Bucket does not exist":
+            if "Bucket does not exist" in response.text:
                 print(f"[!] Bucket deleted improperly, subdomain takeover may be possible on {bucket['domain']}")
                 logger.write_to_log("[MSG]","Fire-Cloud.py",f"S3 Bucket May Be Vulnerable to Subdomain Takeover!  URL: {bucket['domain']}")
                 bucket['subdomainTakeover'] = True
@@ -254,7 +255,7 @@ def s3_takover_exploit(thisFqdn, cloudfronts, logger):
     for cloudfront in thisFqdn['aws']['cloudfront']:
         try:
             response = requests.get(f"http://{cloudfront}", timeout=5)
-            if response.text == "Bucket does not exist":
+            if "Bucket does not exist" in response.text:
                 print(f"[!] Bucket deleted improperly, subdomain takeover may be possible on {cloudfront}")
             else:
                 print(f"[-] Instance: {cloudfront} not vulnerable")
@@ -287,7 +288,7 @@ def beanstalk_takeover(thisFqdn, logger):
     for beanstalk in thisFqdn['aws']['elasticbeanstalk']:
         try:
             response = requests.get(f"http://{beanstalk['domain']}", timeout=5)
-            if response.text == "NXDOMAIN":
+            if "NXDOMAIN" in response.text:
                 print(f"[!] Beanstalk appears to have been deleted improperly, subdomain takeover may be possible on {beanstalk}")
                 logger.write_to_log("[MSG]","Fire-Cloud.py",f"Beanstalk instance May Be Vulnerable to Subdomain Takeover!  URL: {beanstalk['domain']}")
                 beanstalk['subdomainTakeover'] = True
@@ -300,18 +301,18 @@ def beanstalk_takeover(thisFqdn, logger):
 
 def gcp_bucket_sniping(thisFqdn, logger):
     print("[+] Checking GCP buckets for takeover")
-    for bucket in thisFqdn['gcp']['gcp_bucket']:
+    for bucket in thisFqdn['gcp']['bucket']:
         try:
-            response = requests.get(f"http://{bucket['domain']}", timeout=5)
-            if response.text == "NoSuchBucket":
-                print(f"[!] GCP bucket is accessible at {bucket['domain']}")
+            response = requests.get(f"http://{bucket}", timeout=5)
+            if "NoSuchBucket" in response.text:
+                print(f"[!] GCP bucket appears vulnerable to takeover at {bucket}")
                 logger.write_to_log("[MSG]","Fire-Cloud.py",f"GCP Bucket May Be Vulnerable to Subdomain Takeover!  URL: {bucket['domain']}")
             else:
-                print(f"[-] GCP bucket is not vulberable to takeover at {bucket['domain']}")
+                print(f"[-] GCP bucket is not vulnerable to takeover at {bucket}")
         except requests.exceptions.Timeout:
             print("[-] Request timed out.")  
         except requests.exceptions.RequestException as e:
-            print(f"[-] An error occurred -- check {bucket['domain']} manually")
+            print(f"[-] An error occurred -- check {bucket} manually")
 
 def get_fqdn_obj(args):
     r = requests.post(f'http://{args.server}:{args.port}/api/auto', data={'fqdn':args.fqdn})
@@ -353,7 +354,7 @@ def main(args):
     update_scan_progress("Fire-Cloud | S3 Bucket Upload", args.fqdn)
     s3_bucket_upload_exploit(thisFqdn, logger)
     update_scan_progress("Fire-Cloud | S3 Bucket Takeover", args.fqdn)
-    s3_takover_exploit(thisFqdn, cloudfront_list, logger)
+    s3_takover_exploit(thisFqdn, logger)
     beanstalk_takeover(thisFqdn, logger)
     update_scan_progress("Fire-Cloud | Beanstalk Takeover", args.fqdn)
     gcp_bucket_sniping(thisFqdn, logger)
