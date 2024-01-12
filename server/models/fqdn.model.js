@@ -96,6 +96,7 @@ const FqdnSchema = new mongoose.Schema({
             bucketSniping: {
                 type: Boolean,
                 default: false
+            }
         }]
     },
     ips: [{
