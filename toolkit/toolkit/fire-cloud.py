@@ -26,17 +26,6 @@ class Logger:
             log_start_time = str(datetime.now())
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
-# Lists of services identified by their CNAMEs and their respective patterns
-s3_list = []
-open_s3_buckets = []
-ec2_list = []
-cloudfront_list = []
-elb_list = []
-documentdb_list = []
-api_gateway_list = []
-elasticbeanstalk_list = []
-gcp_bucket_list = ['pendo-eu-static-5739703306813440.storage.googleapis.com']
-
 def get_home_dir():
     get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
     return get_home_dir.stdout.replace("\n", "")
@@ -62,7 +51,7 @@ def aws_access_key_check(logger):
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
 def service_detection(cnames, thisFqdn, logger):
-    empty_data = {
+    aws_empty_data = {
         "s3": [],
         "ec2": [],
         "cloudfront": [],
@@ -70,9 +59,12 @@ def service_detection(cnames, thisFqdn, logger):
         "documentdb": [],
         "api_gateway": [],
         "elasticbeanstalk": [],
-        "gcp_bucket": []
     }
-    thisFqdn['aws'] = empty_data
+    thisFqdn['aws'] = aws_empty_data
+    gcp_empty_data = {
+        "bucket": []
+    }
+    thisFqdn['gcp'] = gcp_empty_data
     print("[+] Starting Service Detection")
     print("------------------------------------")
     s3_pattern = r'(?:(?:[a-zA-Z0-9-]+\.)+s3(?:-website-[a-z0-9-]+)?\.amazonaws\.com)'
@@ -95,7 +87,6 @@ def service_detection(cnames, thisFqdn, logger):
         gcp_bucket = re.findall(gcp_bucket_pattern, cname)
 
         if s3:
-            s3_list.append(cname)
             new_s3 = {
                 "domain":cname,
                 "public":False,
@@ -108,43 +99,50 @@ def service_detection(cnames, thisFqdn, logger):
             print(f"[+] AWS S3 Bucket Found: {cname}")
             counter += 1
         elif ec2:
-            ec2_list.append(cname)
             thisFqdn['aws']['ec2'].append(cname)
             print(f"[+] AWS EC2 Instance Found: {cname}")
             counter += 1
-            # ec2_checks(cname)
         elif cloudfront:
-            cloudfront_list.append(cname)
             thisFqdn['aws']['cloudfront'].append(cname)
             print(f"[+] AWS Cloudfront Distribution Found: {cname}")
             counter += 1
-            # cloudfront_checks(cname)
         elif elb:
-            elb_list.append(cname)
-            thisFqdn['aws']['elb'].append(cname)
+            new_elasticbeanstalk = {
+                "domain":cname,
+                "dangling":False
+            }
+            thisFqdn['aws']['elb'].append(new_elasticbeanstalk)
             print(f"[+] AWS ELB Found: {cname}")
             counter += 1
-            # elb_checks(cname)
         elif documentdb:
-            documentdb_list.append(cname)
             thisFqdn['aws']['documentdb'].append(cname)
             print(f"[+] AWS DocumentDB Found: {cname}")
             counter += 1
         elif api_gateway:
-            api_gateway_list.append(cname)
             thisFqdn['aws']['api_gateway'].append(cname)
             print(f"[+] AWS API Gateway Found: {cname}")
             counter += 1
         elif elasticbeanstalk:
-            elasticbeanstalk_list.append(cname)
+            new_elasticbeanstalk = {
+                "domain":cname,
+                "subdomainTakeover":False
+            }
             print(f"[+] AWS Elastic Beanstalk Found: {cname}")
-            thisFqdn['aws']['elasticbeanstalk'].append(cname)
+            thisFqdn['aws']['elasticbeanstalk'].append(new_elasticbeanstalk)
             counter += 1
         elif gcp_bucket:
-            gcp_bucket_list.append(cname)
+            new_gcp_bucket = {
+                "domain": cname,
+                "bucketSniping":False
+            }
             print(f"[+] GCP Bucket Found: {cname}")
-            thisFqdn['gcp']['bucket'].append(cname)
+            thisFqdn['gcp']['bucket'].append(new_gcp_bucket)
             counter += 1
+    test_gcp_bucket = {
+        "domain": "pendo-eu-static-5739703306813440.storage.googleapis.com",
+        "bucketSniping":False
+    }
+    thisFqdn['gcp']['bucket'].append(test_gcp_bucket)
     print(f"[-] Service Detection Complete!  {counter} Services Detected.")
     print("\n")
     logger.write_to_log("[MSG]","Fire-Cloud.py",f"Service Detection Completed Successfully!  {counter} Services Detected.")
@@ -160,7 +158,6 @@ def s3_bucket_public(thisFqdn, logger):
             if "ListBucketResult" in response.text:
                 print(f"[!] Public access is open! Adding {bucket['domain']} to list of open buckets.\n")
                 bucket['public'] = True
-                open_s3_buckets.append(bucket)
                 logger.write_to_log("[MSG]","Fire-Cloud.py",f"Public S3 Bucket Discovered!  URL: {bucket['domain']}")
             else:
                 print("[!] Public access does not appear to be open.")
@@ -265,6 +262,24 @@ def s3_takover_exploit(thisFqdn, logger):
             print(f"[-] An error occurred -- check {cloudfront} manually")
     logger.write_to_log("[MSG]","Fire-Cloud.py",f"AWS Service Subdomain Takeover Check Completed Successfully!")
 
+def elb_checks(thisFqdn, logger):
+    print("[+] Checking ELB instances for dangling CNAME")
+    for elb in thisFqdn['aws']['elb']:
+        try:
+            response = requests.get(f"http://{elb['domain']}", timeout=5)
+            if "NXDOMAIN" in response.text:
+                print(f"[!] ELB appears to have been deleted improperly, investigate for additional impact {elb['domain']}")
+                logger.write_to_log("[MSG]","Fire-Cloud.py",f"ELB with dangling CNAME!  URL: {elb['domain']}")
+                elb['dangling'] = True
+            else:
+                print(f"[-] Instance: {elb['domain']} is not dangling")
+                print(f"[-] Response: {response.text}")
+        except requests.exceptions.Timeout:
+            print(f"[-] Request timed out for {elb['domain']}.")
+        except requests.exceptions.RequestException as e:
+            print(f"[-] An error occurred -- check {elb['domain']} manually")
+    logger.write_to_log("[MSG]","Fire-Cloud.py",f"ELB Dangling CNAME Check Completed Successfully!")
+
 def ec2_checks(cname):
     print(f"[-] Checking EC2 instance: {cname}")
     try:
@@ -303,16 +318,16 @@ def gcp_bucket_sniping(thisFqdn, logger):
     print("[+] Checking GCP buckets for takeover")
     for bucket in thisFqdn['gcp']['bucket']:
         try:
-            response = requests.get(f"http://{bucket}", timeout=5)
+            response = requests.get(f"http://{bucket['domain']}", timeout=5)
             if "NoSuchBucket" in response.text:
-                print(f"[!] GCP bucket appears vulnerable to takeover at {bucket}")
+                print(f"[!] GCP bucket appears vulnerable to takeover at {bucket['domain']}")
                 logger.write_to_log("[MSG]","Fire-Cloud.py",f"GCP Bucket May Be Vulnerable to Subdomain Takeover!  URL: {bucket['domain']}")
             else:
-                print(f"[-] GCP bucket is not vulnerable to takeover at {bucket}")
+                print(f"[-] GCP bucket is not vulnerable to takeover at {bucket['domain']}")
         except requests.exceptions.Timeout:
             print("[-] Request timed out.")  
         except requests.exceptions.RequestException as e:
-            print(f"[-] An error occurred -- check {bucket} manually")
+            print(f"[-] An error occurred -- check {bucket['domain']} manually")
 
 def get_fqdn_obj(args):
     r = requests.post(f'http://{args.server}:{args.port}/api/auto', data={'fqdn':args.fqdn})
@@ -355,10 +370,12 @@ def main(args):
     s3_bucket_upload_exploit(thisFqdn, logger)
     update_scan_progress("Fire-Cloud | S3 Bucket Takeover", args.fqdn)
     s3_takover_exploit(thisFqdn, logger)
-    beanstalk_takeover(thisFqdn, logger)
     update_scan_progress("Fire-Cloud | Beanstalk Takeover", args.fqdn)
+    beanstalk_takeover(thisFqdn, logger)
+    update_scan_progress("Fire-Cloud | ELB Takeover", args.fqdn)
+    elb_checks(thisFqdn, logger)
+    update_scan_progress("Fire-Cloud | GCP Takeover", args.fqdn)
     gcp_bucket_sniping(thisFqdn, logger)
-    update_scan_progress("Fire-Cloud | GCP Bucket Sniping", args.fqdn)
     update_fqdn_obj(args, thisFqdn)
     exit()
 
