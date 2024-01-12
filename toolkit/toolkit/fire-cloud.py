@@ -143,7 +143,7 @@ def service_detection(cnames, thisFqdn, logger):
         elif gcp_bucket:
             gcp_bucket_list.append(cname)
             print(f"[+] GCP Bucket Found: {cname}")
-            thisFqdn['gcp']['gcp_bucket'].append(cname)
+            thisFqdn['gcp']['bucket'].append(cname)
             counter += 1
     print(f"[-] Service Detection Complete!  {counter} Services Detected.")
     print("\n")
