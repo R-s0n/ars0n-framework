@@ -445,7 +445,7 @@ def install_client():
 def run_server_prompt():
     prompt = input("[?] Would you like to run the web application now? (Y/n)")
     if prompt == "Y":
-        subprocess.run(["chmod 777 run.sh; ./run.sh"], shell=True)
+        subprocess.run(["chmod 777 run_arm.sh; ./run_arm.sh"], shell=True)
 
 def update_apt():
     subprocess.run(["sudo apt-get update"], shell=True)
