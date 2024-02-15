@@ -120,7 +120,7 @@ def gau_check():
 
 def install_gau():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/lc/gau/releases/download/v2.2.1/gau_2.2.1_linux_amd64.tar.gz;tar xvf gau_2.2.1_linux_amd64.tar.gz;mv gau {home_dir}/go/bin/gau;rm gau_2.2.1_linux_amd64.tar.gz README.md LICENSE"], shell=True)
+    subprocess.run([f"cd {home_dir};wget https://github.com/lc/gau/releases/download/v2.2.1/gau_2.2.1_linux_arm64.tar.gz;tar xvf gau_2.2.1_linux_arm64.tar.gz;mv gau {home_dir}/go/bin/gau;rm gau_2.2.1_linux_arm64.tar.gz README.md LICENSE"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/gau --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Gau installed successfully!")
@@ -229,7 +229,7 @@ def shuffledns_check():
 
 def install_shuffledns():
     home_dir = get_home_dir()
-    subprocess.run([f"sudo apt-get install -y massdns;cd {home_dir};wget https://github.com/projectdiscovery/shuffledns/releases/download/v1.0.9/shuffledns_1.0.9_linux_amd64.zip;unzip shuffledns_1.0.9_linux_amd64.zip;mv shuffledns {home_dir}/go/bin/shuffledns;rm shuffledns_1.0.9_linux_amd64.zip README.md LICENSE.md"], shell=True)
+    subprocess.run([f"sudo apt-get install -y massdns;cd {home_dir};wget https://github.com/projectdiscovery/shuffledns/releases/download/v1.0.9/shuffledns_1.0.9_linux_arm64.zip;unzip shuffledns_1.0.9_linux_arm64.zip;mv shuffledns {home_dir}/go/bin/shuffledns;rm shuffledns_1.0.9_linux_arm64.zip README.md LICENSE.md"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/shuffledns --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] ShuffleDNS installed successfully!")
@@ -265,7 +265,7 @@ def tlsscan_check():
 
 def install_tlsscan():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/prbinu/tls-scan/releases/download/1.6.0/tls-scan-1.6.0-linux-amd64.tar.gz;tar xvf tls-scan-1.6.0-linux-amd64.tar.gz;mv tls-scan {home_dir}/Tools/tls-scan;rm tls-scan-1.6.0-linux-amd64.tar.gz"], shell=True)
+    subprocess.run([f"cd {home_dir};wget https://github.com/prbinu/tls-scan/releases/download/1.6.0/tls-scan-1.6.0-linux-arm64.tar.gz;tar xvf tls-scan-1.6.0-linux-arm64.tar.gz;mv tls-scan {home_dir}/Tools/tls-scan;rm tls-scan-1.6.0-linux-arm64.tar.gz"], shell=True)
     install_check = subprocess.run([f"ls {home_dir}/Tools/tls-scan/tls-scan"], shell=True)
     if install_check.returncode == 0:
         print("[+] TLS-Scan installed successfully!")
@@ -383,7 +383,7 @@ def mongodb_check():
     return False
 
 def install_mongodb():
-    mongodb_install = subprocess.run(["""sudo sh -c 'wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -; echo "deb [arch=amd64] https://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" >> /etc/apt/sources.list.d/mongodb-org-4.4.list'; sudo apt-get update ; wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb; sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb; rm libssl1.1_1.1.1f-1ubuntu2_amd64.deb; sudo apt-get remove mongodb-server-core ; sudo apt-get install -y mongodb-org ; sudo systemctl start mongod ; sudo systemctl enable mongod"""], shell=True)
+    mongodb_install = subprocess.run(["""sudo sh -c 'wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -; echo "deb [arch=arm64] https://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" >> /etc/apt/sources.list.d/mongodb-org-4.4.list'; sudo apt-get update ; wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_arm64.deb; sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_arm64.deb; rm libssl1.1_1.1.1f-1ubuntu2_arm64.deb; sudo apt-get remove mongodb-server-core ; sudo apt-get install -y mongodb-org ; sudo systemctl start mongod ; sudo systemctl enable mongod"""], shell=True)
     if mongodb_install.returncode == 0:
         print("[+] MongoDB was installed successfully!  Starting the service...")
         start_mongodb_service = subprocess.run(["sudo service mongodb start"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, shell=True)
