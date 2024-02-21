@@ -73,6 +73,12 @@ The Ars0n Framework includes a script that installs all the necessary tools, pac
 
 This [video](https://www.youtube.com/watch?v=cF4xtVS7Rnc) shows exactly what to expect from a successful installation.
 
+**If you are using an ARM Processor, you will need to add the --arm flag to all Install/Run scripts**
+
+```
+./install.sh --arm
+```
+
 You will be prompted to enter various API keys and tokens when the installation begins.  **Entering these is not required to run the core functionality of the framework.  If you do not enter these API keys and tokens at the time of installation, simply hit enter at each of the prompts.  The keys can be added later to the `~/.keys` directory.  More information about how to add these keys manually can be found in the [Frequently Asked Questions](#faq) section of this README.** 
 
 ## Run the Web Application (Client and Server)
@@ -81,6 +87,12 @@ Once the installation is complete, you will be given the option to run the appli
 
 ```
 ./run.sh
+```
+
+**If you are using an ARM Processor, you will need to add the --arm flag to all Install/Run scripts**
+
+```
+./run.sh --arm
 ```
 
 ## Core Modules
