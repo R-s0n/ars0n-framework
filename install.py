@@ -649,7 +649,7 @@ def main(args):
         print("[!] Something went wrong!  Please try to run the installer again or open an issue on the repo...")
         exit()
     starter_timer.stop_timer()
-    run_server_prompt()
+    run_server_prompt(args)
     print(f"[+] Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
 if __name__ == "__main__":
