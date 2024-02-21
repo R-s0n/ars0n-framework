@@ -127,6 +127,15 @@ def install_gau():
     else:
         print("[!] Something went wrong!  Gau was NOT installed successfully...")
 
+def install_gau_arm():
+    home_dir = get_home_dir()
+    subprocess.run([f"cd {home_dir};wget https://github.com/lc/gau/releases/download/v2.2.1/gau_2.2.1_linux_arm64.tar.gz;tar xvf gau_2.2.1_linux_arm64.tar.gz;mv gau {home_dir}/go/bin/gau;rm gau_2.2.1_linux_arm64.tar.gz README.md LICENSE"], shell=True)
+    install_check = subprocess.run([f"{home_dir}/go/bin/gau --help"], shell=True)
+    if install_check.returncode == 0:
+        print("[+] Gau installed successfully!")
+    else:
+        print("[!] Something went wrong!  Gau was NOT installed successfully...")
+
 def shosubgo_check():
     home_dir = get_home_dir()
     shosubgo_check = subprocess.run([f"ls {home_dir}/Tools/shosubgo/"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -181,6 +190,15 @@ def install_subfinder():
     else:
         print("[!] Something went wrong!  Subfinder was NOT installed successfully...")
 
+def install_subfinder_arm():
+    home_dir = get_home_dir()
+    subprocess.run([f"cd {home_dir};wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.3/subfinder_2.6.3_linux_arm64.zip;unzip subfinder_2.6.3_linux_arm64.zip;mv subfinder {home_dir}/go/bin/subfinder;rm subfinder_*.zip README.md LICENSE"], shell=True)
+    install_check = subprocess.run([f"{home_dir}/go/bin/subfinder --help"], shell=True)
+    if install_check.returncode == 0:
+        print("[+] Subfinder installed successfully!")
+    else:
+        print("[!] Something went wrong!  Subfinder was NOT installed successfully...")
+
 def gospider_check():
     home_dir = get_home_dir()
     gospider_check = subprocess.run([f"{home_dir}/go/bin/gospider --help"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -193,6 +211,15 @@ def gospider_check():
 def install_gospider():
     home_dir = get_home_dir()
     subprocess.run([f"cd {home_dir};wget https://github.com/jaeles-project/gospider/releases/download/v1.1.6/gospider_v1.1.6_linux_x86_64.zip;unzip -j gospider_v1.1.6_linux_x86_64.zip;mv gospider {home_dir}/go/bin/gospider;rm gospider_v1.1.6_linux_x86_64.zip README.md LICENSE.md"], shell=True)
+    install_check = subprocess.run([f"{home_dir}/go/bin/gospider --help"], shell=True)
+    if install_check.returncode == 0:
+        print("[+] GoSpider installed successfully!")
+    else:
+        print("[!] Something went wrong!  GoSpider was NOT installed successfully...")
+
+def install_gospider_arm():
+    home_dir = get_home_dir()
+    subprocess.run([f"cd {home_dir};wget https://github.com/jaeles-project/gospider/releases/download/v1.1.6/gospider_v1.1.6_linux_arm64.zip;unzip -j gospider_v1.1.6_linux_arm64.zip;mv gospider {home_dir}/go/bin/gospider;rm gospider_v1.1.6_linux_arm64.zip README.md LICENSE.md"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/gospider --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] GoSpider installed successfully!")
@@ -236,6 +263,15 @@ def install_shuffledns():
     else:
         print("[!] Something went wrong!  ShuffleDNS was NOT installed successfully...")
 
+def install_shuffledns_arm():
+    home_dir = get_home_dir()
+    subprocess.run([f"sudo apt-get install -y massdns;cd {home_dir};wget https://github.com/projectdiscovery/shuffledns/releases/download/v1.0.9/shuffledns_1.0.9_linux_arm64.zip;unzip shuffledns_1.0.9_linux_arm64.zip;mv shuffledns {home_dir}/go/bin/shuffledns;rm shuffledns_1.0.9_linux_arm64.zip README.md LICENSE.md"], shell=True)
+    install_check = subprocess.run([f"{home_dir}/go/bin/shuffledns --help"], shell=True)
+    if install_check.returncode == 0:
+        print("[+] ShuffleDNS installed successfully!")
+    else:
+        print("[!] Something went wrong!  ShuffleDNS was NOT installed successfully...")
+
 def httprobe_check():
     home_dir = get_home_dir()
     httprobe_check = subprocess.run([f"{home_dir}/go/bin/httprobe --help"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
@@ -266,6 +302,15 @@ def tlsscan_check():
 def install_tlsscan():
     home_dir = get_home_dir()
     subprocess.run([f"cd {home_dir};wget https://github.com/prbinu/tls-scan/releases/download/1.6.0/tls-scan-1.6.0-linux-amd64.tar.gz;tar xvf tls-scan-1.6.0-linux-amd64.tar.gz;mv tls-scan {home_dir}/Tools/tls-scan;rm tls-scan-1.6.0-linux-amd64.tar.gz"], shell=True)
+    install_check = subprocess.run([f"ls {home_dir}/Tools/tls-scan/tls-scan"], shell=True)
+    if install_check.returncode == 0:
+        print("[+] TLS-Scan installed successfully!")
+    else:
+        print("[!] Something went wrong!  TLS-Scan was NOT installed successfully...")
+
+def install_tlsscan_arm():
+    home_dir = get_home_dir()
+    subprocess.run([f"cd {home_dir};wget https://github.com/prbinu/tls-scan/releases/download/1.6.0/tls-scan-1.6.0-linux-arm64.tar.gz;tar xvf tls-scan-1.6.0-linux-arm64.tar.gz;mv tls-scan {home_dir}/Tools/tls-scan;rm tls-scan-1.6.0-linux-arm64.tar.gz"], shell=True)
     install_check = subprocess.run([f"ls {home_dir}/Tools/tls-scan/tls-scan"], shell=True)
     if install_check.returncode == 0:
         print("[+] TLS-Scan installed successfully!")
@@ -318,6 +363,15 @@ def nuclei_check():
 def install_nuclei():
     home_dir = get_home_dir()
     subprocess.run([f"cd {home_dir};git clone https://github.com/projectdiscovery/nuclei-templates.git;wget https://github.com/projectdiscovery/nuclei/releases/download/v3.1.2/nuclei_3.1.2_linux_amd64.zip;unzip nuclei_3.1.2_linux_amd64.zip;mv nuclei {home_dir}/go/bin/nuclei;rm nuclei_3.1.2_linux_amd64.zip"], shell=True)
+    install_check = subprocess.run([f"{home_dir}/go/bin/nuclei -update"], shell=True)
+    if install_check.returncode == 0:
+        print("[+] Nuclei installed successfully!")
+    else:
+        print("[!] Something went wrong!  Nuclei was NOT installed successfully...")
+
+def install_nuclei_arm():
+    home_dir = get_home_dir()
+    subprocess.run([f"cd {home_dir};git clone https://github.com/projectdiscovery/nuclei-templates.git;wget https://github.com/projectdiscovery/nuclei/releases/download/v3.1.2/nuclei_3.1.2_linux_arm64.zip;unzip nuclei_3.1.2_linux_arm64.zip;mv nuclei {home_dir}/go/bin/nuclei;rm nuclei_3.1.2_linux_arm64.zip"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/nuclei -update"], shell=True)
     if install_check.returncode == 0:
         print("[+] Nuclei installed successfully!")
@@ -390,6 +444,14 @@ def install_mongodb():
     else:
         print("[!] Something went wrong!  MongoDB was NOT installed successfully...")
 
+def install_mongodb_arm():
+    mongodb_install = subprocess.run(["""sudo sh -c 'wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -; echo "deb [arch=arm64] https://repo.mongodb.org/apt/debian buster/mongodb-org/4.4 main" >> /etc/apt/sources.list.d/mongodb-org-4.4.list'; sudo apt-get update ; wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_arm64.deb; sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_arm64.deb; rm libssl1.1_1.1.1f-1ubuntu2_arm64.deb; sudo apt-get remove mongodb-server-core ; sudo apt-get install -y mongodb-org ; sudo systemctl start mongod ; sudo systemctl enable mongod"""], shell=True)
+    if mongodb_install.returncode == 0:
+        print("[+] MongoDB was installed successfully!  Starting the service...")
+        start_mongodb_service = subprocess.run(["sudo service mongodb start"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, shell=True)
+    else:
+        print("[!] Something went wrong!  MongoDB was NOT installed successfully...")
+
 def get_home_dir():
     get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
     return get_home_dir.stdout.replace("\n", "")
@@ -442,10 +504,13 @@ def install_client():
     else:
         print("[!] Something went wrong!  The Ars0n Framework Client was NOT installed successfully...")
 
-def run_server_prompt():
+def run_server_prompt(args):
     prompt = input("[?] Would you like to run the web application now? (Y/n)")
     if prompt == "Y":
-        subprocess.run(["chmod 777 run.sh; ./run.sh"], shell=True)
+        if args.arm:
+            subprocess.run(["chmod 777 run.sh; ./run.sh"], shell=True)
+        else:
+            subprocess.run(["chmod 777 run.sh; ./run.sh"], shell=True)
 
 def update_apt():
     subprocess.run(["sudo apt-get update"], shell=True)
@@ -465,6 +530,7 @@ def stray_license_file():
 def arg_parse():
     parser = argparse.ArgumentParser()
     parser.add_argument('-v','--vpn', help='Install ProtonVPN Debian Client - https://protonvpn.com', required=False, action='store_true')
+    parser.add_argument('--arm', help='Install The Ars0n Framework for ARM Processor', required=False, action='store_true')
     return parser.parse_args()
 
 def validate_install():
@@ -521,7 +587,10 @@ def main(args):
     if npm_check() is False:
         install_npm()
     if mongodb_check() is False:
-        install_mongodb()
+        if args.arm:
+            install_mongodb()
+        else:
+            install_mongodb_arm()
     if go_check() is False:
         install_go()
     if sublist3r_check() is False:
@@ -529,29 +598,47 @@ def main(args):
     if assetfinder_check() is False:
         install_assetfinder()
     if gau_check() is False:
-        install_gau()
+        if args.arm:
+            install_gau_arm()
+        else:
+            install_gau()
     if crt_check() is False:
         install_crt()
     if shosubgo_check() is False:
         install_shosubgo()
     if subfinder_check() is False:
-        install_subfinder()
+        if args.arm:
+            install_subfinder()
+        else:
+            install_subfinder_arm()
     if gospider_check() is False:
-        install_gospider()
+        if args.arm:
+            install_gospider()
+        else:
+            install_gospider_arm()
     if subdomainizer_check() is False:
         install_subdomainizer()
     if shuffledns_check() is False:
-        install_shuffledns()
+        if args.arm:
+            install_shuffledns()
+        else:
+            install_shuffledns_arm()
     if httprobe_check() is False:
         install_httprobe()
     if tlsscan_check() is False:
-        install_tlsscan()
+        if args.arm:
+            install_tlsscan()
+        else:
+            install_tlsscan_arm()
     if jq_check() is False:
         install_jq()
     if dnmasscan_check() is False:
         install_dnmasscan()
     if nuclei_check() is False:
-        install_nuclei()
+        if args.arm:
+            install_nuclei()
+        else:
+            install_nuclei_arm()
     if server_check() is False:
         install_server()
     if client_check() is False:

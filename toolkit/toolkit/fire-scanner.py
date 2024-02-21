@@ -565,6 +565,7 @@ def clean_screenshots():
 
 def clean_stacktrace_dumps():
     subprocess.run("rm -f nuclei-*.dump", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    subprocess.run("rm -f crash-*.dump", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
 
 def move_screenshots():
     subprocess.run("""for file in ./screenshots/*; do cp -f "$file" "../client/public/screenshots/$(basename "$file")"; done""", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)

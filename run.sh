@@ -38,14 +38,26 @@ for port in 8000 3000 5000; do
     fi
 done
 
-sudo systemctl enable mongod 2>/dev/null
-sudo systemctl start mongod 2>/dev/null
+if [[ "$1" == "--arm" ]]; then
+    sudo systemctl enable mongodb 2>/dev/null
+    sudo systemctl start mongodb 2>/dev/null
 
-if sudo systemctl is-active --quiet mongod; then
-    echo "MongoDB is running. Continuing..."
+    if sudo systemctl is-active --quiet mongodb; then
+        echo "MongoDB is running. Continuing..."
+    else
+        echo "Error: MongoDB is not running! Please turn on your local MongoDB instance to use the Ars0n Framework. Exiting..."
+        exit 1
+    fi
 else
-    echo "Error: MongoDB is not running!  Please turn on your local MongoDB instance to use the Ars0n Framework. Exiting..."
-    exit 1
+    sudo systemctl enable mongod 2>/dev/null
+    sudo systemctl start mongod 2>/dev/null
+
+    if sudo systemctl is-active --quiet mongod; then
+        echo "MongoDB is running. Continuing..."
+    else
+        echo "Error: MongoDB is not running! Please turn on your local MongoDB instance to use the Ars0n Framework. Exiting..."
+        exit 1
+    fi
 fi
 
 nohup node server/server.js > logs/server.log 2>&1 &
