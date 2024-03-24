@@ -1,11 +1,13 @@
+
+
 <h1 align="center">
   <a href="https://www.linkedin.com/in/%E2%84%8C%F0%9D%94%9E%F0%9D%94%AF%F0%9D%94%AF%F0%9D%94%A6%F0%9D%94%B0%F0%9D%94%AC%F0%9D%94%AB-%E2%84%9C%F0%9D%94%A6%F0%9D%94%A0%F0%9D%94%A5%F0%9D%94%9E%F0%9D%94%AF%F0%9D%94%A1%F0%9D%94%B0%F0%9D%94%AC%F0%9D%94%AB-%F0%9D%96%A2%F0%9D%96%A8%F0%9D%96%B2%F0%9D%96%B2%F0%9D%96%AF-%F0%9D%96%AE%F0%9D%96%B2%F0%9D%96%B6%F0%9D%96%A4-%F0%9D%96%AC%F0%9D%96%B2%F0%9D%96%BC-7a55bb158/"><img src="static/rs0n-logo.png" width="200px" alt="Arson Logo"></a>
   <br>
-  The Learn Bug Bounty (LBB) Framework
+  Learn Bug Bounty (LBB) Framework
   <br>
 </h1>
 
-<h4 align="center">A Modern, Agile Framework for Bug Bounty Hunting on Kali Linux</h4>
+<h4 align="center">A Modern, Agile Framework for Bug Bounty Hunting on Kali Linux by rs0n</h4>
       
 <p align="center">
   <a href="#about">About</a> •
