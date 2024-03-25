@@ -7,8 +7,9 @@
   <br>
 </h1>
 
-<h4 align="center">A Modern, Agile Framework for Bug Bounty Hunting on Kali Linux by rs0n</h4>
-      
+<h4 align="center"><strong>Designed to Help Aspiring Researchers Start Their Bug Bounty Journey and "Earn While You Learn"</strong> -- <em>by rs0n</em></h4>
+
+
 <p align="center">
   <a href="#about">About</a> •
   <a href="#install">Install</a> •
