@@ -7,6 +7,8 @@
   <br>
 </h1>
 
+<h3 align="center"><em>THIS PROJECT HAS BEEN PUT ON HOLD AND IS NO LONGER BEING ACTIVELY SUPPORTED AT THIS TIME.  UPDATES WILL BE PROVIDED IN THE DISCORD SERVER WHEN AVAILABLE.</em></h3>
+
 <h4 align="center"><strong>Designed to Help Aspiring Researchers Start Their Bug Bounty Journey and "Earn While You Learn"</strong> -- <em>by rs0n</em></h4>
 
 
