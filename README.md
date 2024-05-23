@@ -70,7 +70,7 @@ rm ars0n-framework-v0.0.2-alpha.tar.gz
 
 The Ars0n Framework includes a script that installs all the necessary tools, packages, etc. that are needed to run the framework on a clean installation of [Kali Linux 2023.4](https://www.kali.org/get-kali/#kali-installer-images).
 
-***Please note that the only supported installation of this framework is on a clean installation of Kali Linux 2023.3.  If you choose to try and run the framework outside of a clean Kali install, I will not be able to help troubleshoot if you have any issues.***
+***Please note that the only supported installation of this framework is on a clean installation of Kali Linux 2023.4.  If you choose to try and run the framework outside of a clean Kali install, I will not be able to help troubleshoot if you have any issues.***
 
 ```
 ./install.sh
