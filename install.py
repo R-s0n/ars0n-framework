@@ -444,7 +444,7 @@ def install_client():
 
 def run_server_prompt(args):
     prompt = input("[?] Would you like to run the web application now? (Y/n)")
-    if prompt == "Y":
+    if prompt.lower() == "y":
         subprocess.run(["chmod 777 run.sh; ./run.sh"], shell=True)
 
 def update_apt():
