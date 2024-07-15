@@ -47,7 +47,7 @@ My hope is that this modular framework will act as a canvas to help share what I
 
 ## Quick Start
 
-Paste this code block into a clean installation of [Kali Linux 2023.4](https://www.kali.org/get-kali/#kali-installer-images) to download, install, and run the latest stable Alpha version of the framework:
+Paste this code block into a clean installation of [Kali Linux 2023.4](https://old.kali.org/kali-images/kali-2023.3/kali-linux-2023.3-installer-amd64.iso) to download, install, and run the latest stable Alpha version of the framework:
 ```
 sudo apt update && sudo apt-get update
 sudo apt -y upgrade && sudo apt-get -y upgrade
