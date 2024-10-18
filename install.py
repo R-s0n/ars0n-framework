@@ -25,7 +25,7 @@ def flask_cors_check():
     return False
 
 def install_flask_cors():
-    install_check = subprocess.run([f"pip3 install flask_cors"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+    install_check = subprocess.run([f"sudo apt install python3-flask-cors"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     if install_check.returncode == 0:
         print("[+] Flask_CORS was installed successfully!")
     else:
