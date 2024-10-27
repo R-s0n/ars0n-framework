@@ -394,8 +394,9 @@ def mongodb_check():
 
 def install_mongodb():
     subprocess.run(["""sudo apt install docker.io -y; sudo systemctl start docker; sudo systemctl enable docker; sudo docker pull mongo; sudo docker run -d -p 27017:27017 --name mongodb-container mongo; """], shell=True)
-    mongodb_check = subprocess.run(['sudo docker exec mongodb-container mongosh --eval "db.runCommand({ connectionStatus: 1 })"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    if mongodb_check.returncode == 0:
+    sleep(2)
+    final_mongodb_check = subprocess.run(['sudo docker exec mongodb-container mongosh --eval "db.runCommand({ connectionStatus: 1 })"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    if final_mongodb_check.returncode == 0:
         print("[+] MongoDB was installed successfully!")
     else:
         print("[!] Something went wrong!  MongoDB was NOT installed successfully...")
