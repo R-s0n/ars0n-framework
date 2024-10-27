@@ -351,20 +351,16 @@ def install_go():
 def node_check():
     node_check = subprocess.run([f"node --version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
     if node_check.returncode == 0:
-        print("[+] Node is already installed.  Checking version...")
-        node_version = node_check.stdout.split(".")[0]
-        print(f"[-] Current Node Version: {node_version}")
-        if node_version == "v18":
-            print("[+] Node 18 is already installed.")
-            return True
-    print("[!] Node 18 is NOT already installed.  Installing now...")
+        print("[+] Node is already installed.")
+        return True
+    print("[!] Node is NOT already installed.  Installing now...")
     print("[!] This can take 30+ minutes depending on your machine.")
     return False
 
 def install_node():
-    node_install = subprocess.run(["sudo apt-get remove --purge nodejs; curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -; sudo apt-get install -y nodejs;"], shell=True)
+    node_install = subprocess.run(["sudo apt-get install -y nodejs;"], shell=True)
     if node_install.returncode == 0:
-        print("[+] Node 18 was installed successfully!")
+        print("[+] Node was installed successfully!")
     else:
         print("[!] Something went wrong!  Node 18 was NOT installed successfully...")
 
