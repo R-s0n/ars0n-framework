@@ -15,7 +15,22 @@ class Timer:
 
     def get_stop(self):
         return self.stop.strftime("%H:%M:%S")
-    
+
+def pip_check():
+    pip_check = subprocess.run([f"pip3 --version"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+    if pip_check.returncode == 0:
+        print("[+] pip is already installed.")
+        return True
+    print("[!] pip is NOT installed.  Installing now...")
+    return False
+
+def install_pip():
+    install_check = subprocess.run([f"sudo apt install python3-pip"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+    if install_check.returncode == 0:
+        print("[+] pip was installed successfully!")
+    else:
+        print("[!] Something went wrong!  pip was NOT installed successfully...")  
+
 def flask_cors_check():
     flask_cors_check = subprocess.run([f"pip3 show flask_cors"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     if flask_cors_check.returncode == 0:
@@ -120,7 +135,7 @@ def gau_check():
 
 def install_gau():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/lc/gau/releases/download/v2.2.1/gau_2.2.1_linux_amd64.tar.gz;tar xvf gau_2.2.1_linux_amd64.tar.gz;mv gau {home_dir}/go/bin/gau;rm gau_2.2.1_linux_amd64.tar.gz README.md LICENSE"], shell=True)
+    subprocess.run([f"go install github.com/lc/gau/v2/cmd/gau@latest"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/gau --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Gau installed successfully!")
@@ -129,7 +144,7 @@ def install_gau():
 
 def shosubgo_check():
     home_dir = get_home_dir()
-    shosubgo_check = subprocess.run([f"ls {home_dir}/Tools/shosubgo/"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+    shosubgo_check = subprocess.run([f"{home_dir}/go/bin/shosubgo --help"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
     if shosubgo_check.returncode == 0:
         print("[+] Shosubgo is already installed.")
         return True
@@ -138,8 +153,8 @@ def shosubgo_check():
 
 def install_shosubgo():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir}/Tools;git clone https://github.com/incogbyte/shosubgo.git"], shell=True)
-    install_check = subprocess.run([f"ls {home_dir}/Tools/shosubgo/"], shell=True)
+    subprocess.run([f"go install github.com/incogbyte/shosubgo@latest"], shell=True)
+    install_check = subprocess.run([f"{home_dir}/go/bin/shosubgo --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Shosubgo installed successfully!  Don't forget to add your API key in the .keystore file.")
     else:
@@ -174,7 +189,7 @@ def subfinder_check():
 
 def install_subfinder():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/projectdiscovery/subfinder/releases/download/v2.6.3/subfinder_2.6.3_linux_amd64.zip;unzip subfinder_2.6.3_linux_amd64.zip;mv subfinder {home_dir}/go/bin/subfinder;rm subfinder_*.zip README.md LICENSE"], shell=True)
+    subprocess.run([f"go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/subfinder --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] Subfinder installed successfully!")
@@ -192,7 +207,7 @@ def gospider_check():
 
 def install_gospider():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};wget https://github.com/jaeles-project/gospider/releases/download/v1.1.6/gospider_v1.1.6_linux_x86_64.zip;unzip -j gospider_v1.1.6_linux_x86_64.zip;mv gospider {home_dir}/go/bin/gospider;rm gospider_v1.1.6_linux_x86_64.zip README.md LICENSE.md"], shell=True)
+    subprocess.run([f"GO111MODULE=on go install github.com/jaeles-project/gospider@latest"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/gospider --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] GoSpider installed successfully!")
@@ -229,7 +244,7 @@ def shuffledns_check():
 
 def install_shuffledns():
     home_dir = get_home_dir()
-    subprocess.run([f"sudo apt-get install -y massdns;cd {home_dir};wget https://github.com/projectdiscovery/shuffledns/releases/download/v1.0.9/shuffledns_1.0.9_linux_amd64.zip;unzip shuffledns_1.0.9_linux_amd64.zip;mv shuffledns {home_dir}/go/bin/shuffledns;rm shuffledns_1.0.9_linux_amd64.zip README.md LICENSE.md"], shell=True)
+    subprocess.run([f"sudo apt-get install -y massdns; go install -v github.com/projectdiscovery/shuffledns/cmd/shuffledns@latest"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/shuffledns --help"], shell=True)
     if install_check.returncode == 0:
         print("[+] ShuffleDNS installed successfully!")
@@ -317,7 +332,7 @@ def nuclei_check():
 
 def install_nuclei():
     home_dir = get_home_dir()
-    subprocess.run([f"cd {home_dir};git clone https://github.com/projectdiscovery/nuclei-templates.git;wget https://github.com/projectdiscovery/nuclei/releases/download/v3.1.2/nuclei_3.1.2_linux_amd64.zip;unzip nuclei_3.1.2_linux_amd64.zip;mv nuclei {home_dir}/go/bin/nuclei;rm nuclei_3.1.2_linux_amd64.zip"], shell=True)
+    subprocess.run([f"go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest"], shell=True)
     install_check = subprocess.run([f"{home_dir}/go/bin/nuclei -update"], shell=True)
     if install_check.returncode == 0:
         print("[+] Nuclei installed successfully!")
@@ -325,9 +340,8 @@ def install_nuclei():
         print("[!] Something went wrong!  Nuclei was NOT installed successfully...")
 
 def install_go():
-    # To Update: https://golang.org/doc/install
     home_dir = get_home_dir()
-    subprocess.run([f"sudo apt-get update && sudo apt-get install -y golang-go; sudo apt-get install -y gccgo-go; mkdir {home_dir}/go;"], shell=True)
+    subprocess.run([f"sudo apt install -y golang; export GOROOT=/usr/lib/go; export GOPATH=$HOME/go; export PATH=$GOPATH/bin:$GOROOT/bin:$PATH; source .zshrc"], shell=True)
     install_check = subprocess.run(["go version"], shell=True)
     if install_check.returncode == 0:
         print("[+] Go installed successfully!")
@@ -348,7 +362,7 @@ def node_check():
     return False
 
 def install_node():
-    node_install = subprocess.run(["sudo apt-get install nodejs -y"], shell=True)
+    node_install = subprocess.run(["sudo apt-get remove --purge nodejs; curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -; sudo apt-get install -y nodejs;"], shell=True)
     if node_install.returncode == 0:
         print("[+] Node 18 was installed successfully!")
     else:
@@ -448,7 +462,7 @@ def run_server_prompt(args):
         subprocess.run(["chmod 777 run.sh; ./run.sh"], shell=True)
 
 def update_apt():
-    subprocess.run(["sudo apt-get update"], shell=True)
+    subprocess.run(["sudo apt-get update"], stdout=subprocess.DEVNULL, shell=True)
 
 def install_protonvpn():
     home_dir = get_home_dir()
@@ -494,9 +508,6 @@ def validate_install():
         server_check,
         client_check
     ]
-    # Intentionally not using all because we want to fail as soon
-    # as an install is not installed. Below is the alternative one liner.
-    # Otherwise: return all([check() for check in checks])
     for check in checks:
         if not check():
             return False
@@ -510,6 +521,8 @@ def main(args):
     starter_timer = Timer()
     keystore()
     update_apt()
+    if pip_check() is False:
+        install_pip()
     if tools_dir_check() is False:
         create_tools_dir()
     if flask_cors_check() is False:
