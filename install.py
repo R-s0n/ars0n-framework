@@ -453,9 +453,9 @@ def install_client():
     else:
         print("[!] Something went wrong!  The Ars0n Framework Client was NOT installed successfully...")
 
-def run_server_prompt(args):
+def run_server_prompt():
     prompt = input("[?] Would you like to run the web application now? (Y/n)")
-    if prompt == "Y":
+    if prompt.lower() == "y":
         subprocess.run(["chmod 777 run.sh; ./run.sh"], shell=True)
 
 def update_apt():
@@ -596,7 +596,7 @@ def main(args):
             print("[!] Something went wrong!  Please try to run the installer again or open an issue on the repo...")
             exit()
     starter_timer.stop_timer()
-    run_server_prompt(args)
+    run_server_prompt()
     print(f"[+] Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
 if __name__ == "__main__":
