@@ -38,7 +38,7 @@ for port in 8000 3000 5000; do
     fi
 done
 
-if sudo docker exec mongodb-container mongosh --quiet --eval "db.runCommand({ connectionStatus: 1 })"; then
+if sudo docker exec mongodb-container mongosh --quiet --eval "db.runCommand({ connectionStatus: 1 })" > /dev/null 2>&1; then
     echo "MongoDB is running. Continuing..."
 else
     echo "Error: MongoDB is not running! Please turn on your local MongoDB instance to use the Ars0n Framework. Exiting..."
