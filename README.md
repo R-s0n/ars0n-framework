@@ -20,8 +20,7 @@
   <a href="#frequently-asked-questions">FAQs</a> •
   <a href="https://ars0nsecurity.com" target=”_blank”>Ars0n Security</a> •
   <a href="https://www.youtube.com/@rs0n_live" target=”_blank”>YouTube</a> •
-  <a href="https://www.twitch.tv/rs0n_live" target=”_blank”>Twitch</a> •
-  <a href="https://discord.gg/yeZ8d5xbvc" target=”_blank”>Discord</a>
+  <a href="https://www.twitch.tv/rs0n_live" target=”_blank”>Twitch</a>
 </p>
 
 <div align="center">
