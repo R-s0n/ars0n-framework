@@ -385,7 +385,7 @@ def install_npm():
         print("[!] Something went wrong!  NPM 9 was NOT installed successfully...")
 
 def kali_mongodb_check():
-    kali_mongodb_check = subprocess.run(['sudo docker exec mongodb-container mongosh --eval "db.runCommand({ connectionStatus: 1 })"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    kali_mongodb_check = subprocess.run(['sudo docker exec mongodb-container mongo --eval "db.runCommand({ connectionStatus: 1 })"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     if kali_mongodb_check.returncode == 0:
         print("[+] Mongodb is already installed.")
         return True
@@ -393,9 +393,9 @@ def kali_mongodb_check():
     return False
 
 def kali_install_mongodb():
-    subprocess.run(["""sudo apt install docker.io -y; sudo systemctl start docker; sudo systemctl enable docker; sudo docker pull mongo; sudo docker run -d -p 27017:27017 --name mongodb-container mongo; """], shell=True)
+    subprocess.run(["""sudo apt install docker.io -y; sudo systemctl start docker; sudo systemctl enable docker; sudo docker pull mongo:4.4; sudo docker run -d -p 27017:27017 --name mongodb-container mongo:4.4;"""], shell=True)
     sleep(2)
-    final_kali_mongodb_check = subprocess.run(['sudo docker exec mongodb-container mongosh --eval "db.runCommand({ connectionStatus: 1 })"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    final_kali_mongodb_check = subprocess.run(['sudo docker exec mongodb-container mongo --eval "db.runCommand({ connectionStatus: 1 })"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     if final_kali_mongodb_check.returncode == 0:
         print("[+] MongoDB was installed successfully!")
     else:
@@ -410,7 +410,7 @@ def docker_mongodb_check():
     return False
 
 def docker_install_mongodb():
-    subprocess.run(["""sudo apt install docker.io -y; sudo systemctl start docker; sudo systemctl enable docker; sudo docker pull mongo; sudo docker run -d -p 27017:27017 --name mongodb-container mongo; """], shell=True)
+    subprocess.run(["""ls"""], shell=True)
     sleep(2)
     final_docker_mongodb_check = subprocess.run(['sudo docker exec mongodb-container mongosh --eval "db.runCommand({ connectionStatus: 1 })"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     if final_docker_mongodb_check.returncode == 0:
@@ -555,63 +555,63 @@ def main(args):
     if kali_mongodb_check() is False:
         failed_check_count += 1
         kali_install_mongodb()
-    # if go_check() is False:
-    #     failed_check_count += 1
-    #     install_go()
-    # if sublist3r_check() is False:
-    #     failed_check_count += 1
-    #     install_sublist3r()
-    # if assetfinder_check() is False:
-    #     failed_check_count += 1
-    #     install_assetfinder()
-    # if gau_check() is False:
-    #     failed_check_count += 1
-    #     install_gau()
-    # if crt_check() is False:
-    #     failed_check_count += 1
-    #     install_crt()
-    # if shosubgo_check() is False:
-    #     failed_check_count += 1
-    #     install_shosubgo()
-    # if subfinder_check() is False:
-    #     failed_check_count += 1
-    #     install_subfinder()
-    # if gospider_check() is False:
-    #     failed_check_count += 1
-    #     install_gospider()
-    # if subdomainizer_check() is False:
-    #     failed_check_count += 1
-    #     install_subdomainizer()
-    # if shuffledns_check() is False:
-    #     failed_check_count += 1
-    #     install_shuffledns()
-    # if httprobe_check() is False:
-    #     failed_check_count += 1
-    #     install_httprobe()
-    # if tlsscan_check() is False:
-    #     failed_check_count += 1
-    #     install_tlsscan()
-    # if jq_check() is False:
-    #     failed_check_count += 1
-    #     install_jq()
-    # if dnmasscan_check() is False:
-    #     failed_check_count += 1
-    #     install_dnmasscan()
-    # if nuclei_check() is False:
-    #     failed_check_count += 1
-    #     install_nuclei()
-    # if server_check() is False:
-    #     failed_check_count += 1
-    #     install_server()
-    # if client_check() is False:
-    #     failed_check_count += 1
-    #     install_client()
-    # if failed_check_count > 0:
-    #     if validate_install() is False:
-    #         print("[!] Something went wrong!  Please try to run the installer again or open an issue on the repo...")
-    #         exit()
+    if go_check() is False:
+        failed_check_count += 1
+        install_go()
+    if sublist3r_check() is False:
+        failed_check_count += 1
+        install_sublist3r()
+    if assetfinder_check() is False:
+        failed_check_count += 1
+        install_assetfinder()
+    if gau_check() is False:
+        failed_check_count += 1
+        install_gau()
+    if crt_check() is False:
+        failed_check_count += 1
+        install_crt()
+    if shosubgo_check() is False:
+        failed_check_count += 1
+        install_shosubgo()
+    if subfinder_check() is False:
+        failed_check_count += 1
+        install_subfinder()
+    if gospider_check() is False:
+        failed_check_count += 1
+        install_gospider()
+    if subdomainizer_check() is False:
+        failed_check_count += 1
+        install_subdomainizer()
+    if shuffledns_check() is False:
+        failed_check_count += 1
+        install_shuffledns()
+    if httprobe_check() is False:
+        failed_check_count += 1
+        install_httprobe()
+    if tlsscan_check() is False:
+        failed_check_count += 1
+        install_tlsscan()
+    if jq_check() is False:
+        failed_check_count += 1
+        install_jq()
+    if dnmasscan_check() is False:
+        failed_check_count += 1
+        install_dnmasscan()
+    if nuclei_check() is False:
+        failed_check_count += 1
+        install_nuclei()
+    if server_check() is False:
+        failed_check_count += 1
+        install_server()
+    if client_check() is False:
+        failed_check_count += 1
+        install_client()
+    if failed_check_count > 0:
+        if validate_install() is False:
+            print("[!] Something went wrong!  Please try to run the installer again or open an issue on the repo...")
+            exit()
     starter_timer.stop_timer()
-    # run_server_prompt()
+    run_server_prompt()
     print(f"[+] Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
 if __name__ == "__main__":
