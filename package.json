@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "./run.sh"
+  },
   "dependencies": {
     "@react-pdf/renderer": "^3.1.14",
     "axios": "^1.6.1",

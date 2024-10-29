@@ -41,6 +41,14 @@ done
 if sudo docker exec mongodb-container mongosh --quiet --eval "db.runCommand({ connectionStatus: 1 })" > /dev/null 2>&1; then
     echo "MongoDB is running. Continuing..."
 else
+    sudo systemctl start docker 
+    sudo systemctl enable docker
+    sudo docker start mongodb-container
+fi
+
+if sudo docker exec mongodb-container mongosh --quiet --eval "db.runCommand({ connectionStatus: 1 })" > /dev/null 2>&1; then
+    echo "MongoDB is running. Continuing..."
+else  
     echo "Error: MongoDB is not running! Please turn on your local MongoDB instance to use the Ars0n Framework. Exiting..."
     exit 1
 fi
