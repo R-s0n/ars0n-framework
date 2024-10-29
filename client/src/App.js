@@ -57,7 +57,7 @@ function App() {
 
     fetchData()
 
-    axios.post('http://localhost:8000/api/fqdn/all', {})
+    axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/all`, {})
       .then(res=>{
         console.log(res.data);
         setFqdns(res.data);
@@ -109,14 +109,14 @@ function App() {
             );
             if (existingIndex === -1) {
               setFqdns((prevData) => [...prevData, importedFqdn]);
-              axios.post("http://localhost:8000/api/fqdn/new",importedFqdn)
+              axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/new`,importedFqdn)
             } else {
               setFqdns((prevData) => {
                 const newData = [...prevData];
                 newData[existingIndex] = importedFqdn;
                 return newData;
               });
-              axios.post("http://localhost:8000/api/fqdn/update",importedFqdn)
+              axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`,importedFqdn)
             }
           });
         } catch (error) {
@@ -130,7 +130,7 @@ function App() {
   const deleteFqdn = () => {
     const fqdnToDelete = fqdns[activeTab];
   
-    axios.post('http://localhost:8000/api/fqdn/delete', fqdnToDelete)
+    axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/delete`, fqdnToDelete)
       .then(res => {
         // Remove the deleted FQDN from the state
         const updatedFqdns = fqdns.filter((_, index) => index !== activeTab);

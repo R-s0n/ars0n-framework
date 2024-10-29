@@ -20,7 +20,7 @@ const Enumeration = props => {
     }, [props.index]);
 
     const populateBurp = () => {
-        axios.post('http://localhost:8000/api/populate-burp', urls)
+        axios.post(`${process.env.API_IP}:${API_PORT}/api/populate-burp`, urls)
           .then(res=>{
             console.log(res);
           })
@@ -31,7 +31,7 @@ const Enumeration = props => {
     const data = {
         targetUrl: targetUrl
     }
-    axios.post('http://localhost:8000/api/scan/default', data)
+    axios.post(`${process.env.API_IP}:${API_PORT}/api/scan/default`, data)
         .then(res=>{
         console.log(res);
         })
@@ -42,7 +42,7 @@ const Enumeration = props => {
         const data = {
             targetUrl: targetUrl
         }
-        axios.post('http://localhost:8000/api/scan/deep', data)
+        axios.post(`${process.env.API_IP}:${API_PORT}/api/scan/deep`, data)
             .then(res=>{
             console.log(res);
             })

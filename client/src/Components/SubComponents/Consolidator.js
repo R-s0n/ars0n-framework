@@ -9,7 +9,7 @@ const Consolidator = props => {
     const [refresh, setRefresh] = useState(0);
 
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 setConsolidatedList(res.data.recon.subdomains.consolidated);
                 setConsolidatedNewList(res.data.recon.subdomains.consolidatedNew);
@@ -46,13 +46,13 @@ const Consolidator = props => {
         let tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.consolidated = consolidatedNewList;
         tempFqdn.recon.subdomains.consolidatedNew = consolidated;
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{let temp = refresh + 1; setRefresh(temp); console.log(res);})
             .catch(err=>console.log(err))
     }
     
     const consolidate = () => {
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 buildConsolidatedList(res.data.recon.subdomains.sublist3r, res.data.recon.subdomains.amass, res.data.recon.subdomains.assetfinder, res.data.recon.subdomains.gau);
             })

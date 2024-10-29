@@ -10,7 +10,7 @@ const Logging = props => {
     const [loaded, setLoaded] = useState(false);
 
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/log/all')
+        axios.post(`${process.env.API_IP}:${API_PORT}/api/log/all`)
         .then((res) => {
             setLogs(res.data);
             setLoaded(true);

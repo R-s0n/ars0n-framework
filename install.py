@@ -401,22 +401,8 @@ def kali_install_mongodb():
     else:
         print("[!] Something went wrong!  MongoDB was NOT installed successfully...")
 
-def docker_mongodb_check():
-    docker_mongodb_check = subprocess.run(['mongosh --eval "db.runCommand({ connectionStatus: 1 })"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    if docker_mongodb_check.returncode == 0:
-        print("[+] Mongodb is already installed.")
-        return True
-    print("[!] Mongodb is NOT already installed.  Installing now...")
-    return False
-
-def docker_install_mongodb():
-    subprocess.run(["""ls"""], shell=True)
-    sleep(2)
-    final_docker_mongodb_check = subprocess.run(['sudo docker exec mongodb-container mongosh --eval "db.runCommand({ connectionStatus: 1 })"'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    if final_docker_mongodb_check.returncode == 0:
-        print("[+] MongoDB was installed successfully!")
-    else:
-        print("[!] Something went wrong!  MongoDB was NOT installed successfully...")
+def start_mongodb():
+    subprocess.run(["""mongod --bind_ip 0.0.0.0 --dbpath /data/db &"""], shell=True)
 
 def get_home_dir():
     get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
@@ -492,7 +478,7 @@ def stray_license_file():
 
 def arg_parse():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v','--vpn', help='Install ProtonVPN Debian Client - https://protonvpn.com', required=False, action='store_true')
+    parser.add_argument('-d','--docker', help='Docker Container Installation', required=False, action='store_true')
     return parser.parse_args()
 
 def validate_install():
@@ -532,6 +518,8 @@ def main(args):
     print("[+] Starting install script")
     starter_timer = Timer()
     # keystore()
+    if args.docker:
+        start_mongodb()
     update_apt()
     failed_check_count = 0
     if pip_check() is False:
@@ -555,63 +543,63 @@ def main(args):
     if kali_mongodb_check() is False:
         failed_check_count += 1
         kali_install_mongodb()
-    if go_check() is False:
-        failed_check_count += 1
-        install_go()
-    if sublist3r_check() is False:
-        failed_check_count += 1
-        install_sublist3r()
-    if assetfinder_check() is False:
-        failed_check_count += 1
-        install_assetfinder()
-    if gau_check() is False:
-        failed_check_count += 1
-        install_gau()
-    if crt_check() is False:
-        failed_check_count += 1
-        install_crt()
-    if shosubgo_check() is False:
-        failed_check_count += 1
-        install_shosubgo()
-    if subfinder_check() is False:
-        failed_check_count += 1
-        install_subfinder()
-    if gospider_check() is False:
-        failed_check_count += 1
-        install_gospider()
-    if subdomainizer_check() is False:
-        failed_check_count += 1
-        install_subdomainizer()
-    if shuffledns_check() is False:
-        failed_check_count += 1
-        install_shuffledns()
-    if httprobe_check() is False:
-        failed_check_count += 1
-        install_httprobe()
-    if tlsscan_check() is False:
-        failed_check_count += 1
-        install_tlsscan()
-    if jq_check() is False:
-        failed_check_count += 1
-        install_jq()
-    if dnmasscan_check() is False:
-        failed_check_count += 1
-        install_dnmasscan()
-    if nuclei_check() is False:
-        failed_check_count += 1
-        install_nuclei()
-    if server_check() is False:
-        failed_check_count += 1
-        install_server()
-    if client_check() is False:
-        failed_check_count += 1
-        install_client()
-    if failed_check_count > 0:
-        if validate_install() is False:
-            print("[!] Something went wrong!  Please try to run the installer again or open an issue on the repo...")
-            exit()
+    # if go_check() is False:
+    #     failed_check_count += 1
+    #     install_go()
+    # if sublist3r_check() is False:
+    #     failed_check_count += 1
+    #     install_sublist3r()
+    # if assetfinder_check() is False:
+    #     failed_check_count += 1
+    #     install_assetfinder()
+    # if gau_check() is False:
+    #     failed_check_count += 1
+    #     install_gau()
+    # if crt_check() is False:
+    #     failed_check_count += 1
+    #     install_crt()
+    # if shosubgo_check() is False:
+    #     failed_check_count += 1
+    #     install_shosubgo()
+    # if subfinder_check() is False:
+    #     failed_check_count += 1
+    #     install_subfinder()
+    # if gospider_check() is False:
+    #     failed_check_count += 1
+    #     install_gospider()
+    # if subdomainizer_check() is False:
+    #     failed_check_count += 1
+    #     install_subdomainizer()
+    # if shuffledns_check() is False:
+    #     failed_check_count += 1
+    #     install_shuffledns()
+    # if httprobe_check() is False:
+    #     failed_check_count += 1
+    #     install_httprobe()
+    # if tlsscan_check() is False:
+    #     failed_check_count += 1
+    #     install_tlsscan()
+    # if jq_check() is False:
+    #     failed_check_count += 1
+    #     install_jq()
+    # if dnmasscan_check() is False:
+    #     failed_check_count += 1
+    #     install_dnmasscan()
+    # if nuclei_check() is False:
+    #     failed_check_count += 1
+    #     install_nuclei()
+    # if server_check() is False:
+    #     failed_check_count += 1
+    #     install_server()
+    # if client_check() is False:
+    #     failed_check_count += 1
+    #     install_client()
+    # if failed_check_count > 0:
+    #     if validate_install() is False:
+    #         print("[!] Something went wrong!  Please try to run the installer again or open an issue on the repo...")
+    #         exit()
     starter_timer.stop_timer()
-    run_server_prompt()
+    # run_server_prompt()
     print(f"[+] Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
 if __name__ == "__main__":

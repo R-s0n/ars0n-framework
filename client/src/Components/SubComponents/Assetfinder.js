@@ -17,7 +17,7 @@ const Assetfinder = props => {
     }
 
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     const tempArr = res.data.recon.subdomains.assetfinder;
@@ -35,7 +35,7 @@ const Assetfinder = props => {
     const addAssetfinderData = (list) => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.assetfinder = list.split("\n");
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.assetfinder)
                 setFormCompleted(true);
@@ -46,7 +46,7 @@ const Assetfinder = props => {
     const deleteAssetfinderData = () => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.assetfinder = [];
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.assetfinder)
                 setFormCompleted(false);

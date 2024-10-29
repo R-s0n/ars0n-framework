@@ -18,7 +18,7 @@ const Amass = props => {
     }
 
     useEffect(()=>{
-        axios.post('http://localhost:8000/api/fqdn', {_id:props.thisFqdn._id})
+        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     const tempArr = res.data.recon.subdomains.amass;
@@ -36,7 +36,7 @@ const Amass = props => {
     const addAmassData = (list) => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.amass = list.split("\n");
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.amass)
                 setFormCompleted(true);
@@ -47,7 +47,7 @@ const Amass = props => {
     const deleteAmassData = () => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.amass = [];
-        axios.post('http://localhost:8000/api/fqdn/update', tempFqdn)
+        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.amass)
                 setFormCompleted(false);
