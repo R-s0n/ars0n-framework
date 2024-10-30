@@ -19,7 +19,7 @@ const ShuffleDnsCustom = props => {
 
     useEffect(()=>{
         setFormCompleted(false);
-        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
+        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     const tempArr = res.data.recon.subdomains.shufflednsCustom;
@@ -37,7 +37,7 @@ const ShuffleDnsCustom = props => {
     const addShuffleDnsCustomData = (list) => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.shufflednsCustom = list.split("\n");
-        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`, tempFqdn)
+        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.shufflednsCustom)
                 setFormCompleted(true);
@@ -48,7 +48,7 @@ const ShuffleDnsCustom = props => {
     const deleteShuffleDnsCustomData = () => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.shufflednsCustom = [];
-        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`, tempFqdn)
+        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.shufflednsCustom)
                 setFormCompleted(false);

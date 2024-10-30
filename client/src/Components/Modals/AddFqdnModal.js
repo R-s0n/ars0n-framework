@@ -37,7 +37,7 @@ const AddFqdnModal = props => {
                                              });
     
                         domains = [...new Set(domains)];
-                        axios.all(domains.map(domain => axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/new`, { fqdn: domain })))
+                        axios.all(domains.map(domain => axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/new`, { fqdn: domain })))
                         .then(axios.spread((...responses) => {
                             const newFqdns = responses.map(res => res.data);
                             props.setFqdns(prevFqdns => [...prevFqdns, ...newFqdns]);
@@ -57,7 +57,7 @@ const AddFqdnModal = props => {
             console.log("Manually adding...");
             props.setNoFqdns(false); 
             const domain = manualFqdn.replace(/(https?:\/\/)?(www\.)?/g, '');
-            axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/new`, { fqdn: domain })
+            axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/new`, { fqdn: domain })
                 .then(res => {
                     const newFqdn = res.data;
                     props.setFqdns(prevFqdns => [...prevFqdns, newFqdn]);
@@ -77,14 +77,14 @@ const AddFqdnModal = props => {
                         );
                         if (existingIndex === -1) {
                             props.setFqdns((prevData) => [...prevData, importedFqdn]);
-                            axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/new`,importedFqdn)
+                            axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/new`,importedFqdn)
                         } else {
                             props.setFqdns((prevData) => {
                                 const newData = [...prevData];
                                 newData[existingIndex] = importedFqdn;
                                 return newData;
                             });
-                            axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`,importedFqdn)
+                            axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`,importedFqdn)
                         }
                     });
                     props.setNoFqdns(false);

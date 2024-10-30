@@ -6,7 +6,7 @@ const UrlForm = props => {
     const [loaded, setLoaded] = useState(false);
 
     useEffect(()=>{
-        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
+        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 console.log(res.data)
                 setUrlList(res.data.targetUrls);
@@ -27,9 +27,9 @@ const UrlForm = props => {
         data["_id"] = props.thisFqdn._id;
         data["targetUrls"] = currentUrls;
         console.log(data);
-        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`, data)
+        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, data)
             .then(res=>{
-                axios.post(`${process.env.API_IP}:${API_PORT}/api/url/new`, {url:newUrl, fqdn:props.thisFqdn.fqdn})
+                axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/url/new`, {url:newUrl, fqdn:props.thisFqdn.fqdn})
                     .then(res=>{
                         console.log(res.data);
                         setLoaded(false);
@@ -54,9 +54,9 @@ const UrlForm = props => {
         data["_id"] = props.thisFqdn._id;
         data["targetUrls"] = currentUrls;
         console.log(data);
-        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`, data)
+        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, data)
             .then(res=>{
-                axios.post(`${process.env.API_IP}:${API_PORT}/api/url/auto/delete`, {url: urlToDelete})
+                axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/url/auto/delete`, {url: urlToDelete})
                     .then(res=>{
                         setUrlList(currentUrls)
                         console.log(res);

@@ -6,7 +6,7 @@ const GithubOsint = props => {
     const [loaded, setLoaded] = useState(false);
 
     useEffect(()=>{
-        axios.post(`${process.env.API_IP}:${API_PORT}/api/urllist`, {fqdnId: props.thisFqdn._id})
+        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/urllist`, {fqdnId: props.thisFqdn._id})
             .then(res=>{
                 const urlArray = [];
                 urlArray.push(props.thisFqdn.fqdn);

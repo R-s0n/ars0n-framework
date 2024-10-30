@@ -17,7 +17,7 @@ const Ctl = props => {
     }
 
     useEffect(()=>{
-        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
+        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     const tempArr = res.data.recon.subdomains.ctl;
@@ -35,7 +35,7 @@ const Ctl = props => {
     const addCtlData = (list) => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.ctl = list.split("\n");
-        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`, tempFqdn)
+        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.ctl)
                 setFormCompleted(true);
@@ -46,7 +46,7 @@ const Ctl = props => {
     const deleteCtlData = () => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.ctl = [];
-        axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`, tempFqdn)
+        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.ctl)
                 setFormCompleted(false);

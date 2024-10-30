@@ -42,7 +42,7 @@ function App() {
   useEffect(()=>{
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/status');
+        const response = await fetch(`http://${process.env.TOOLKIT_IP}:${process.env.TOOLKIT_PORT}/status`);
         const result = await response.json();
         setScanRunning(result['scan_running']);
         setScanStep(result['scan_step']);
@@ -57,7 +57,7 @@ function App() {
 
     fetchData()
 
-    axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/all`, {})
+    axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/all`, {})
       .then(res=>{
         console.log(res.data);
         setFqdns(res.data);
@@ -109,14 +109,14 @@ function App() {
             );
             if (existingIndex === -1) {
               setFqdns((prevData) => [...prevData, importedFqdn]);
-              axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/new`,importedFqdn)
+              axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/new`,importedFqdn)
             } else {
               setFqdns((prevData) => {
                 const newData = [...prevData];
                 newData[existingIndex] = importedFqdn;
                 return newData;
               });
-              axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/update`,importedFqdn)
+              axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`,importedFqdn)
             }
           });
         } catch (error) {
@@ -130,7 +130,7 @@ function App() {
   const deleteFqdn = () => {
     const fqdnToDelete = fqdns[activeTab];
   
-    axios.post(`${process.env.API_IP}:${API_PORT}/api/fqdn/delete`, fqdnToDelete)
+    axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/delete`, fqdnToDelete)
       .then(res => {
         // Remove the deleted FQDN from the state
         const updatedFqdns = fqdns.filter((_, index) => index !== activeTab);
@@ -162,7 +162,7 @@ function App() {
         scanSingleDomain: scanSingleDomain,
         domainCount: fqdns.length
       };
-      axios.post('http://localhost:5000/wildfire', payload)
+      axios.post(`http://${process.env.TOOLKIT_IP}:${process.env.TOOLKIT_PORT}/wildfire`, payload)
       .then(res => {
         setScanRunning(true);
         console.log("Wildfire Running Against All Domains...");
@@ -177,7 +177,7 @@ function App() {
         scanSingleDomain: scanSingleDomain,
         domainCount: 1
       };
-      axios.post('http://localhost:5000/wildfire', payload)
+      axios.post(`http://${process.env.TOOLKIT_IP}:${process.env.TOOLKIT_PORT}/wildfire`, payload)
       .then(res => {
         setScanRunning(true);
         console.log("Wildfire Running Against Single Domain...");
@@ -255,7 +255,7 @@ function App() {
   };
 
   const handleCollectScreenshotsButton = () => {
-    axios.post('http://localhost:5000/collect_sceenshots',{})
+    axios.post(`http://${process.env.TOOLKIT_IP}:${process.env.TOOLKIT_PORT}/collect_sceenshots`,{})
       .then(res => {
         console.log("Collecting Screenshots...");
       })
