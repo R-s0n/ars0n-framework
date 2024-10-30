@@ -20,7 +20,7 @@ const Enumeration = props => {
     }, [props.index]);
 
     const populateBurp = () => {
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/populate-burp`, urls)
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/populate-burp`, urls)
           .then(res=>{
             console.log(res);
           })
@@ -31,7 +31,7 @@ const Enumeration = props => {
     const data = {
         targetUrl: targetUrl
     }
-    axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/scan/default`, data)
+    axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/scan/default`, data)
         .then(res=>{
         console.log(res);
         })
@@ -42,7 +42,7 @@ const Enumeration = props => {
         const data = {
             targetUrl: targetUrl
         }
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/scan/deep`, data)
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/scan/deep`, data)
             .then(res=>{
             console.log(res);
             })

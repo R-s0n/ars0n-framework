@@ -5,7 +5,7 @@ const GithubSearchResults = props => {
     const [loaded, setLoaded] = useState(false);
 
     useEffect(()=>{
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 setSearchResults(res.data.recon.osint.GithubSearch);
                 setLoaded(true);
@@ -16,7 +16,7 @@ const GithubSearchResults = props => {
     const deleteSubdomains = (e) => {
         let tempFqdn = props.thisFqdn;
         tempFqdn.recon.osint.GithubSearch = [];
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, tempFqdn)
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>props.thisFormCompleted(false))
             .catch(err=>console.log(err))
     }

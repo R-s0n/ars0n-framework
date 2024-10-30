@@ -19,7 +19,7 @@ const GithubSubdomains = props => {
 
     useEffect(()=>{
         setFormCompleted(false);
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     const tempArr = res.data.recon.subdomains.githubSearch;
@@ -37,7 +37,7 @@ const GithubSubdomains = props => {
     const addGithubSubdomainsData = (list) => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.githubSearch = list.split("\n");
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, tempFqdn)
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.githubSearch)
                 setFormCompleted(true);
@@ -48,7 +48,7 @@ const GithubSubdomains = props => {
     const deleteGithubSubdomainsData = () => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.githubSearch = [];
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, tempFqdn)
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.githubSearch)
                 setFormCompleted(false);

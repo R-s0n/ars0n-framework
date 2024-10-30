@@ -1,0 +1,56 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    depends_on:
+      - toolkit_service
+      - mongodb
+      - backend
+
+  backend:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    depends_on:
+      - toolkit_service
+      - mongodb
+
+  toolkit_service:
+    build:
+      context: .
+      dockerfile: toolkit/Dockerfile
+    ports:
+      - "5000:5000"
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:4.4
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo_data:

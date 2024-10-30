@@ -53,7 +53,7 @@ const CveTesting = props => {
     const [impactfulVulnFoundHeadless, setImpactfulVulnFoundHeadless] = useState(false)
 
     useEffect(()=>{
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     let counter = 0;

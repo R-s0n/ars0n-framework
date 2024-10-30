@@ -401,9 +401,6 @@ def kali_install_mongodb():
     else:
         print("[!] Something went wrong!  MongoDB was NOT installed successfully...")
 
-def start_mongodb():
-    subprocess.run(["""mongod --bind_ip 0.0.0.0 --dbpath /data/db &"""], shell=True)
-
 def get_home_dir():
     get_home_dir = subprocess.run(["echo $HOME"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
     return get_home_dir.stdout.replace("\n", "")

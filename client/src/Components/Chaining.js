@@ -9,7 +9,7 @@ const Chaining = props => {
 
     useEffect(()=>{
         setLoaded(false);
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/url/auto`, {url:props.thisFqdn.targetUrls[activeEndpointTab]})
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/url/auto`, {url:props.thisFqdn.targetUrls[activeEndpointTab]})
         .then(res=>{
             if (res.data){
                 setUrlData(res.data);

@@ -17,7 +17,7 @@ const NucleiScans = props => {
 
     useEffect(()=>{
         setFormCompleted(false);
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     const tempArr = res.data.vulnsDNS;
@@ -33,7 +33,7 @@ const NucleiScans = props => {
     const deleteVuln = () => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.sublist3r = [];
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, tempFqdn)
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setVulnList(res.data.recon.subdomains.sublist3r)
                 setFormCompleted(false);

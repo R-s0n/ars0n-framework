@@ -14,7 +14,7 @@ const GithubSearch = props => {
     const [formCompleted, setFormCompleted] = useState(false);
 
     useEffect(()=>{
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 const tempArr = res.data.recon.osint.GithubSearch;
                 if (tempArr.length > 0){

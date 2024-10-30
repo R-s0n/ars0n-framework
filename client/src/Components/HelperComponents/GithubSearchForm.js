@@ -14,7 +14,7 @@ const GithubSearchForm = props => {
         }
         let tempFqdn = props.thisFqdn;
         tempFqdn.recon.osint.GithubSearch = finalArr;
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, tempFqdn)
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 props.thisFormCompleted(true);
             })

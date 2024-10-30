@@ -19,7 +19,7 @@ const SubDomainizer = props => {
 
     useEffect(()=>{
         setFormCompleted(false);
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn`, {_id:props.thisFqdn._id})
             .then(res=>{
                 if (res.data !== null){
                     const tempArr = res.data.recon.subdomains.subdomainizer;
@@ -37,7 +37,7 @@ const SubDomainizer = props => {
     const addSubDomainizerData = (list) => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.subdomainizer = list.split("\n");
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, tempFqdn)
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.subdomainizer)
                 setFormCompleted(true);
@@ -48,7 +48,7 @@ const SubDomainizer = props => {
     const deleteSubDomainizerData = () => {
         const tempFqdn = props.thisFqdn;
         tempFqdn.recon.subdomains.subdomainizer = [];
-        axios.post(`http://${process.env.API_IP}:${process.env.API_PORT}/api/fqdn/update`, tempFqdn)
+        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/fqdn/update`, tempFqdn)
             .then(res=>{
                 setSubdomainList(res.data.recon.subdomains.subdomainizer)
                 setFormCompleted(false);
