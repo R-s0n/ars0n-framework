@@ -42,7 +42,8 @@ function App() {
   useEffect(()=>{
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://${process.env.REACT_APP_TOOLKIT_IP}:${process.env.REACT_APP_TOOLKIT_PORT}/status`);
+        const response = await fetch(`http://${process.env.REACT_APP_TOOLKIT_IP}:${process.env.REACT_APP_TOOLKIT_PORT}/status`, {method: 'GET',mode: 'cors'}
+        );
         const result = await response.json();
         setScanRunning(result['scan_running']);
         setScanStep(result['scan_step']);

@@ -9,7 +9,7 @@ import signal
 app = Flask(__name__)
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 class Scan:
     def __init__(self):
@@ -96,6 +96,7 @@ def status():
     
 @app.route('/update-scan', methods=['POST'])
 def update_scan():
+    print(request.headers)
     global scan_obj
     if scan_obj.scan_running:
         data = request.get_json()
@@ -146,4 +147,4 @@ def collect_sceenshots():
     return "Done!"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

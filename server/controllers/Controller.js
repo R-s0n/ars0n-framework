@@ -47,7 +47,7 @@ module.exports.addFqdn = (req, res) => {
 }
 
 module.exports.getFqdns = (req, res) => {
-    
+    console.log(req.headers)
     Fqdn.find()
         .then(fqdns=>res.json(fqdns))
         .catch(err=>res.status(400).json(err))

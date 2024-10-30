@@ -515,8 +515,6 @@ def main(args):
     print("[+] Starting install script")
     starter_timer = Timer()
     # keystore()
-    if args.docker:
-        start_mongodb()
     update_apt()
     failed_check_count = 0
     if pip_check() is False:
