@@ -1,3 +1,0 @@
-Flask
-Flask-Cors
-psutil

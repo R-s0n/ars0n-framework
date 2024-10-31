@@ -135,7 +135,7 @@ def wildfire():
             scanSingle_flag = f" --scanSingle"
         scan_obj.core_module = "Wildfire.py"
         start_scan(fire_starter, fire_cloud, fire_scanner, domain_count, scan_obj.core_module)
-        subprocess.run([f"python3 wildfire.py{start_flag}{cloud_flag}{scan_flag}{fqdn_flag}{scanSingle_flag}"], shell=True)
+        subprocess.run([f"python3 wildfire.py{start_flag}{cloud_flag}{scan_flag}{fqdn_flag}{scanSingle_flag} -S backend"], shell=True)
         stop_scan()
         return jsonify({"message": "Done!"})
     else:
