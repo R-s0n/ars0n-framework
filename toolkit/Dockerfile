@@ -3,9 +3,9 @@ FROM kalilinux/kali-rolling
 WORKDIR /app
 RUN mkdir /root/Tools
 RUN mkdir /root/.keys
-RUN touch /root/.hackerone
-RUN touch /root/slack_web_hook
-RUN touch /root/.keystore
+RUN touch /root/.keys/.hackerone
+RUN touch /root/.keys/slack_web_hook
+RUN touch /root/.keys/.keystore
 
 
 ENV GOROOT=/usr/lib/go
@@ -52,7 +52,7 @@ RUN go install -v github.com/projectdiscovery/shuffledns/cmd/shuffledns@latest
 RUN go install github.com/tomnomnom/httprobe@latest
 RUN go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
 
-
+WORKDIR /app
 COPY ./toolkit ./
 
 EXPOSE 5000
