@@ -1,10 +1,15 @@
 FROM kalilinux/kali-rolling
 
 WORKDIR /app
-RUN mkdir ./Tools
+RUN mkdir /root/Tools
+RUN mkdir /root/.keys
+RUN touch /root/.hackerone
+RUN touch /root/slack_web_hook
+RUN touch /root/.keystore
+
 
 ENV GOROOT=/usr/lib/go
-ENV GOPATH=$HOME/go
+ENV GOPATH=/root/go
 ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
 RUN apt-get update && \
@@ -22,7 +27,8 @@ RUN apt-get update && \
     vim \
     amass \
     jq \
-    git
+    git \
+    cewl
 
 RUN apt update && \
     apt install -y --no-install-recommends \
@@ -30,12 +36,12 @@ RUN apt update && \
     golang \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app/Tools
+WORKDIR /root/Tools
 RUN git clone https://github.com/huntergregal/Sublist3r.git
 RUN git clone https://github.com/hannob/tlshelpers.git
 RUN git clone https://github.com/nsonaniya2010/SubDomainizer.git
 RUN git clone https://github.com/rastating/dnmasscan.git
-WORKDIR /app
+WORKDIR /root
 
 RUN go install github.com/tomnomnom/assetfinder@latest
 RUN go install github.com/lc/gau/v2/cmd/gau@latest
