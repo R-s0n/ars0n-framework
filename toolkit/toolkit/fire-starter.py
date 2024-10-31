@@ -785,7 +785,6 @@ def main(args):
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
-    exit()
     # Subdomain Scraping
     try:
         update_scan_progress("Fire-Starter | Sublist3r", args.fqdn)
