@@ -425,7 +425,7 @@ def subdomainizer(home_dir, thisFqdn, logger):
 
 def shuffle_dns(args, home_dir, thisFqdn, logger):
     try:
-        subprocess.run([f'echo {args.fqdn} | {home_dir}/go/bin/shuffledns -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp -mode bruteforce'], shell=True)
+        subprocess.run([f'{home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp -mode bruteforce'], shell=True)
         f = open(f"./temp/shuffledns.tmp", "r")
         shuffledns_arr = f.read().rstrip().split("\n")
         for subdomain in shuffledns_arr:
@@ -444,7 +444,7 @@ def shuffle_dns(args, home_dir, thisFqdn, logger):
 
 def shuffle_dns_custom(args, home_dir, thisFqdn, logger):
     try:
-        subprocess.run([f'echo {args.fqdn} | {home_dir}/go/bin/shuffledns -w wordlists/cewl_{args.fqdn}.txt -r wordlists/resolvers.txt -o ./temp/shuffledns_custom.tmp -mode bruteforce'], shell=True)
+        subprocess.run([f'{home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/cewl_{args.fqdn}.txt -r wordlists/resolvers.txt -o ./temp/shuffledns_custom.tmp -mode bruteforce'], shell=True)
         try:
             f = open(f"./temp/shuffledns_custom.tmp", "r")
         except:
@@ -701,10 +701,6 @@ def wrap_up(args):
         print(f"[!] Exception: {e}")
     # input("[!] Debug Pause...")
     # send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), False))
-    try:
-        populate_burp(args, get_fqdn_obj(args))
-    except Exception as e:
-        print("[!] Burp Suite Proxy NOT Found.  Skipping Populate Burp Module...")
     cleanup()
 
 def update_nuclei(logger):
@@ -776,69 +772,69 @@ def main(args):
     logger = Logger()
     cleanup()
     print("[-] Running Subdomain Scraping Modules...")
-    # Amass
-    try:
-        update_scan_progress("Fire-Starter | Amass", args.fqdn)
-        print(f"[-] Running Amass against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Amass -> {args.fqdn}")
-        amass(args, get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-    # Subdomain Scraping
-    try:
-        update_scan_progress("Fire-Starter | Sublist3r", args.fqdn)
-        print(f"[-] Running Sublist3r against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Sublist3r -> {args.fqdn}")
-        sublist3r(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
-        update_scan_progress("Fire-Starter | Assetfinder", args.fqdn)
-        print(f"[-] Running Assetfinder against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Assetfinder -> {args.fqdn}")
-        assetfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
-        update_scan_progress("Fire-Starter | GAU", args.fqdn)
-        print(f"[-] Running Get All URLs against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GAU -> {args.fqdn}")
-        gau(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
-        update_scan_progress("Fire-Starter | CRT", args.fqdn)
-        print(f"[-] Running CRT against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running CRT -> {args.fqdn}")
-        crt(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
-        update_scan_progress("Fire-Starter | Subfinder", args.fqdn)
-        print(f"[-] Running Subfinder against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder -> {args.fqdn}")
-        subfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
-        update_scan_progress("Fire-Starter | Subfinder (Recursive)", args.fqdn)
-        print(f"[-] Running Subfinder in Recursive Mode against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder (Recursive) -> {args.fqdn}")
-        subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
+    # # Amass
+    # try:
+    #     update_scan_progress("Fire-Starter | Amass", args.fqdn)
+    #     print(f"[-] Running Amass against {args.fqdn}")
+    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Amass -> {args.fqdn}")
+    #     amass(args, get_fqdn_obj(args), logger)
+    #     run_checks(args, starter_timer)
+    # except Exception as e:
+    #     print(f"[!] Exception: {e}")
+    # # Subdomain Scraping
+    # try:
+    #     update_scan_progress("Fire-Starter | Sublist3r", args.fqdn)
+    #     print(f"[-] Running Sublist3r against {args.fqdn}")
+    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Sublist3r -> {args.fqdn}")
+    #     sublist3r(args, get_home_dir(), get_fqdn_obj(args), logger)
+    #     run_checks(args, starter_timer)
+    # except Exception as e:
+    #     print(f"[!] Exception: {e}")
+# 
+    # try:
+    #     update_scan_progress("Fire-Starter | Assetfinder", args.fqdn)
+    #     print(f"[-] Running Assetfinder against {args.fqdn}")
+    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Assetfinder -> {args.fqdn}")
+    #     assetfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
+    #     run_checks(args, starter_timer)
+    # except Exception as e:
+    #     print(f"[!] Exception: {e}")
+# 
+    # try:
+    #     update_scan_progress("Fire-Starter | GAU", args.fqdn)
+    #     print(f"[-] Running Get All URLs against {args.fqdn}")
+    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GAU -> {args.fqdn}")
+    #     gau(args, get_home_dir(), get_fqdn_obj(args), logger)
+    #     run_checks(args, starter_timer)
+    # except Exception as e:
+    #     print(f"[!] Exception: {e}")
+# 
+    # try:
+    #     update_scan_progress("Fire-Starter | CRT", args.fqdn)
+    #     print(f"[-] Running CRT against {args.fqdn}")
+    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running CRT -> {args.fqdn}")
+    #     crt(args, get_home_dir(), get_fqdn_obj(args), logger)
+    #     run_checks(args, starter_timer)
+    # except Exception as e:
+    #     print(f"[!] Exception: {e}")
+# 
+    # try:
+    #     update_scan_progress("Fire-Starter | Subfinder", args.fqdn)
+    #     print(f"[-] Running Subfinder against {args.fqdn}")
+    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder -> {args.fqdn}")
+    #     subfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
+    #     run_checks(args, starter_timer)
+    # except Exception as e:
+    #     print(f"[!] Exception: {e}")
+# 
+    # try:
+    #     update_scan_progress("Fire-Starter | Subfinder (Recursive)", args.fqdn)
+    #     print(f"[-] Running Subfinder in Recursive Mode against {args.fqdn}")
+    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder (Recursive) -> {args.fqdn}")
+    #     subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args), logger)
+    #     run_checks(args, starter_timer)
+    # except Exception as e:
+    #     print(f"[!] Exception: {e}")
 
     # Subdomain Brute Force
     try:
@@ -907,7 +903,7 @@ def main(args):
         search_data(args, get_fqdn_obj(args))
 
     wrap_up(args)
-    collect_screenshots(get_home_dir(), get_fqdn_obj(args), logger)
+    # collect_screenshots(get_home_dir(), get_fqdn_obj(args), logger)
     starter_timer.stop_timer()
     logger.write_to_log("[DONE]","Fire-Starter.py",f"Fire-Starter Completed Successfully -> {args.fqdn}")
     print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")

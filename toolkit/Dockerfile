@@ -3,7 +3,6 @@ FROM kalilinux/kali-rolling
 WORKDIR /app
 RUN mkdir /root/Tools
 RUN mkdir /root/.keys
-RUN mkdir /root/temp
 RUN touch /root/.keys/.hackerone
 RUN touch /root/.keys/slack_web_hook
 RUN touch /root/.keys/.keystore
@@ -23,6 +22,7 @@ RUN apt-get update && \
     python3-requests \
     python3-dnspython \
     python3-termcolor \
+    python3-bs4 \
     massdns \
     curl \
     wget \
@@ -37,6 +37,7 @@ RUN apt update && \
     apt install -y --no-install-recommends \
     awscli \
     golang \
+    chromium \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /root/Tools
@@ -57,6 +58,7 @@ RUN go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
 
 WORKDIR /app
 COPY ./toolkit ./
+RUN chmod -R 775 ./toolkit
 
 EXPOSE 5000
 
