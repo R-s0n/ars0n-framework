@@ -425,7 +425,7 @@ def subdomainizer(home_dir, thisFqdn, logger):
 
 def shuffle_dns(args, home_dir, thisFqdn, logger):
     try:
-        subprocess.run([f'echo {args.fqdn} | {home_dir}/go/bin/shuffledns -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp'], shell=True)
+        subprocess.run([f'echo {args.fqdn} | {home_dir}/go/bin/shuffledns -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp -mode bruteforce'], shell=True)
         f = open(f"./temp/shuffledns.tmp", "r")
         shuffledns_arr = f.read().rstrip().split("\n")
         for subdomain in shuffledns_arr:
@@ -444,7 +444,7 @@ def shuffle_dns(args, home_dir, thisFqdn, logger):
 
 def shuffle_dns_custom(args, home_dir, thisFqdn, logger):
     try:
-        subprocess.run([f'echo {args.fqdn} | {home_dir}/go/bin/shuffledns -w wordlists/cewl_{args.fqdn}.txt -r wordlists/resolvers.txt -o ./temp/shuffledns_custom.tmp'], shell=True)
+        subprocess.run([f'echo {args.fqdn} | {home_dir}/go/bin/shuffledns -w wordlists/cewl_{args.fqdn}.txt -r wordlists/resolvers.txt -o ./temp/shuffledns_custom.tmp -mode bruteforce'], shell=True)
         try:
             f = open(f"./temp/shuffledns_custom.tmp", "r")
         except:
@@ -678,8 +678,8 @@ def check_timeout(args, timer):
 def validate_httprobe(args, thisFqdn):
     if len(thisFqdn['recon']['subdomains']['httprobe']) < 1:
         domain = thisFqdn['fqdn']
-        slack_text = f'Something may have gone wrong with Httprobe!  Domain: {domain}'
-        send_slack_notification(get_home_dir(), slack_text)
+        # slack_text = f'Something may have gone wrong with Httprobe!  Domain: {domain}'
+        # send_slack_notification(get_home_dir(), slack_text)
     for i in range(50):
         if len(thisFqdn['recon']['subdomains']['httprobe']) < 1:
             print(f"[!] Something may have gone wrong with Httprobe.\n[!] Sleeping for 2 minutes, then trying again...")
@@ -700,7 +700,7 @@ def wrap_up(args):
     except Exception as e:
         print(f"[!] Exception: {e}")
     # input("[!] Debug Pause...")
-    send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), False))
+    # send_slack_notification(get_home_dir(), get_live_server_text(args, get_fqdn_obj(args), False))
     try:
         populate_burp(args, get_fqdn_obj(args))
     except Exception as e:
@@ -723,7 +723,7 @@ def collect_screenshots(home_dir, thisFqdn, logger):
         for url in thisFqdn['recon']['subdomains']['httprobe']:
             file.write(url + '\n')
     update_nuclei(logger)
-    subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless/screenshot.yaml -l ./temp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -sb -hbs 10 -headc 1 -fhr -hm"], shell=True)
+    subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless/screenshot.yaml -l ./temp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -hbs 10 -headc 1 -fhr -hm"], shell=True)
     subprocess.run("""for file in ./screenshots/*; do cp -f "$file" "../client/public/screenshots/$(basename "$file")"; done""", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     subprocess.run(["rm -f screenshots/*.png"], shell=True)
 

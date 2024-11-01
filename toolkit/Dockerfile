@@ -3,6 +3,7 @@ FROM kalilinux/kali-rolling
 WORKDIR /app
 RUN mkdir /root/Tools
 RUN mkdir /root/.keys
+RUN mkdir /root/temp
 RUN touch /root/.keys/.hackerone
 RUN touch /root/.keys/slack_web_hook
 RUN touch /root/.keys/.keystore
@@ -21,6 +22,7 @@ RUN apt-get update && \
     python3-psutil \
     python3-requests \
     python3-dnspython \
+    python3-termcolor \
     massdns \
     curl \
     wget \
@@ -28,7 +30,8 @@ RUN apt-get update && \
     amass \
     jq \
     git \
-    cewl
+    cewl \
+    ffuf 
 
 RUN apt update && \
     apt install -y --no-install-recommends \
