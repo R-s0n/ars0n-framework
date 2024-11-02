@@ -834,8 +834,8 @@ def main(args):
         subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args), logger)
         run_checks(args, starter_timer)
     except Exception as e:
-        print(f"[!] Exception: {e}"
-    Subdomain Brute Force
+        print(f"[!] Exception: {e}")
+    # Subdomain Brute Force
     try:
         update_scan_progress("Fire-Starter | ShuffleDNS", args.fqdn)
         print(f"[-] Running ShuffleDNS w/ a Default Wordlist against {args.fqdn}")
