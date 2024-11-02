@@ -772,71 +772,70 @@ def main(args):
     logger = Logger()
     cleanup()
     print("[-] Running Subdomain Scraping Modules...")
-    # # Amass
-    # try:
-    #     update_scan_progress("Fire-Starter | Amass", args.fqdn)
-    #     print(f"[-] Running Amass against {args.fqdn}")
-    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Amass -> {args.fqdn}")
-    #     amass(args, get_fqdn_obj(args), logger)
-    #     run_checks(args, starter_timer)
-    # except Exception as e:
-    #     print(f"[!] Exception: {e}")
-    # # Subdomain Scraping
-    # try:
-    #     update_scan_progress("Fire-Starter | Sublist3r", args.fqdn)
-    #     print(f"[-] Running Sublist3r against {args.fqdn}")
-    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Sublist3r -> {args.fqdn}")
-    #     sublist3r(args, get_home_dir(), get_fqdn_obj(args), logger)
-    #     run_checks(args, starter_timer)
-    # except Exception as e:
-    #     print(f"[!] Exception: {e}")
-# 
-    # try:
-    #     update_scan_progress("Fire-Starter | Assetfinder", args.fqdn)
-    #     print(f"[-] Running Assetfinder against {args.fqdn}")
-    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Assetfinder -> {args.fqdn}")
-    #     assetfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
-    #     run_checks(args, starter_timer)
-    # except Exception as e:
-    #     print(f"[!] Exception: {e}")
-# 
-    # try:
-    #     update_scan_progress("Fire-Starter | GAU", args.fqdn)
-    #     print(f"[-] Running Get All URLs against {args.fqdn}")
-    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GAU -> {args.fqdn}")
-    #     gau(args, get_home_dir(), get_fqdn_obj(args), logger)
-    #     run_checks(args, starter_timer)
-    # except Exception as e:
-    #     print(f"[!] Exception: {e}")
-# 
-    # try:
-    #     update_scan_progress("Fire-Starter | CRT", args.fqdn)
-    #     print(f"[-] Running CRT against {args.fqdn}")
-    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running CRT -> {args.fqdn}")
-    #     crt(args, get_home_dir(), get_fqdn_obj(args), logger)
-    #     run_checks(args, starter_timer)
-    # except Exception as e:
-    #     print(f"[!] Exception: {e}")
-# 
-    # try:
-    #     update_scan_progress("Fire-Starter | Subfinder", args.fqdn)
-    #     print(f"[-] Running Subfinder against {args.fqdn}")
-    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder -> {args.fqdn}")
-    #     subfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
-    #     run_checks(args, starter_timer)
-    # except Exception as e:
-    #     print(f"[!] Exception: {e}")
-# 
-    # try:
-    #     update_scan_progress("Fire-Starter | Subfinder (Recursive)", args.fqdn)
-    #     print(f"[-] Running Subfinder in Recursive Mode against {args.fqdn}")
-    #     logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder (Recursive) -> {args.fqdn}")
-    #     subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args), logger)
-    #     run_checks(args, starter_timer)
-    # except Exception as e:
-    #     print(f"[!] Exception: {e}")
+    # Amass
+    try:
+        update_scan_progress("Fire-Starter | Amass", args.fqdn)
+        print(f"[-] Running Amass against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Amass -> {args.fqdn}")
+        amass(args, get_fqdn_obj(args), logger)
+        run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+    # Subdomain Scraping
+    try:
+        update_scan_progress("Fire-Starter | Sublist3r", args.fqdn)
+        print(f"[-] Running Sublist3r against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Sublist3r -> {args.fqdn}")
+        sublist3r(args, get_home_dir(), get_fqdn_obj(args), logger)
+        run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
 
-    # Subdomain Brute Force
+    try:
+        update_scan_progress("Fire-Starter | Assetfinder", args.fqdn)
+        print(f"[-] Running Assetfinder against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Assetfinder -> {args.fqdn}")
+        assetfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
+        run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+    try:
+        update_scan_progress("Fire-Starter | GAU", args.fqdn)
+        print(f"[-] Running Get All URLs against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GAU -> {args.fqdn}")
+        gau(args, get_home_dir(), get_fqdn_obj(args), logger)
+        run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+    try:
+        update_scan_progress("Fire-Starter | CRT", args.fqdn)
+        print(f"[-] Running CRT against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running CRT -> {args.fqdn}")
+        crt(args, get_home_dir(), get_fqdn_obj(args), logger)
+        run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+    try:
+        update_scan_progress("Fire-Starter | Subfinder", args.fqdn)
+        print(f"[-] Running Subfinder against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder -> {args.fqdn}")
+        subfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
+        run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+    try:
+        update_scan_progress("Fire-Starter | Subfinder (Recursive)", args.fqdn)
+        print(f"[-] Running Subfinder in Recursive Mode against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder (Recursive) -> {args.fqdn}")
+        subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args), logger)
+        run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}"
+    Subdomain Brute Force
     try:
         update_scan_progress("Fire-Starter | ShuffleDNS", args.fqdn)
         print(f"[-] Running ShuffleDNS w/ a Default Wordlist against {args.fqdn}")

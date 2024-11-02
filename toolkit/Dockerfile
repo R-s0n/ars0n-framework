@@ -23,6 +23,7 @@ RUN apt-get update && \
     python3-dnspython \
     python3-termcolor \
     python3-bs4 \
+    python3-htmlmin \
     massdns \
     curl \
     wget \
