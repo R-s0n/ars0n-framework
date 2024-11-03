@@ -24,6 +24,9 @@ RUN apt-get update && \
     python3-termcolor \
     python3-bs4 \
     python3-htmlmin \
+    python3-tldextract \
+    python3-colorama \
+    python3-cffi \
     massdns \
     curl \
     wget \
@@ -39,6 +42,7 @@ RUN apt update && \
     awscli \
     golang \
     chromium \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /root/Tools

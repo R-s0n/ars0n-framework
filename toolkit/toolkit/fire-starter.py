@@ -295,11 +295,11 @@ def gau(args, home_dir, thisFqdn, logger):
 
 def crt(args, home_dir, thisFqdn, logger):
     try:
-        subprocess.run([f"{home_dir}/Tools/tlshelpers/getsubdomain {args.fqdn} > ./temp/ctl.tmp"], shell=True)
-        f = open(f"./temp/ctl.tmp", "r")
+        subprocess.run([f"{home_dir}/Tools/tlshelpers/getsubdomain {args.fqdn} > /tmp/ctl.tmp"], shell=True)
+        f = open(f"/tmp/ctl.tmp", "r")
         ctl_arr = f.read().rstrip().split("\n")
         f.close()
-        subprocess.run(["rm ./temp/ctl.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+        subprocess.run(["rm /tmp/ctl.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['ctl'] = ctl_arr
         update_fqdn_obj(args, thisFqdn)
         subdomains_found = len(thisFqdn['recon']['subdomains']['ctl'])
@@ -364,6 +364,7 @@ def gospider(args, home_dir, thisFqdn, logger):
         subdomains_found = len(thisFqdn['recon']['subdomains']['gospider'])
         logger.write_to_log("[MSG]","Fire-Starter.py",f"GoSpider Completed Successfully: {subdomains_found} Results Found")
     except Exception as e:
+        exit()
         logger.write_to_log("[ERROR]","Fire-Starter.py",f"GoSpider Exception: {str(e)}")
         print(f"[!] Something went wrong!  Exception: {str(e)}")
 
@@ -372,7 +373,7 @@ def gospider_deep(home_dir, thisFqdn, logger):
         f = open('wordlists/crawl_list.tmp', 'r')
         domain_arr = f.read().rstrip().split("\n")
         for domain in domain_arr:
-            subprocess.run([f'{home_dir}/go/bin/gospider -S ./wordlists/live_servers.txt -o ./temp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
+            subprocess.run([f'{home_dir}/go/bin/gospider -S /tmp/live_servers.txt -o ./temp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
             fqdn = domain.split("/")[2]
             outputFile = fqdn.replace(".", "_")
             f = open(f"./temp/gospider/{outputFile}", "r")
@@ -397,7 +398,7 @@ def gospider_deep(home_dir, thisFqdn, logger):
 
 def subdomainizer(home_dir, thisFqdn, logger):
     try:
-        file_path = './wordlists/live_servers.txt'
+        file_path = '/tmp/live_servers.txt'
         max_lines = 250
         with open(file_path, 'r') as file:
             lines = file.readlines()
@@ -405,7 +406,7 @@ def subdomainizer(home_dir, thisFqdn, logger):
         if line_count > max_lines:
             with open(file_path, 'w') as file:
                 file.writelines(lines[:max_lines])
-        subprocess.run([f"""timeout 4h python3 {home_dir}/Tools/SubDomainizer/SubDomainizer.py -l ./wordlists/live_servers.txt -o ./temp/subdomainizer.tmp -sop ./temp/secrets.tmp;if [ -f "./temp/secrets.tmp" ]; then cp ./temp/secrets.tmp /tmp; fi"""], shell=True)
+        subprocess.run([f"""timeout 4h python3 {home_dir}/Tools/SubDomainizer/SubDomainizer.py -l /tmp/live_servers.txt -o ./temp/subdomainizer.tmp -sop ./temp/secrets.tmp;if [ -f "./temp/secrets.tmp" ]; then cp ./temp/secrets.tmp /tmp; fi"""], shell=True)
         try:
             f = open("./temp/subdomainizer.tmp", "r")
             subdomainizer_arr = f.read().rstrip().split("\n")
@@ -425,7 +426,7 @@ def subdomainizer(home_dir, thisFqdn, logger):
 
 def shuffle_dns(args, home_dir, thisFqdn, logger):
     try:
-        subprocess.run([f'{home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp -mode bruteforce'], shell=True)
+        subprocess.run([f'timeout 2h {home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp -mode bruteforce'], shell=True)
         f = open(f"./temp/shuffledns.tmp", "r")
         shuffledns_arr = f.read().rstrip().split("\n")
         for subdomain in shuffledns_arr:
@@ -444,7 +445,7 @@ def shuffle_dns(args, home_dir, thisFqdn, logger):
 
 def shuffle_dns_custom(args, home_dir, thisFqdn, logger):
     try:
-        subprocess.run([f'{home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/cewl_{args.fqdn}.txt -r wordlists/resolvers.txt -o ./temp/shuffledns_custom.tmp -mode bruteforce'], shell=True)
+        subprocess.run([f'timeout 2h {home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/cewl_{args.fqdn}.txt -r wordlists/resolvers.txt -o ./temp/shuffledns_custom.tmp -mode bruteforce'], shell=True)
         try:
             f = open(f"./temp/shuffledns_custom.tmp", "r")
         except:
@@ -493,18 +494,25 @@ def consolidate(args):
     update_fqdn_obj(args, thisFqdn)
 
 def httprobe(args, home_dir, thisFqdn):
+    print("HIT HTTPROBE FUNCTION")
     subdomainStr = ""
     subdomainArr = thisFqdn['recon']['subdomains']['consolidated']
     for subdomain in subdomainArr:
         subdomainStr += f"{subdomain}\n"
-    f = open("./temp/consolidated_list.tmp", "w")
-    f.write(subdomainStr)
-    f.close()
-    httprobe_results = subprocess.run([f"cat ./temp/consolidated_list.tmp | {home_dir}/go/bin/httprobe -t 8000 -c 500 -p http:8080 -p http:8000 -p http:8008 -p https:8443 -p https:44300 -p https:44301"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+        try:
+            f = open("/tmp/consolidated_list.tmp", "w")
+            f.write(subdomainStr)
+            f.close()
+        except:
+            print("SOMETHING WENT WRONG ACCESSING THE CONSOLIDATED FILE.  EXITING!")
+            exit()
+    httprobe_results = subprocess.run([f"cat /tmp/consolidated_list.tmp | {home_dir}/go/bin/httprobe -t 8000 -c 500 -p http:8080 -p http:8000 -p http:8008 -p https:8443 -p https:44300 -p https:44301"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
     r = requests.post(f'http://{args.server}:{args.port}/api/auto', data={'fqdn':args.fqdn})
     thisFqdn = r.json()
     httprobe_stdout = httprobe_results.stdout
+    print(httprobe_stdout)
     httprobe_stderr = httprobe_results.stderr
+    print(httprobe_stderr)
     httprobe = httprobe_stdout.split("\n")
     for item in httprobe:
         if len(item) < 2:
@@ -521,6 +529,7 @@ def httprobe(args, home_dir, thisFqdn):
     thisFqdn['recon']['subdomains']['httprobe'] = remove_duplicates(httprobe)
     thisFqdn['recon']['subdomains']['httprobeAdded'] = remove_duplicates(httprobeAdded)
     thisFqdn['recon']['subdomains']['httprobeRemoved'] = remove_duplicates(httprobeRemoved)
+    print(thisFqdn)
     # sleep(60)
     update_fqdn_obj(args, thisFqdn)
 
@@ -529,7 +538,7 @@ def remove_duplicates(string_list):
 
 def build_crawl_list(thisFqdn):
     live_servers = thisFqdn['recon']['subdomains']['httprobe']
-    f = open('./wordlists/live_servers.txt', 'w')
+    f = open('/tmp/live_servers.txt', 'w')
     for domain in live_servers:
         f.write(f"{domain}\n")
     f.close()
@@ -768,7 +777,6 @@ def protonvpn_killswitch():
 def main(args):
     args.limit = True
     starter_timer = Timer()
-    # network_validator = NetworkValidator()
     logger = Logger()
     cleanup()
     print("[-] Running Subdomain Scraping Modules...")
@@ -835,6 +843,7 @@ def main(args):
         run_checks(args, starter_timer)
     except Exception as e:
         print(f"[!] Exception: {e}")
+
     # Subdomain Brute Force
     try:
         update_scan_progress("Fire-Starter | ShuffleDNS", args.fqdn)
@@ -861,24 +870,14 @@ def main(args):
     build_crawl_list(get_fqdn_obj(args))
 
     # Subdomain Link/JS Discovery
-    if args.deep:
+    try:
         update_scan_progress("Fire-Starter | Gospider", args.fqdn)
-        print(f"[-] Running DEEP Crawl Scan on {args.fqdn}...")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GoSpider (Deep) -> {args.fqdn}")
-        try:
-            gospider_deep(get_home_dir(), get_fqdn_obj(args), logger)
-            run_checks(args, starter_timer)
-        except Exception as e:
-            print(f"[!] Exception: {e}")
-    else:
-        try:
-            update_scan_progress("Fire-Starter | Gospider", args.fqdn)
-            print(f"[-] Running Gospider against {args.fqdn}")
-            logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GoSpider -> {args.fqdn}")
-            gospider(args, get_home_dir(), get_fqdn_obj(args), logger)
-            run_checks(args, starter_timer)
-        except Exception as e:
-            print(f"[!] Exception: {e}")
+        print(f"[-] Running Gospider against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GoSpider -> {args.fqdn}")
+        gospider(args, get_home_dir(), get_fqdn_obj(args), logger)
+        run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
 
     try:
         update_scan_progress("Fire-Starter | Subdomainizer", args.fqdn)
@@ -890,21 +889,26 @@ def main(args):
     except Exception as e:
         print(f"[!] Exception: {e}")
 
-    if not check_clear_sky_data():
-        if not args.update:
-            logger.write_to_log("[MSG]","Fire-Starter.py",f"Clear Sky Data NOT Found.  Skipping...")
-            print("[!] Clear Sky data not found!  Skipping AWS IP range scan...")
-            print("[!] To enable the Clear Sky module, run fire-starter.py in UPDATE MODE (--update)")
-        else:
-            update_aws_domains()
-    else:
-        print(f"[-] Running Clear-Sky against {args.fqdn}")
-        search_data(args, get_fqdn_obj(args))
+    # if not check_clear_sky_data():
+    #     if not args.update:
+    #         logger.write_to_log("[MSG]","Fire-Starter.py",f"Clear Sky Data NOT Found.  Skipping...")
+    #         print("[!] Clear Sky data not found!  Skipping AWS IP range scan...")
+    #         print("[!] To enable the Clear Sky module, run fire-starter.py in UPDATE MODE (--update)")
+    #     else:
+    #         update_aws_domains()
+    # else:
+    #     print(f"[-] Running Clear-Sky against {args.fqdn}")
+    #     search_data(args, get_fqdn_obj(args))
 
     wrap_up(args)
     # collect_screenshots(get_home_dir(), get_fqdn_obj(args), logger)
     starter_timer.stop_timer()
     logger.write_to_log("[DONE]","Fire-Starter.py",f"Fire-Starter Completed Successfully -> {args.fqdn}")
+    try:
+        with open("logs/log.txt") as f:
+            print(f.read())
+    except Exception as e:
+        print(e)
     print(f"[+] Fire Starter Modules Done!  Start: {starter_timer.get_start()}  |  Stop: {starter_timer.get_stop()}")
 
 if __name__ == "__main__":
