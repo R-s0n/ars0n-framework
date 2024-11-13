@@ -1,4 +1,3 @@
-version: '3'
 services:
   frontend:
     build:
@@ -28,12 +27,34 @@ services:
     build:
       context: .
       dockerfile: toolkit/Dockerfile
+    command: ["python3","-m","uvicorn", "toolkit-service:app", "--host", "0.0.0.0", "--port", "5000", "--reload", "--log-level", "debug"]
     ports:
       - "5000:5000"
     networks:
       - app-network
     depends_on:
       - mongodb
+  
+  toolkit_worker:
+    build:
+      context: .
+      dockerfile: toolkit/Dockerfile
+    command: ["python3", "-m", "celery", "-A", "celery_worker.celery_app", "worker", "--loglevel=debug"]
+    ports:
+      - "6000:6000"
+    networks:
+      - app-network
+    depends_on:
+      - redis
+      - toolkit_service
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
 
   mongodb:
     image: mongo:4.4

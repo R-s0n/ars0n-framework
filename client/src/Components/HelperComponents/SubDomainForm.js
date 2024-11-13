@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import { useState } from 'react';
 
 const SubDomainForm = props => {
     const [formData, setformData] = useState([]);

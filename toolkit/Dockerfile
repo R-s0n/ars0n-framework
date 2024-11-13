@@ -1,16 +1,14 @@
 FROM kalilinux/kali-rolling
 
 WORKDIR /app
-RUN mkdir /root/Tools
-RUN mkdir /root/.keys
-RUN touch /root/.keys/.hackerone
-RUN touch /root/.keys/slack_web_hook
-RUN touch /root/.keys/.keystore
-
+RUN mkdir -p /root/Tools /root/.keys
+RUN touch /root/.keys/.hackerone /root/.keys/slack_web_hook /root/.keys/.keystore
 
 ENV GOROOT=/usr/lib/go
 ENV GOPATH=/root/go
 ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+ENV REDIS_URL: redis://redis:6379/0
+ENV MONGO_URI: mongodb://root:example@mongodb:27017
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -27,6 +25,10 @@ RUN apt-get update && \
     python3-tldextract \
     python3-colorama \
     python3-cffi \
+    python3-fastapi \
+    python3-redis \
+    python3-uvicorn \
+    python3-celery \
     massdns \
     curl \
     wget \
@@ -35,7 +37,9 @@ RUN apt-get update && \
     jq \
     git \
     cewl \
-    ffuf 
+    ffuf \
+    redis-server \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN apt update && \
     apt install -y --no-install-recommends \
@@ -60,11 +64,10 @@ RUN GO111MODULE=on go install github.com/jaeles-project/gospider@latest
 RUN go install -v github.com/projectdiscovery/shuffledns/cmd/shuffledns@latest
 RUN go install github.com/tomnomnom/httprobe@latest
 RUN go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+RUN go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
 
 WORKDIR /app
-COPY ./toolkit ./
+COPY ./toolkit ./  
 RUN chmod -R 775 ./toolkit
 
-EXPOSE 5000
-
-CMD ["python3", "toolkit-service.py"]
+EXPOSE 5000 6000 6379 

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../Component.css';
 import NucleiScansFull from './SubComponents/NucleiScansFull';
@@ -36,7 +36,6 @@ const CveTesting = props => {
     const [impactfulVulnCountNetwork, setImpactfulVulnCountNetwork] = useState(0)
     const [impactfulVulnCountRs0n, setImpactfulVulnCountRs0n] = useState(0)
     const [impactfulVulnCountHeadless, setImpactfulVulnCountHeadless] = useState(0)
-    const [impactfulVulnFoundCount, setImpactfulVulnFoundCount] = useState(false)
     const [impactfulVulnFoundSSL, setImpactfulVulnFoundSSL] = useState(false)
     const [impactfulVulnFoundFile, setImpactfulVulnFoundFile] = useState(false)
     const [impactfulVulnFoundDNS, setImpactfulVulnFoundDNS] = useState(false)

@@ -14,5 +14,8 @@
     "timers": "^0.1.1",
     "web-vitals": "^3.5.0",
     "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1"
   }
 }

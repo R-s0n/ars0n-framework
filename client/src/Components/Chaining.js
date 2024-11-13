@@ -1,28 +1,6 @@
-import React, {useState, useEffect} from 'react';
-import axios from 'axios';import '../Component.css';
+import '../Component.css';
 
 const Chaining = props => {
-    const [urls, setUrls] = useState(props.thisFqdn.targetUrls)
-    const [activeEndpointTab, setActiveEndpointTab] = useState(0);
-    const [urlData, setUrlData] = useState({});
-    const [loaded, setLoaded] = useState(false);
-
-    useEffect(()=>{
-        setLoaded(false);
-        axios.post(`http://${process.env.REACT_APP_API_IP}:${process.env.REACT_APP_API_PORT}/api/url/auto`, {url:props.thisFqdn.targetUrls[activeEndpointTab]})
-        .then(res=>{
-            if (res.data){
-                setUrlData(res.data);
-            } else {
-                setUrlData({
-                    "endpoints": []
-                })
-            }
-            setLoaded(true);
-        })
-        .catch(err=>console.log(err))
-    }, [activeEndpointTab]);
-
     return (
         <>
         <nav style={{borderBottom: '2px groove #284B63'}} className="pl-2 pt-0 navbar navbar-expand-lg bg-primary">

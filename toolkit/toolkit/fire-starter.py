@@ -41,74 +41,11 @@ class Logger:
             log_start_time = str(datetime.now())
             file.write(f"{flag} {log_start_time} | {running_script} -- {message}\n")
 
-class NetworkValidator:
-    def __init__(self):
-        self.process_id = None
-        self.interface_data = None
-        self.tunnel_ip = None
-        self.gateway_ip = None
-        self.vpn_on = self.check_vpn()
-        self.resolver_string = self.get_resolver_string()
-        self.vpn_connected = self.check_vpn_connection()
-
-    def __repr__(self):
-        return f"\n** Network Validator **\n\nProtonVPN Running: {self.vpn_on}\nProtonVPN Process ID: {self.process_id}\nProtonVPN Tunnel IP: {self.tunnel_ip}\nProtonVPN Gateway IP: {self.gateway_ip}\nInterface Data:\n{self.interface_data}\nResolvers File:\n{self.resolver_string}\n"
-    
-    def check_vpn(self):
-        print("[-] Checking for ProtonVPN Process ID...")
-        vpn_check = subprocess.run(["pgrep protonvpn"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, shell=True)
-        if vpn_check.returncode == 0:
-            final_process_id = vpn_check.stdout.replace("\n", "")
-            print(f"[+] ProtonVPN found on Process ID {final_process_id}")
-            self.process_id = final_process_id
-            return True
-        else:
-            print("[-] ProtonVPN Process ID not found.  If you are running ProtonVPN, something has gone wrong.  Otherwise, ignore this message :)")
-            return False
-
-    def get_resolver_string(self):
-        print("[-] Storing contents of the /etc/resolv.con file...")
-        resolver_string = subprocess.run(["cat /etc/resolv.conf"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
-        if resolver_string.returncode == 0:
-            final_string = resolver_string.stdout
-            print("[+] Contents of /etc/resolv.conf stored successfully!")
-            return final_string
-        else:
-            print("[!] Unable to store contents of /etc/resolv.conf file!  If anything breaks, you're on your own...")
-            return ""
-
-    def check_vpn_connection(self):
-        print("[-] Checking VPN Connection...")
-        validation_count = 0
-        interface_check = subprocess.run(["ifconfig | grep -A 1 proton"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
-        if interface_check.returncode == 0:
-            validation_count += 1
-            print("[+] ProtonVPN Connection Found!  Storing relavent data...")
-            interface_check_stdout = interface_check.stdout
-            self.interface_data = interface_check_stdout
-            pattern = r'inet\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
-            match = re.search(pattern, interface_check_stdout)
-            if match:
-                validation_count += 1
-                inet_ip = match.group(1)
-                print(f"[+] ProtonVPN Tunnel IP: {inet_ip}")
-                self.tunnel_ip = inet_ip
-            pattern = r'destination\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
-            match = re.search(pattern, interface_check_stdout)
-            if match:
-                validation_count += 1
-                found_gateway_ip = match.group(1)
-                print(f"[+] ProtonVPN Gateway IP: {found_gateway_ip}")
-                self.gateway_ip = found_gateway_ip
-        if validation_count == 3:
-            print("[+] ProtonVPN Connection Confirmed!")
-            self.vpn_connected = True
-        else:
-            print("[+] ProtonVPN connection not found.  Continuing without VPN...")
-            self.vpn_connected = False
-
 def update_scan_progress(scan_step_name, target_domain):
-    requests.post("http://localhost:5000/update-scan", json={"stepName":scan_step_name,"target_domain":target_domain})
+    try:
+        requests.post("http://toolkit_service:5000/update-scan", json={"stepName":scan_step_name,"target_domain":target_domain})
+    except:
+        print("Something broke connecting between the toolkit worker and toolkit service.  You can figure it out later...")
 
 def sublist3r(args, home_dir, thisFqdn, logger):
     try:
@@ -295,11 +232,11 @@ def gau(args, home_dir, thisFqdn, logger):
 
 def crt(args, home_dir, thisFqdn, logger):
     try:
-        subprocess.run([f"{home_dir}/Tools/tlshelpers/getsubdomain {args.fqdn} > /tmp/ctl.tmp"], shell=True)
-        f = open(f"/tmp/ctl.tmp", "r")
+        subprocess.run([f"{home_dir}/Tools/tlshelpers/getsubdomain {args.fqdn} > ./temp/ctl.tmp"], shell=True)
+        f = open(f"./temp/ctl.tmp", "r")
         ctl_arr = f.read().rstrip().split("\n")
         f.close()
-        subprocess.run(["rm /tmp/ctl.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
+        subprocess.run(["rm ./temp/ctl.tmp"], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, shell=True)
         thisFqdn['recon']['subdomains']['ctl'] = ctl_arr
         update_fqdn_obj(args, thisFqdn)
         subdomains_found = len(thisFqdn['recon']['subdomains']['ctl'])
@@ -373,7 +310,7 @@ def gospider_deep(home_dir, thisFqdn, logger):
         f = open('wordlists/crawl_list.tmp', 'r')
         domain_arr = f.read().rstrip().split("\n")
         for domain in domain_arr:
-            subprocess.run([f'{home_dir}/go/bin/gospider -S /tmp/live_servers.txt -o ./temp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
+            subprocess.run([f'{home_dir}/go/bin/gospider -S ./temp/live_servers.txt -o ./temp/gospider -c 10 -d 1 --other-source --subs --include-subs'], shell=True)
             fqdn = domain.split("/")[2]
             outputFile = fqdn.replace(".", "_")
             f = open(f"./temp/gospider/{outputFile}", "r")
@@ -398,7 +335,7 @@ def gospider_deep(home_dir, thisFqdn, logger):
 
 def subdomainizer(home_dir, thisFqdn, logger):
     try:
-        file_path = '/tmp/live_servers.txt'
+        file_path = './temp/live_servers.txt'
         max_lines = 250
         with open(file_path, 'r') as file:
             lines = file.readlines()
@@ -406,7 +343,7 @@ def subdomainizer(home_dir, thisFqdn, logger):
         if line_count > max_lines:
             with open(file_path, 'w') as file:
                 file.writelines(lines[:max_lines])
-        subprocess.run([f"""timeout 4h python3 {home_dir}/Tools/SubDomainizer/SubDomainizer.py -l /tmp/live_servers.txt -o ./temp/subdomainizer.tmp -sop ./temp/secrets.tmp;if [ -f "./temp/secrets.tmp" ]; then cp ./temp/secrets.tmp /tmp; fi"""], shell=True)
+        subprocess.run([f"""timeout 4h python3 {home_dir}/Tools/SubDomainizer/SubDomainizer.py -l ./temp/live_servers.txt -o ./temp/subdomainizer.tmp -sop ./temp/secrets.tmp -k"""], shell=True)
         try:
             f = open("./temp/subdomainizer.tmp", "r")
             subdomainizer_arr = f.read().rstrip().split("\n")
@@ -426,7 +363,7 @@ def subdomainizer(home_dir, thisFqdn, logger):
 
 def shuffle_dns(args, home_dir, thisFqdn, logger):
     try:
-        subprocess.run([f'timeout 2h {home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp -mode bruteforce'], shell=True)
+        subprocess.run([f'timeout 2h {home_dir}/go/bin/shuffledns -duc -v -d {args.fqdn} -w wordlists/all.txt -r wordlists/resolvers.txt -o ./temp/shuffledns.tmp -mode bruteforce'], shell=True)
         f = open(f"./temp/shuffledns.tmp", "r")
         shuffledns_arr = f.read().rstrip().split("\n")
         for subdomain in shuffledns_arr:
@@ -445,7 +382,14 @@ def shuffle_dns(args, home_dir, thisFqdn, logger):
 
 def shuffle_dns_custom(args, home_dir, thisFqdn, logger):
     try:
-        subprocess.run([f'timeout 2h {home_dir}/go/bin/shuffledns -d {args.fqdn} -w wordlists/cewl_{args.fqdn}.txt -r wordlists/resolvers.txt -o ./temp/shuffledns_custom.tmp -mode bruteforce'], shell=True)
+        print(f"[-] Running CEWL against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Building CeWL Wordlist -> {args.fqdn}")
+        build_cewl_wordlist(args, logger)
+    except Exception as e:
+        print("[!] Failed to build custom wordlist for ShuffleDNS!  Skipping the 2nd round...")
+        return False
+    try:
+        subprocess.run([f'timeout 2h {home_dir}/go/bin/shuffledns -duc -v -d {args.fqdn} -w wordlists/cewl_{args.fqdn}.txt -r wordlists/resolvers.txt -o ./temp/shuffledns_custom.tmp -mode bruteforce'], shell=True)
         try:
             f = open(f"./temp/shuffledns_custom.tmp", "r")
         except:
@@ -475,9 +419,9 @@ def consolidate(args):
                 continue
             if subdomain in thisFqdn['recon']['subdomains']['httprobeRemoved']:
                 continue
-            if subdomain not in thisFqdn['recon']['subdomains']['consolidated'] and args.fqdn in subdomain and "?" not in subdomain and "http" not in subdomain:
+            if subdomain not in thisFqdn['recon']['subdomains']['consolidated'] and args.fqdn in subdomain and "?" not in subdomain and "http" not in subdomain and "*" not in subdomain:
                 consolidatedNew.append(subdomain)
-            if args.fqdn in subdomain and "?" not in subdomain and "http" not in subdomain:
+            if args.fqdn in subdomain and "?" not in subdomain and "http" not in subdomain and "*" not in subdomain:
                 consolidated.append(subdomain)
     thisFqdn['recon']['subdomains']['consolidated'] = set(consolidated)
     thisFqdn['recon']['subdomains']['consolidatedNew'] = consolidatedNew
@@ -493,20 +437,16 @@ def consolidate(args):
     thisFqdn['recon']['subdomains']['consolidatedNew'] = temp
     update_fqdn_obj(args, thisFqdn)
 
-def httprobe(args, home_dir, thisFqdn):
-    print("HIT HTTPROBE FUNCTION")
+def httprobe(args, home_dir):
+    thisFqdn = get_fqdn_obj(args)
     subdomainStr = ""
     subdomainArr = thisFqdn['recon']['subdomains']['consolidated']
     for subdomain in subdomainArr:
         subdomainStr += f"{subdomain}\n"
-        try:
-            f = open("/tmp/consolidated_list.tmp", "w")
-            f.write(subdomainStr)
-            f.close()
-        except:
-            print("SOMETHING WENT WRONG ACCESSING THE CONSOLIDATED FILE.  EXITING!")
-            exit()
-    httprobe_results = subprocess.run([f"cat /tmp/consolidated_list.tmp | {home_dir}/go/bin/httprobe -t 8000 -c 500 -p http:8080 -p http:8000 -p http:8008 -p https:8443 -p https:44300 -p https:44301"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
+        f = open("./temp/consolidated_list.tmp", "w")
+        f.write(subdomainStr)
+        f.close()
+    httprobe_results = subprocess.run([f"cat ./temp/consolidated_list.tmp | {home_dir}/go/bin/httprobe -t 8000 -c 500 -p http:8080 -p http:8000 -p http:8008 -p https:8443 -p https:44300 -p https:44301"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, shell=True)
     r = requests.post(f'http://{args.server}:{args.port}/api/auto', data={'fqdn':args.fqdn})
     thisFqdn = r.json()
     httprobe_stdout = httprobe_results.stdout
@@ -529,8 +469,6 @@ def httprobe(args, home_dir, thisFqdn):
     thisFqdn['recon']['subdomains']['httprobe'] = remove_duplicates(httprobe)
     thisFqdn['recon']['subdomains']['httprobeAdded'] = remove_duplicates(httprobeAdded)
     thisFqdn['recon']['subdomains']['httprobeRemoved'] = remove_duplicates(httprobeRemoved)
-    print(thisFqdn)
-    # sleep(60)
     update_fqdn_obj(args, thisFqdn)
 
 def remove_duplicates(string_list):
@@ -538,7 +476,10 @@ def remove_duplicates(string_list):
 
 def build_crawl_list(thisFqdn):
     live_servers = thisFqdn['recon']['subdomains']['httprobe']
-    f = open('/tmp/live_servers.txt', 'w')
+    if len(live_servers) < 1:
+        print("[!] No live web servers have been discovered!  Exiting...")
+        exit()
+    f = open('./temp/live_servers.txt', 'w')
     for domain in live_servers:
         f.write(f"{domain}\n")
     f.close()
@@ -729,7 +670,7 @@ def collect_screenshots(home_dir, thisFqdn, logger):
             file.write(url + '\n')
     update_nuclei(logger)
     subprocess.run([f"{home_dir}/go/bin/nuclei -t {home_dir}/nuclei-templates/headless/screenshot.yaml -l ./temp/urls.txt -stats -system-resolvers -config config/nuclei_config.yaml -vv --headless -hbs 10 -headc 1 -fhr -hm"], shell=True)
-    subprocess.run("""for file in ./screenshots/*; do cp -f "$file" "../client/public/screenshots/$(basename "$file")"; done""", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    subprocess.run("""for file in ./temp/screenshots/*; do cp -f "$file" "../temp/client/public/screenshots/$(basename "$file")"; done""", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     subprocess.run(["rm -f screenshots/*.png"], shell=True)
 
 def arg_parse():
@@ -744,6 +685,17 @@ def arg_parse():
     parser.add_argument('-l', '--limit', help='Stop the scan when the number of unique subdomains goes above 2000', required=False, action='store_true')
     parser.add_argument('-c', '--consolidate', help='Consolidate and Run HTTProbe Against Discovered Subdomains', required=False, action='store_true')
     parser.add_argument('-s', '--screenshots', help='Collect a new round of screenshots for all live URLs', required=False, action='store_true')
+    parser.add_argument('--amass', help='Runs Amass against the target in Select Tool(s) Scanning Mode', required=False, action='store_true')
+    parser.add_argument('--sublist3r', help='Runs Sublist3r against the target in Select Tool(s) Scanning Mode', required=False, action='store_true')
+    parser.add_argument('--assetfinder', help='Runs Assetfinder against the target in Select Tool(s) Scanning Mode', required=False, action='store_true')
+    parser.add_argument('--gau', help='Runs GetAllURLs (GAU) against the target in Select Tool(s) Scanning Mode', required=False, action='store_true')
+    parser.add_argument('--ctl', help='Runs Certificate Transparency Logs (CTL) against the target in Select Tool(s) Scanning Mode', required=False, action='store_true')
+    parser.add_argument('--subfinder', help='Runs Subfinder against the target in Select Tool(s) Scanning Mode', required=False, action='store_true')
+    parser.add_argument('--subfinderrecursive', help='Runs Subfinder Recursive against the target in Select Tool(s) Scanning Mode', required=False, action='store_true')
+    parser.add_argument('--shuffledns', help='Runs ShuffleDNS against the target in Select Tool(s) Scanning Mode', required=False, action='store_true')
+    parser.add_argument('--shufflednscustom', help='Runs ShuffleDNS Custom against the target in Select Tool(s) Scanning Mode', required=False, action='store_true')
+    parser.add_argument('--gospider', help='Runs Gospider against the target in Select Tool(s) Scanning Mode', required=False, action='store_true')
+    parser.add_argument('--subdomainizer', help='Runs Subdomainizer against the target in Select Tool(s) Scanning Mode', required=False, action='store_true')
     return parser.parse_args()
 
 def consolidate_flag(args):
@@ -759,136 +711,192 @@ def run_checks(args, starter_timer):
     if args.timeout:
         print("[-] Timeout threshold detected.  Checking timer...")
         check_timeout(args, starter_timer)
-    # input("[!] Debug Pause...")
 
-def protonvpn_connect():
-    command = subprocess.run(["protonvpn-cli c -f"], shell=True)
+def run_amass(args, logger, starter_timer):
+    try:
+        update_scan_progress("Fire-Starter | Amass", args.fqdn)
+        print(f"[-] Running Amass against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Amass -> {args.fqdn}")
+        amass(args, get_fqdn_obj(args), logger)
+        consolidate(args)
+        httprobe(args, get_home_dir())
+        # run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
 
-def protonvpn_disconnect():
-    command = subprocess.run(["protonvpn-cli d"], shell=True)
+def run_sublist3r(args, logger, starter_timer):
+    try:
+        update_scan_progress("Fire-Starter | Sublist3r", args.fqdn)
+        print(f"[-] Running Sublist3r against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Sublist3r -> {args.fqdn}")
+        sublist3r(args, get_home_dir(), get_fqdn_obj(args), logger)
+        consolidate(args)
+        httprobe(args, get_home_dir())
+        # run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
 
-def protonvpn_status():
-    command = subprocess.run(["protonvpn-cli s"], stdout=subprocess.PIPE, text=True, shell=True)
-    return command.stdout
-    
-def protonvpn_killswitch():
-    command = subprocess.run(["protonvpn-cli ks --permanent"], shell=True)
+def run_assetfinder(args, logger, starter_timer):
+    try:
+        update_scan_progress("Fire-Starter | Assetfinder", args.fqdn)
+        print(f"[-] Running Assetfinder against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Assetfinder -> {args.fqdn}")
+        assetfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
+        consolidate(args)
+        httprobe(args, get_home_dir())
+        # run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+def run_gau(args, logger, starter_timer):
+    try:
+        update_scan_progress("Fire-Starter | GAU", args.fqdn)
+        print(f"[-] Running Get All URLs against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GAU -> {args.fqdn}")
+        gau(args, get_home_dir(), get_fqdn_obj(args), logger)
+        consolidate(args)
+        httprobe(args, get_home_dir())
+        # run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+def run_ctl(args, logger, starter_timer):
+    try:
+        update_scan_progress("Fire-Starter | CRT", args.fqdn)
+        print(f"[-] Running CRT against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running CRT -> {args.fqdn}")
+        crt(args, get_home_dir(), get_fqdn_obj(args), logger)
+        consolidate(args)
+        httprobe(args, get_home_dir())
+        # run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+def run_subfinder(args, logger, starter_timer):
+    try:
+        update_scan_progress("Fire-Starter | Subfinder", args.fqdn)
+        print(f"[-] Running Subfinder against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder -> {args.fqdn}")
+        subfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
+        consolidate(args)
+        httprobe(args, get_home_dir())
+        # run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+def run_subfinder_recursive(args, logger, starter_timer):
+    try:
+        update_scan_progress("Fire-Starter | Subfinder (Recursive)", args.fqdn)
+        print(f"[-] Running Subfinder in Recursive Mode against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder (Recursive) -> {args.fqdn}")
+        subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args), logger)
+        consolidate(args)
+        httprobe(args, get_home_dir())
+        # run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+def run_shuffledns(args, logger, starter_timer):
+    try:
+        update_scan_progress("Fire-Starter | ShuffleDNS", args.fqdn)
+        print(f"[-] Running ShuffleDNS w/ a Default Wordlist against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running ShuffleDNS (Default) -> {args.fqdn}")
+        shuffle_dns(args, get_home_dir(), get_fqdn_obj(args), logger)
+        consolidate(args)
+        httprobe(args, get_home_dir())
+        # run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+
+def run_shuffledns_custom(args, logger, starter_timer):
+    try:
+        update_scan_progress("Fire-Starter | ShuffleDNS (Custom)", args.fqdn)
+        print(f"[-] Running ShuffleDNS w/ a Custom Wordlist against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running ShuffleDNS (Custom) -> {args.fqdn}")
+        shuffle_dns_custom(args, get_home_dir(), get_fqdn_obj(args), logger)
+        consolidate(args)
+        httprobe(args, get_home_dir())
+        # run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+def run_gospider(args, logger, starter_timer):
+    try:
+        update_scan_progress("Fire-Starter | Gospider", args.fqdn)
+        print(f"[-] Running Gospider against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GoSpider -> {args.fqdn}")
+        build_crawl_list(get_fqdn_obj(args))
+        gospider(args, get_home_dir(), get_fqdn_obj(args), logger)
+        consolidate(args)
+        httprobe(args, get_home_dir())
+        # run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+def run_subdomainizer(args, logger, starter_timer):
+    try:
+        update_scan_progress("Fire-Starter | Subdomainizer", args.fqdn)
+        print(f"[-] Running Subdomainizer against {args.fqdn}")
+        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subdomainizer -> {args.fqdn}")
+        print(f"[-] Current Time: {datetime.now()}")
+        build_crawl_list(get_fqdn_obj(args))
+        subdomainizer(get_home_dir(), get_fqdn_obj(args), logger)
+        consolidate(args)
+        httprobe(args, get_home_dir())
+        # run_checks(args, starter_timer)
+    except Exception as e:
+        print(f"[!] Exception: {e}")
+
+def select_tool_scan(args, logger, starter_timer):
+    if args.amass:
+        run_amass(args, logger, starter_timer)
+    if args.sublist3r:
+        run_sublist3r(args, logger, starter_timer)
+    if args.assetfinder:
+        run_assetfinder(args, logger, starter_timer)
+    if args.gau:
+        run_gau(args, logger, starter_timer)
+    if args.ctl:
+        run_ctl(args, logger, starter_timer)
+    if args.subfinder:
+        run_subfinder(args, logger, starter_timer)
+    if args.subfinderrecursive:
+        run_subfinder_recursive(args, logger, starter_timer)
+    if args.shuffledns:
+        run_shuffledns(args, logger, starter_timer)
+    if args.shufflednscustom:
+        run_shuffledns_custom(args, logger, starter_timer)
+    if args.gospider:
+        run_gospider(args, logger, starter_timer)
+    if args.subdomainizer:
+        run_subdomainizer(args, logger, starter_timer)
+    exit()
+
 
 def main(args):
     args.limit = True
     starter_timer = Timer()
     logger = Logger()
     cleanup()
+    # select_tool_scan(args, logger, starter_timer)
     print("[-] Running Subdomain Scraping Modules...")
-    # Amass
-    try:
-        update_scan_progress("Fire-Starter | Amass", args.fqdn)
-        print(f"[-] Running Amass against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Amass -> {args.fqdn}")
-        amass(args, get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
+    run_amass(args, logger, starter_timer)
     # Subdomain Scraping
-    try:
-        update_scan_progress("Fire-Starter | Sublist3r", args.fqdn)
-        print(f"[-] Running Sublist3r against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Sublist3r -> {args.fqdn}")
-        sublist3r(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
-        update_scan_progress("Fire-Starter | Assetfinder", args.fqdn)
-        print(f"[-] Running Assetfinder against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Assetfinder -> {args.fqdn}")
-        assetfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
-        update_scan_progress("Fire-Starter | GAU", args.fqdn)
-        print(f"[-] Running Get All URLs against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GAU -> {args.fqdn}")
-        gau(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
-        update_scan_progress("Fire-Starter | CRT", args.fqdn)
-        print(f"[-] Running CRT against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running CRT -> {args.fqdn}")
-        crt(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
-        update_scan_progress("Fire-Starter | Subfinder", args.fqdn)
-        print(f"[-] Running Subfinder against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder -> {args.fqdn}")
-        subfinder(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
-        update_scan_progress("Fire-Starter | Subfinder (Recursive)", args.fqdn)
-        print(f"[-] Running Subfinder in Recursive Mode against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subfinder (Recursive) -> {args.fqdn}")
-        subfinder_recursive(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
+    run_sublist3r(args, logger, starter_timer)
+    run_assetfinder(args, logger, starter_timer)
+    run_gau(args, logger, starter_timer)
+    run_ctl(args, logger, starter_timer)
+    run_subfinder(args, logger, starter_timer)
+    run_subfinder_recursive(args, logger, starter_timer)
     # Subdomain Brute Force
-    try:
-        update_scan_progress("Fire-Starter | ShuffleDNS", args.fqdn)
-        print(f"[-] Running ShuffleDNS w/ a Default Wordlist against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running ShuffleDNS (Default) -> {args.fqdn}")
-        shuffle_dns(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
-        update_scan_progress("Fire-Starter | ShuffleDNS (Custom)", args.fqdn)
-        print(f"[-] Running CEWL against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Building CeWL Wordlist -> {args.fqdn}")
-        build_cewl_wordlist(args, logger)
-        print(f"[-] Running ShuffleDNS w/ a Custom Wordlist against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running ShuffleDNS (Custom) -> {args.fqdn}")
-        shuffle_dns_custom(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-    
+    run_shuffledns(args, logger, starter_timer)
+    run_shuffledns_custom(args, logger, starter_timer)
     wrap_up(args)
     build_crawl_list(get_fqdn_obj(args))
-
     # Subdomain Link/JS Discovery
-    try:
-        update_scan_progress("Fire-Starter | Gospider", args.fqdn)
-        print(f"[-] Running Gospider against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running GoSpider -> {args.fqdn}")
-        gospider(args, get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
-    try:
-        update_scan_progress("Fire-Starter | Subdomainizer", args.fqdn)
-        print(f"[-] Running Subdomainizer against {args.fqdn}")
-        logger.write_to_log("[MSG]","Fire-Starter.py",f"Running Subdomainizer -> {args.fqdn}")
-        print(f"[-] Current Time: {datetime.now()}")
-        subdomainizer(get_home_dir(), get_fqdn_obj(args), logger)
-        run_checks(args, starter_timer)
-    except Exception as e:
-        print(f"[!] Exception: {e}")
-
+    run_gospider(args, logger, starter_timer)
+    run_subdomainizer(args, logger, starter_timer)
     # if not check_clear_sky_data():
     #     if not args.update:
     #         logger.write_to_log("[MSG]","Fire-Starter.py",f"Clear Sky Data NOT Found.  Skipping...")
@@ -899,7 +907,6 @@ def main(args):
     # else:
     #     print(f"[-] Running Clear-Sky against {args.fqdn}")
     #     search_data(args, get_fqdn_obj(args))
-
     wrap_up(args)
     # collect_screenshots(get_home_dir(), get_fqdn_obj(args), logger)
     starter_timer.stop_timer()

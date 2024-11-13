@@ -1,5 +1,6 @@
-import React, {useState, useEffect} from 'react';
-import axios from 'axios';import UrlForm from '../HelperComponents/UrlForm';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import UrlForm from '../HelperComponents/UrlForm';
 
 const GithubOsint = props => {
     const [urls, setUrls] = useState([]);

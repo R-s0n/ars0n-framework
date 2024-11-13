@@ -1,7 +1,8 @@
-import React, {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 
-import toast, { Toaster } from 'react-hot-toast';
-import axios from 'axios';import GithubSearchForm from '../HelperComponents/GithubSearchForm';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import GithubSearchForm from '../HelperComponents/GithubSearchForm';
 import GithubSearchResults from '../HelperComponents/GithubSearchResults';
 
 const GithubSearch = props => {

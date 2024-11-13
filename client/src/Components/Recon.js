@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import { useState } from 'react';
 
 import Sublist3r from './SubComponents/Sublist3r';
 import Amass from './SubComponents/Amass';

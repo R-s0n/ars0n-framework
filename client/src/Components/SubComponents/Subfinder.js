@@ -1,6 +1,7 @@
-import axios from 'axios';import React, {useState, useEffect} from 'react';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
 
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import SubDomainForm from '../HelperComponents/SubDomainForm';
 import SubDomainResults from '../HelperComponents/SubDomainResults';
 

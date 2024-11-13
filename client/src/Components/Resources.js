@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import { useState } from 'react';
 import '../Component.css';
 import ResourceEntry from './SubComponents/ResourceEntry';
 import Portswigger from './SubComponents/Portswigger';

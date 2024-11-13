@@ -1,6 +1,3 @@
-import React, {useState, useEffect} from 'react';
-import Modal from 'react-modal';
-
 const H2cSmugglingTunneling = props => {
 
     return (

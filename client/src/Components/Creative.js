@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import { useState } from 'react';
 
 import '../Component.css';
 import HopHeaders from './SubComponents/HopHeaders';

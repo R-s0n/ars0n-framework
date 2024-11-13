@@ -1,4 +1,3 @@
-import React from 'react';
 import UrlForm from '../HelperComponents/UrlForm';
 
 const EyeWitness = props => {

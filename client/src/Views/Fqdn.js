@@ -1,14 +1,12 @@
-import React, {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import Dashboard from '../Components/Dashboard';
 import CveTesting from '../Components/CveTesting';
 import Recon from '../Components/Recon';
 import Enumeration from '../Components/Enumeration';
 import Ops from '../Components/Ops';
-import Chaining from '../Components/Chaining';
 import Core from '../Components/Core';
 import Logging from '../Components/Logging';
-import Resources from '../Components/Resources';
 import Creative from '../Components/Creative';
 import ComingSoon from '../Components/ComingSoon';
 

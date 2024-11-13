@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import axios from 'axios';import Modal from 'react-modal';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import Modal from 'react-modal';
 import AddFqdnModal from './Components/Modals/AddFqdnModal';
 import Fqdn from './Views/Fqdn';
-import './App.css'
+import './App.css';
 
 function App() {
   useEffect(()=>setActiveTab(0), [App.index]);
@@ -10,7 +11,7 @@ function App() {
   const [noFqdns, setNoFqdns] = useState(true);
   const [loaded, setLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
-  const [refreshCounter, setRefreshCounter] = useState(0);
+  const [refreshCounter] = useState(0);
   const [fireStarter, setFireStarter] = useState(true);
   const [fireCloud, setFireCloud] = useState(false);
   const [fireScanner, setFireScanner] = useState(false);

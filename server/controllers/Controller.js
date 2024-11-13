@@ -47,7 +47,6 @@ module.exports.addFqdn = (req, res) => {
 }
 
 module.exports.getFqdns = (req, res) => {
-    console.log(req.headers)
     Fqdn.find()
         .then(fqdns=>res.json(fqdns))
         .catch(err=>res.status(400).json(err))
@@ -68,7 +67,6 @@ module.exports.deleteFqdn = (req, res) => {
 }
 
 module.exports.updateFqdn = (req, res) => {
-    console.log(req.body)
     Fqdn.findOneAndUpdate(
         { _id: req.body._id },
         req.body,
