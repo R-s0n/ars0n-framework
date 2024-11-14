@@ -135,7 +135,8 @@ async def amass(request: Request):
 @app.get('/debug/amass')
 async def amass(request: Request):
     print("testing Amass via celery worker...")
-    task = test_amass.apply_async()
+    domain = request.query_params.get("d")
+    task = test_amass.apply_async(args=(domain,))
     return JSONResponse(status_code=200, content={"taskId": str(task.id)})
 
 @app.get('/debug/status/{task_id}')
