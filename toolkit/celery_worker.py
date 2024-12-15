@@ -3,29 +3,12 @@ import subprocess
 import requests
 import re
 import json
-from time import sleep
 
 celery_app = Celery(
     "tasks",
     broker="redis://redis:6379/0",
     backend="redis://redis:6379"
 )
-
-@celery_app.task
-def test_scan():
-    subprocess.run(["sleep 10"], shell=True)
-    print("running...")
-    subprocess.run(["sleep 10"], shell=True)
-    print("running...")
-    subprocess.run(["sleep 10"], shell=True)
-    print("running...")
-    subprocess.run(["sleep 10"], shell=True)
-    print("running...")
-    subprocess.run(["sleep 10"], shell=True)
-    print("running...")
-    subprocess.run(["sleep 10"], shell=True)
-    print("running...")
-    return "Task complete"
 
 def parse_amass_file(file_path):
     try:
@@ -118,49 +101,43 @@ def amass_get_dns():
 
 @celery_app.task
 def test_amass(domain):
-    print(f"Running Amass Against {domain}...")
-    print(f"Domain: {domain}")
-    r = requests.post(f'http://backend:8000/api/auto', data={'fqdn':domain})
-    initFqdn = r.json()
-    if initFqdn == None:
-        print("No initFqdn!  Exiting...")
-        exit()
-    print("initFqdn:")
-    print(initFqdn)
-    amass_results = subprocess.run([f"amass enum -active -alts -brute -nocolor -min-for-recursive 2 -timeout 60 -d {domain} -o ./temp/amass.tmp"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
-    print(f"STDOUT: {amass_results.stdout}")
-    print(f"STDERR: {amass_results.stderr}")
-    amass_arr = []
-    with open('./temp/amass.tmp', 'r') as file:
-        for line in file:
-            try:
-                domain_pattern = r'([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})'
-                match = re.search(domain_pattern, line)
-                if match:
-                    domain = match.group(1)
-                    amass_arr.append(domain)
-            except Exception as e:
-                print(f"[!] Error processing line: {line}")
-                print(f"[!] Exception: {e}")
-    thisFqdn = get_ips_from_amass(initFqdn)
-    print("thisFqdn:")
-    print(thisFqdn)
-    thisFqdn['dns'] = amass_get_dns()
-    final_amass_arr = []
-    for amass_finding in amass_arr:
-        if thisFqdn['fqdn'] in amass_finding and amass_finding not in final_amass_arr:
-            final_amass_arr.append(amass_finding)
-    thisFqdn['recon']['subdomains']['amass'] = final_amass_arr
-    print("final update")
-    print(thisFqdn)
-    r = requests.post(f'http://backend:8000/api/auto/update', json=thisFqdn)
     try:
-        print(r.text)
-    except:
-        print("it's not r.text")
-    return "Amass Scan Complete"
-
-@celery_app.task
-def test_wildfire(command):
-    subprocess.run([command], shell=True)
-    return "Wildfire Scan Complete"
+        print(f"Running Amass Against {domain}...")
+        print(f"Domain: {domain}")
+        r = requests.post(f'http://backend:8000/api/auto', data={'fqdn':domain})
+        initFqdn = r.json()
+        amass_results = subprocess.run([f"amass enum -active -alts -brute -nocolor -min-for-recursive 2 -timeout 60 -d {domain} -o ./temp/amass.tmp"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, text=True)
+        print(f"STDOUT: {amass_results.stdout}")
+        print(f"STDERR: {amass_results.stderr}")
+        amass_arr = []
+        with open('./temp/amass.tmp', 'r') as file:
+            for line in file:
+                try:
+                    domain_pattern = r'([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})'
+                    match = re.search(domain_pattern, line)
+                    if match:
+                        domain = match.group(1)
+                        amass_arr.append(domain)
+                except Exception as e:
+                    print(f"[!] Error processing line: {line}")
+                    print(f"[!] Exception: {e}")
+        thisFqdn = get_ips_from_amass(initFqdn)
+        print("thisFqdn:")
+        print(thisFqdn)
+        thisFqdn['dns'] = amass_get_dns()
+        final_amass_arr = []
+        for amass_finding in amass_arr:
+            if thisFqdn['fqdn'] in amass_finding and amass_finding not in final_amass_arr:
+                final_amass_arr.append(amass_finding)
+        thisFqdn['recon']['subdomains']['amass'] = final_amass_arr
+        print("final update")
+        print(thisFqdn)
+        r = requests.post(f'http://backend:8000/api/auto/update', json=thisFqdn)
+        try:
+            print(r.text)
+        except:
+            print("it's not r.text")
+        return "Amass Scan Complete"
+    except Exception as e:
+        print("SOMETHING'S WRONG WITH THE AMASS SCAN")
+        return "SOMETHING'S WRONG WITH THE AMASS SCAN"

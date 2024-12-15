@@ -121,55 +121,14 @@ async def update_scan(request: Request):
     else:
         return JSONResponse(status_code=400, content={"message": "ERROR: Scan Not Currently Running..."})
 
-@app.get('/debug')
-async def amass(request: Request):
-    # flags = request.query_params.get("flags")
-    # domain = request.query_params.get("domain")
-    # print(domain)
-    # print(flags)
-    # subprocess.run([f"python3 toolkit/fire-starter.py -S backend -P 8000 -d {domain} {flags}"], shell=True)
-    print("testing celery worker...")
-    task = test_scan.apply_async()
-    return JSONResponse(status_code=200, content={"taskId": str(task.id)})
+@app.get('/amass/status/{task_id}')
+async def get_task_status(task_id: str):
+    result = test_amass.AsyncResult(task_id)
+    return JSONResponse(status_code=200, content={"status": str(result.state)})
 
-@app.get('/debug/amass')
+@app.get('/amass')
 async def amass(request: Request):
     print("testing Amass via celery worker...")
     domain = request.query_params.get("d")
     task = test_amass.apply_async(args=(domain,))
     return JSONResponse(status_code=200, content={"taskId": str(task.id)})
-
-@app.get('/debug/status/{task_id}')
-async def get_task_status(task_id: str):
-    result = test_scan.AsyncResult(task_id)
-    return JSONResponse(status_code=200, content={"status": str(result.state)})
-
-@app.post('/wildfire')
-async def wildfire(request: Request):
-    global scan_obj
-    if not scan_obj.scan_running:
-        data = await request.json()
-        fire_starter = data.get('fireStarter')
-        fire_cloud = data.get('fireCloud')
-        fire_scanner = data.get('fireScanner')
-        fqdn = data.get('fqdn', '')
-        scan_single_domain = data.get('scanSingleDomain', False)
-        domain_count = data.get('domainCount', 1)
-        start_flag = " --start" if fire_starter else ""
-        cloud_flag = " --cloud" if fire_cloud else ""
-        scan_flag = " --scan" if fire_scanner else ""
-        fqdn_flag = f" --fqdn {fqdn}" if scan_single_domain else ""
-        scanSingle_flag = " --scanSingle" if scan_single_domain else ""
-        scan_obj.core_module = "Wildfire.py"
-        start_scan(fire_starter, fire_cloud, fire_scanner, domain_count, scan_obj.core_module)
-        command = f"python3 wildfire.py{start_flag}{cloud_flag}{scan_flag}{fqdn_flag}{scanSingle_flag} -S backend"
-        task = test_wildfire.apply_async(args=(command,))
-        stop_scan()
-        return JSONResponse(status_code=200, content={"taskId": str(task.id)})
-    else:
-        return JSONResponse(status_code=400, content={"message": "ERROR: Scan Running..."})
-
-@app.post('/collect_screenshots')
-async def collect_screenshots():
-    subprocess.run(["python3 wildfire.py --screenshots"], shell=True)
-    return JSONResponse(status_code=200, content={"message": "Done!"})
