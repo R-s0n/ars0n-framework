@@ -7,7 +7,7 @@
   <br>
 </h1>
 
-<h3 align="center"><em>THIS PROJECT IS CURRENTLY IN CLOSED ALPHA.  CHECK YOUTUBE, LINKEDIN, OR HERE FOR UPDATES...</em></h3>
+<h3 align="center"><em>VERSION 2 ALPHA IS COMING SOON!!  <a href="https://github.com/R-s0n/ars0n-framework-v2">CHECK THE REPO FOR UPDATES!</a></em></h3>
 
 <h4 align="center"><strong>Designed to Help Aspiring Researchers Start Their Bug Bounty Journey and "Earn While You Learn"</strong> -- <em>by rs0n</em></h4>
 
